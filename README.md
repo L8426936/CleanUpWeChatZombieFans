@@ -1,6 +1,6 @@
 # Auto.js 脚本
 
-## [微信清理好友脚本](./we_chat_scripts/clear_friends/README.md)
+## [微信清理好友脚本](./we_chat_script/clear_friends/README.md)
 
 适用微信7.0.9版本，其它微信版本需要修改[config.js](./we_chat_script/clear_friends/config.js)的xxx_xxx_ID
 
