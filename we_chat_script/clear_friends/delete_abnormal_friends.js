@@ -59,7 +59,7 @@ function clickFriend(abnormal_friend) {
     while (index <= last_index) {
         index++;
     }
-    if (index >= friend_nicknames.length) {
+    if (index >= friend_nicknames.length || friend_nicknames[index].text() != abnormal_friend.friend_nickname) {
         if (id(CONFIG.FRIEND_COUNT_ID).find().empty()) {
             scrollFriends();
         } else {
@@ -191,6 +191,7 @@ function main() {
                     }
                 }
             }
+            stopScript();
         }
     }
 }
