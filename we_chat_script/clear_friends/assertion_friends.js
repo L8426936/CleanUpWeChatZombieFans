@@ -81,13 +81,17 @@ function clickFriend() {
  */
 function clickSendMessage() {
     let nodes = id(CONFIG.SEND_MESSAGE_ID).untilFind();
-    let we_chat_name = id(CONFIG.WE_CHAT_NAME_ID).findOne().text();
-    if (we_chat_name == last_we_chat_name || nodes.length < 2) {
+    if (nodes.length < 2) {
         if (NODE_UTIL.backtrackClickNode(id(CONFIG.BACK_TO_FRIEND_LIST_ID).findOne())) {
             step = 1;
         }
     } else {
-        if (NODE_UTIL.backtrackClickNode(nodes[0])) {
+        let we_chat_name = id(CONFIG.WE_CHAT_NAME_ID).findOne().text();
+        if (we_chat_name == last_we_chat_name) {
+            if (NODE_UTIL.backtrackClickNode(id(CONFIG.BACK_TO_FRIEND_LIST_ID).findOne())) {
+                step = 1;
+            }
+        } else if (NODE_UTIL.backtrackClickNode(nodes[0])) {
             last_we_chat_name = we_chat_name;
             step = 3;
         }
