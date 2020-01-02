@@ -2,9 +2,14 @@
 
 const CONFIG = require("./config.js");
 const COMMON = require("./common.js");
+const NODE_UTIL = require("../../util/node_util.js");
+const APP_UTIL = require("../../util/app_util.js");
+const ASSERTION_FRIENDS = require("./assertion_friends.js");
+const DELETE_ABNORMAL_FRIENDS = require("./delete_abnormal_friends.js");
 
 ui.layout(
     <frame padding="8">
+        <text id="support_we_chat" gravity="center"/>
         <vertical>
             <list id="list" marginBottom="64">
                 <horizontal padding="0 8">
@@ -18,34 +23,35 @@ ui.layout(
             </list>
         </vertical>
         <horizontal>
-            <button id="clear_abnormal_friends" layout_weight="1" layout_gravity="bottom" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="清除本地数据"/>
+            <button id="clear_button" layout_weight="1" layout_gravity="bottom" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="清除本地数据"/>
             <button id="delete_button" layout_weight="1" layout_gravity="bottom" textColor="red" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="开始删除"/>
             <button id="assertion_button" layout_weight="1" layout_gravity="bottom" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="开始标记"/>
         </horizontal>
     </frame>
 );
 
-const BASE_PATH = files.cwd();
-
+const GONE = 8, VISIBLE = 0;
 var abnormal_friends = {}, is_delete_count = 0;
 
 function init() {
+    ui.support_we_chat.setText("仅支持" + CONFIG.SUPPORT_WE_CHAT_VERSIONS + "版本的微信");
+    let is_support = CONFIG.SUPPORT_WE_CHAT_VERSIONS.includes(APP_UTIL.getAppVersion(CONFIG.WE_CHAT_PACKAGE_NAME));
+    ui.support_we_chat.setVisibility(is_support ? GONE : VISIBLE);
     abnormal_friends = COMMON.getAbnormalFriends();
     let list_data = [];
     for (let we_chat_name of Object.keys(abnormal_friends)) {
         list_data.push(abnormal_friends[we_chat_name]);
     }
     ui.list.setDataSource(list_data);
+    ui.assertion_button.enabled = is_support;
     if (list_data.length > 0) {
-        ui.clear_abnormal_friends.enabled = true;
+        ui.clear_button.enabled = true;
         ui.delete_button.enabled = true;
     } else {
-        ui.clear_abnormal_friends.enabled = false;
+        ui.clear_button.enabled = false;
         ui.delete_button.enabled = false;
     }
 }
-
-init();
 
 ui.emitter.on("resume", init);
 
@@ -75,7 +81,7 @@ ui.list.on("item_bind", (itemView, itemHolder) => {
     });
 });
 
-ui.clear_abnormal_friends.on("click", () => {
+ui.clear_button.on("click", () => {
     COMMON.putAbnormalFriends({});
     init();
 });
@@ -89,7 +95,9 @@ ui.delete_button.on("click", () => {
             positive: "确定",
             negative: "取消"
         }).on("positive", () => {
-            engines.execScriptFile(BASE_PATH + "/delete_abnormal_friends.js");
+            threads.start(function(){
+                DELETE_ABNORMAL_FRIENDS.main();
+            });
         }).on("cancel", () => {
         }).show();
     } else {
@@ -98,5 +106,9 @@ ui.delete_button.on("click", () => {
 });
 
 ui.assertion_button.on("click", () => {
-    engines.execScriptFile(BASE_PATH + "/assertion_friends.js");
+    threads.start(function(){
+        ASSERTION_FRIENDS.main();
+    });
 });
+
+init();

@@ -1,10 +1,7 @@
 /**
  * 删除好友
  */
-
-const NODE_UTIL = require("../../util/node_util.js");
-const CONFIG = require("./config.js");
-const COMMON = require("./common.js");
+auto();
 
 /**
  * @var abnormal_friends 异常好友
@@ -148,19 +145,18 @@ function keyDownListenerByVolumeDown() {
  */
 function stopScript() {
     run = false;
-    toast("脚本已停止运行！！！");
+    for (let i = 0; i < deleted_abnormal_friends.length; i++) {
+        delete abnormal_friends[deleted_abnormal_friends[i]];
+    }
+    COMMON.putAbnormalFriends(abnormal_friends);
     try {
-        for (let i = 0; i < deleted_abnormal_friends.length; i++) {
-            delete abnormal_friends[deleted_abnormal_friends[i]];
-        }
-        COMMON.putAbnormalFriends(abnormal_friends);
         exit();
     } catch (e) {
     }
+    toast("脚本已停止运行！！！");
 }
-
-function main() {
-    if (Object.keys(abnormal_friends).length > 0) {
+module.exports = {
+    main: () => {
         keyDownListenerByVolumeDown();
         launchWeChat();
         if (clickFriends()) {
@@ -191,9 +187,7 @@ function main() {
                     }
                 }
             }
-            stopScript();
         }
+        stopScript();
     }
 }
-
-main();

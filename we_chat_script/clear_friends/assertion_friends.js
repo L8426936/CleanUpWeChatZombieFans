@@ -1,10 +1,7 @@
 /**
  * 检测微信好友关系
  */
-
-const NODE_UTIL = require("../../util/node_util.js");
-const CONFIG = require("./config.js");
-const COMMON = require("./common.js");
+auto();
 
 /**
  * @var abnormal_friends 异常好友
@@ -208,51 +205,51 @@ function keyDownListenerByVolumeDown() {
  */
 function stopScript() {
     run = false;
-    toast("脚本已停止运行！！！");
+    COMMON.putAbnormalFriends(abnormal_friends);
     try {
-        COMMON.putAbnormalFriends(abnormal_friends);
         exit();
     } catch (e) {
     }
+    toast("脚本已停止运行！！！");
 }
 
-function main() {
-    keyDownListenerByVolumeDown();
-    launchWeChat();
-    while (run) {
-        switch(step) {
-            case 0:
-                clickFriends();
-                break;
-            case 1:
-                clickFriend();
-                break;
-            case 2:
-                clickSendMessage();
-                break;
-            case 3:
-                clickMoreFunction();
-                break;
-            case 4:
-                clickTransferMoney();
-                break;
-            case 5:
-                setTransferAmount();
-                break;
-            case 6:
-                clickConfirmTransferMoney();
-                break;
-            case 7:
-                assertionFriend();
-                break;
-            case 8:
-                clickBackToChat();
-                break;
-            case 9:
-                clickBackToChatList();
-                break;
+module.exports = {
+    main: () => {
+        keyDownListenerByVolumeDown();
+        launchWeChat();
+        while (run) {
+            switch(step) {
+                case 0:
+                    clickFriends();
+                    break;
+                case 1:
+                    clickFriend();
+                    break;
+                case 2:
+                    clickSendMessage();
+                    break;
+                case 3:
+                    clickMoreFunction();
+                    break;
+                case 4:
+                    clickTransferMoney();
+                    break;
+                case 5:
+                    setTransferAmount();
+                    break;
+                case 6:
+                    clickConfirmTransferMoney();
+                    break;
+                case 7:
+                    assertionFriend();
+                    break;
+                case 8:
+                    clickBackToChat();
+                    break;
+                case 9:
+                    clickBackToChatList();
+                    break;
+            }
         }
     }
 }
-
-main();

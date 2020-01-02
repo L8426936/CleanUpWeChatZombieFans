@@ -1,11 +1,12 @@
 /**
- * 以下控件id适用微信7.0.9版本
+ * 以下控件id适用微信7.0.9~7.0.10版本
  */
 module.exports = {
     // 微信包名
     WE_CHAT_PACKAGE_NAME: "com.tencent.mm",
     STORAGES_FILE_KEY: "com.niming:we_chat_tool",
     ABNORMAL_FRIENDS_KEY: "abnormal_friends",
+    SUPPORT_WE_CHAT_VERSIONS: "7.0.9, 7.0.10",
     FRIENDS_TEXT: "通讯录",
     DELETE_TEXT: "删除",
     CLOSE_DESC: "关闭",
