@@ -1,7 +1,6 @@
 /**
  * 检测微信好友关系
  */
-auto();
 
 /**
  * @var abnormal_friends 异常好友
@@ -206,11 +205,8 @@ function keyDownListenerByVolumeDown() {
 function stopScript() {
     run = false;
     COMMON.putAbnormalFriends(abnormal_friends);
-    try {
-        exit();
-    } catch (e) {
-    }
     toast("脚本已停止运行！！！");
+    exit();
 }
 
 module.exports = {

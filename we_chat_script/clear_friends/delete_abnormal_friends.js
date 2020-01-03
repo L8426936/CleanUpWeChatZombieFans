@@ -1,7 +1,6 @@
 /**
  * 删除好友
  */
-auto();
 
 /**
  * @var abnormal_friends 异常好友
@@ -149,12 +148,10 @@ function stopScript() {
         delete abnormal_friends[deleted_abnormal_friends[i]];
     }
     COMMON.putAbnormalFriends(abnormal_friends);
-    try {
-        exit();
-    } catch (e) {
-    }
     toast("脚本已停止运行！！！");
+    exit();
 }
+
 module.exports = {
     main: () => {
         keyDownListenerByVolumeDown();

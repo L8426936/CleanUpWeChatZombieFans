@@ -34,22 +34,31 @@ const GONE = 8, VISIBLE = 0;
 var abnormal_friends = {}, is_delete_count = 0;
 
 function init() {
+    if (auto.service == null) {
+        dialogs.alert("提示", "去开启无障碍服务").then(() => {
+            app.startActivity({
+                action: "android.settings.ACCESSIBILITY_SETTINGS"
+            });
+        });
+    }
+    
     ui.support_we_chat.setText("仅支持" + CONFIG.SUPPORT_WE_CHAT_VERSIONS + "版本的微信");
     let is_support = CONFIG.SUPPORT_WE_CHAT_VERSIONS.includes(APP_UTIL.getAppVersion(CONFIG.WE_CHAT_PACKAGE_NAME));
     ui.support_we_chat.setVisibility(is_support ? GONE : VISIBLE);
+
+    ui.clear_button.enabled = false;
+    ui.delete_button.enabled = false;
+    ui.assertion_button.enabled = is_support;
+
     abnormal_friends = COMMON.getAbnormalFriends();
     let list_data = [];
     for (let we_chat_name of Object.keys(abnormal_friends)) {
         list_data.push(abnormal_friends[we_chat_name]);
     }
     ui.list.setDataSource(list_data);
-    ui.assertion_button.enabled = is_support;
     if (list_data.length > 0) {
         ui.clear_button.enabled = true;
         ui.delete_button.enabled = true;
-    } else {
-        ui.clear_button.enabled = false;
-        ui.delete_button.enabled = false;
     }
 }
 
