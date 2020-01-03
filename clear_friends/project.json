@@ -1,0 +1,19 @@
+{
+  "assets": [],
+  "build": {
+    "build_id": "",
+    "build_number": 0,
+    "build_time": 0
+  },
+  "useFeatures": [],
+  "icon": "res/logo.png",
+  "launchConfig": {
+    "hideLogs": true
+  },
+  "main": "main.js",
+  "name": "微信好友清理",
+  "packageName": "com.niming",
+  "scripts": {},
+  "versionCode": 1,
+  "versionName": "2020-01-04-1"
+}
