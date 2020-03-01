@@ -44,8 +44,8 @@ const APP_UTIL = require("./utils/app_util.js");
             });
         }
 
-        ui.support_we_chat.setText("仅支持" + CONFIG.SUPPORT_WE_CHAT_VERSIONS + "版本的微信");
-        let is_support = CONFIG.SUPPORT_WE_CHAT_VERSIONS.includes(APP_UTIL.getAppVersion(CONFIG.WE_CHAT_PACKAGE_NAME));
+        ui.support_we_chat.setText("仅支持" + CONFIG.MIN_SUPPORTED_WE_CHAT_VERSION + "~" + CONFIG.MAX_SUPPORTED_WE_CHAT_VERSION + "版本的微信");
+        let is_support = APP_UTIL.isSupportVersion();
         ui.support_we_chat.setVisibility(is_support ? GONE : VISIBLE);
 
         ui.delete_button.enabled = false;
