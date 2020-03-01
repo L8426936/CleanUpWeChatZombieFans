@@ -33,7 +33,7 @@ const APP_UTIL = require("./utils/app_util.js");
     );
 
     const GONE = 8, VISIBLE = 0;
-    let abnormal_friends, is_delete_count;
+    let abnormal_friends;
 
     function init() {
         if (auto.service == null) {
@@ -52,7 +52,6 @@ const APP_UTIL = require("./utils/app_util.js");
         ui.assertion_button.enabled = is_support;
 
         abnormal_friends = COMMON.getAbnormalFriends();
-        is_delete_count = 0;
         let list_data = [];
         for (let we_chat_name of Object.keys(abnormal_friends)) {
             list_data.push(abnormal_friends[we_chat_name]);
@@ -68,7 +67,6 @@ const APP_UTIL = require("./utils/app_util.js");
     ui.list.on("item_bind", (itemView, itemHolder) => {
         itemView.single_assertion_friend_checkbox.on("check", (checked) => {
             let item = itemHolder.item;
-            is_delete_count = checked ? is_delete_count + 1 : is_delete_count - 1;
             if (abnormal_friends[item.we_chat_name].is_delete != checked) {
                 abnormal_friends[item.we_chat_name].is_delete = checked;
                 COMMON.putAbnormalFriends(abnormal_friends);
@@ -106,7 +104,14 @@ const APP_UTIL = require("./utils/app_util.js");
     });
 
     ui.delete_button.on("click", () => {
-        if (is_delete_count > 0) {
+        let selected = false;
+        for (let we_chat_name of Object.keys(abnormal_friends)) {
+            if (abnormal_friends[we_chat_name].is_delete) {
+                selected = true;
+                break;
+            }
+        }
+        if (selected > 0) {
             dialogs.build({
                 title: "危险操作！！！",
                 titleColor: "red",
@@ -114,7 +119,7 @@ const APP_UTIL = require("./utils/app_util.js");
                 positive: "确定",
                 negative: "取消"
             }).on("positive", () => {
-                threads.start(function(){
+                threads.start(function () {
                     DELETE_ABNORMAL_FRIENDS.main();
                 });
             }).on("cancel", () => {
@@ -125,7 +130,7 @@ const APP_UTIL = require("./utils/app_util.js");
     });
 
     ui.assertion_button.on("click", () => {
-        threads.start(function() {
+        threads.start(function () {
             ASSERTION_FRIENDS.main();
         });
     });

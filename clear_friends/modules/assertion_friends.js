@@ -173,7 +173,7 @@ module.exports = (() => {
         sleep(150);
         let node = id(CONFIG.ABNORMAL_MESSAGE_ID).findOnce();
         if (node == null) {
-            if (!NODE_UTIL.backtrackClickNode(desc(CONFIG.CLOSE_DESC).findOnce())) {
+            if (!NODE_UTIL.backtrackClickNode(desc(CONFIG.CLOSE_DESC_TEXT).findOnce())) {
                 assertionFriend();
             } else {
                 step = 8;

@@ -2,7 +2,7 @@
 
 ## [微信清理好友脚本](./clear_friends/README.md)
 
-适用微信7.0.9~7.0.10版本，其它微信版本需要修改[config.js](./clear_friends/config.js)的xxx_xxx_ID
+适用微信7.0.9~7.0.11版本，其它微信版本需要修改[config.js](./clear_friends/config.js)的xxx_xxx_ID
 
 通过微信转账判断好友关系
 1. 被拉黑-请确认你和他（她）的好友关系是否正常

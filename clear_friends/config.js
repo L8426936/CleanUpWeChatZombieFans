@@ -11,7 +11,7 @@ module.exports = {
     MAX_SUPPORTED_WE_CHAT_VERSION: "7.0.11",
     FRIENDS_TEXT: "通讯录",
     DELETE_TEXT: "删除",
-    CLOSE_DESC: "关闭",
+    CLOSE_DESC_TEXT: "关闭",
     TRANSFER_MONEY_TEXT: "转账",
     // 通讯录的联系人ListView的id
     FRIEND_LIST_ID: "oc",
