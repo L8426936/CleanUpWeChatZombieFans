@@ -13,12 +13,15 @@ const APP_UTIL = require("./utils/app_util.js");
         <frame padding="8">
             <text id="support_we_chat" gravity="center"/>
             <vertical>
+                <text textColor="#FF8000">以下微信好友漏查或无需检查</text>
+                <scroll w="*" h="60" ><text textColor="#FF8000" id="ignore_friends_text"></text></scroll>
+                <text textColor="#FF8000">-----------------分割线-----------------</text>
                 <list id="list" marginBottom="64">
                     <horizontal padding="0 8">
                         <checkbox id="single_assertion_friend_checkbox" layout_gravity="center" checked="{{is_delete}}"/>
                         <vertical>
                             <text text="{{we_chat_name}}"/>
-                            <text text="{{friend_nickname}}"/>
+                            <text text="{{friend_remark}}"/>
                             <text text="{{assertion}}"/>
                         </vertical>
                     </horizontal>
@@ -53,12 +56,15 @@ const APP_UTIL = require("./utils/app_util.js");
 
         abnormal_friends = COMMON.getAbnormalFriends();
         let list_data = [];
-        for (let we_chat_name of Object.keys(abnormal_friends)) {
+        for (let we_chat_name in abnormal_friends) {
             list_data.push(abnormal_friends[we_chat_name]);
         }
         ui.list.setDataSource(list_data);
-        if (list_data.length > 0) {
-            ui.delete_button.enabled = true;
+        ui.delete_button.enabled = list_data.length > 0;
+
+        let ignore_friends = COMMON.getIgnoreFriends();
+        for (let ignore_friend in ignore_friends) {
+            ui.ignore_friends_text.setText(ui.ignore_friends_text.text() + ignore_friend + "\n");
         }
     }
 
@@ -97,6 +103,8 @@ const APP_UTIL = require("./utils/app_util.js");
         }).on("positive", () => {
             COMMON.putAbnormalFriends({});
             COMMON.putCheckedFriends({});
+            COMMON.putIgnoreFriends({});
+            ui.ignore_friends_text.setText("");
             toast("已清空");
             init();
         }).on("cancel", () => {
@@ -105,13 +113,13 @@ const APP_UTIL = require("./utils/app_util.js");
 
     ui.delete_button.on("click", () => {
         let selected = false;
-        for (let we_chat_name of Object.keys(abnormal_friends)) {
+        for (let we_chat_name in abnormal_friends) {
             if (abnormal_friends[we_chat_name].is_delete) {
                 selected = true;
                 break;
             }
         }
-        if (selected > 0) {
+        if (selected) {
             dialogs.build({
                 title: "危险操作！！！",
                 titleColor: "red",
