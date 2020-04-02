@@ -13,7 +13,7 @@ const APP_UTIL = require("./utils/app_util.js");
         <frame padding="8">
             <text id="support_we_chat" gravity="center"/>
             <vertical>
-                <text textColor="#FF8000">以下微信好友漏查或无需检查</text>
+                <text textColor="#FF8000">上次运行以下微信好友漏查或无需检查</text>
                 <scroll w="*" h="60" ><text textColor="#FF8000" id="ignore_friends_text"></text></scroll>
                 <text textColor="#FF8000">-----------------分割线-----------------</text>
                 <list id="list" marginBottom="64">

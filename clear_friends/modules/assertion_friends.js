@@ -249,7 +249,7 @@ module.exports = (() => {
                 <vertical padding="8" bg="#000000" w="*">
                     <vertical layout_weight="1" w="*">
                         <vertical layout_weight="1" w="*">
-                            <text textColor="#FF8000" w="*">以下微信好友漏查或是无需检查</text>
+                            <text textColor="#FF8000" w="*">本次运行以下微信好友漏查或是无需检查</text>
                             <scroll w="*" h="60" id="warning_text_scroll"><text textColor="#FF8000" layout_gravity="top" id="warning_text"></text></scroll>
                         </vertical>
                         <vertical layout_weight="1" w="*">
@@ -270,7 +270,7 @@ module.exports = (() => {
             stopScript();
         });
 
-        ignore_friends = COMMON.getIgnoreFriends(), checked_friends = COMMON.getCheckedFriends(), abnormal_friends = COMMON.getAbnormalFriends(), last_we_chat_name = "", last_friend_remark = "", last_index = -1, step = 0, run = false;
+        ignore_friends = {}, checked_friends = COMMON.getCheckedFriends(), abnormal_friends = COMMON.getAbnormalFriends(), last_we_chat_name = "", last_friend_remark = "", last_index = -1, step = 0, run = false;
         keyDownListenerByVolumeDown();
         launchWeChat();
         while (run) {
