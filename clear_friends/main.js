@@ -1,147 +1,398 @@
 "ui";
 
-const CONFIG = require("./config.js");
-const COMMON = require("./common.js");
-const NODE_UTIL = require("./utils/node_util.js");
-const APP_UTIL = require("./utils/app_util.js");
-
 (() => {
-    const ASSERTION_FRIENDS = require("./modules/assertion_friends.js");
-    const DELETE_ABNORMAL_FRIENDS = require("./modules/delete_abnormal_friends.js");
-    
     ui.layout(
-        <frame padding="8">
-            <text id="support_we_chat" gravity="center"/>
-            <vertical>
-                <text textColor="#FF8000">上次运行以下微信好友漏查或无需检查</text>
-                <scroll w="*" h="60" ><text textColor="#FF8000" id="ignore_friends_text"></text></scroll>
-                <text textColor="#FF8000">-----------------分割线-----------------</text>
-                <list id="list" marginBottom="64">
-                    <horizontal padding="0 8">
-                        <checkbox id="single_assertion_friend_checkbox" layout_gravity="center" checked="{{is_delete}}"/>
-                        <vertical>
-                            <text text="{{we_chat_name}}"/>
-                            <text text="{{friend_remark}}"/>
-                            <text text="{{assertion}}"/>
-                        </vertical>
-                    </horizontal>
-                </list>
-            </vertical>
-            <horizontal>
-                <button id="clear_button" layout_weight="1" layout_gravity="bottom" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="清除本地数据"/>
-                <button id="delete_button" layout_weight="1" layout_gravity="bottom" textColor="red" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="开始删除"/>
-                <button id="assertion_button" layout_weight="1" layout_gravity="bottom" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold" text="开始标记"/>
+        <vertical>
+            <appbar>
+                <toolbar id="toolbar">
+                </toolbar>
+                <tabs id="tabs" />
+            </appbar>
+            <viewpager id="viewpager" layout_weight="1">
+                <frame>
+                    <list id="abnormal_friend_list">
+                        <horizontal padding="0 8">
+                            <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
+                            <vertical>
+                                <text id="friend_remark_text" text="{{friend_remark}}" />
+                                <text id="we_chat_id_text" text="{{we_chat_id}}" />
+                                <text id="abnormal_message_text" text="{{abnormal_message}}" />
+                            </vertical>
+                        </horizontal>
+                    </list>
+                </frame>
+                <frame>
+                    <list id="normal_friend_list">
+                        <horizontal padding="0 8">
+                            <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
+                            <vertical>
+                                <text id="friend_remark_text" text="{{friend_remark}}" />
+                                <text id="we_chat_id_text" text="{{we_chat_id}}" />
+                            </vertical>
+                        </horizontal>
+                    </list>
+                </frame>
+                <frame>
+                    <list id="ignored_friend_list">
+                        <text padding="8" text="{{friend_remark}}" />
+                    </list>
+                </frame>
+            </viewpager>
+            <horizontal bg="#EBEBEB">
+                <button id="clear_friends_data_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="delete_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
             </horizontal>
-        </frame>
+        </vertical>
     );
 
-    const GONE = 8, VISIBLE = 0;
-    let abnormal_friends;
+    let config, language, texts, abnormal_friends, normal_friends, no_more_warning = false;
 
-    function init() {
-        if (auto.service == null) {
-            dialogs.alert("提示", "去开启微信清理好友无障碍服务").then(() => {
-                app.startActivity({
-                    action: "android.settings.ACCESSIBILITY_SETTINGS"
-                });
-            });
+    /**
+     * 初始化配置
+     */
+    function initConfig() {
+        config = JSON.parse(open("./config/config.json").read());
+        texts = JSON.parse(open("./config/text_id/text.json").read());
+        let default_language = checkSupportedLanguage() ? context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country : "zh-CN";
+        language = JSON.parse(open("./config/languages/" + default_language + ".json").read());
+    }
+    initConfig();
+
+    /**
+     * 初始化UI
+     */
+    function initUI() {
+        abnormal_friends = files.exists("./data/abnormal_friends.json") ? JSON.parse(open("./data/abnormal_friends.json").read()) : {};
+        normal_friends = files.exists("./data/normal_friends.json") ? JSON.parse(open("./data/normal_friends.json").read()) : {};
+        let ignored_friends = files.exists("./data/ignored_friends.json") ? JSON.parse(open("./data/ignored_friends.json").read()) : {};
+        
+        let abnormal_friend_list = [];
+        for (let friend_remark in abnormal_friends) {
+            for (let we_chat_id in abnormal_friends[friend_remark]) {
+                abnormal_friend_list.push(abnormal_friends[friend_remark][we_chat_id]);
+            }
         }
-
-        ui.support_we_chat.setText("仅支持" + CONFIG.MIN_SUPPORTED_WE_CHAT_VERSION + "~" + CONFIG.MAX_SUPPORTED_WE_CHAT_VERSION + "版本的微信");
-        let is_support = APP_UTIL.isSupportVersion();
-        ui.support_we_chat.setVisibility(is_support ? GONE : VISIBLE);
-
-        ui.delete_button.enabled = false;
-        ui.assertion_button.enabled = is_support;
-
-        abnormal_friends = COMMON.getAbnormalFriends();
-        let list_data = [];
-        for (let we_chat_name in abnormal_friends) {
-            list_data.push(abnormal_friends[we_chat_name]);
+        ui.abnormal_friend_list.setDataSource(abnormal_friend_list);
+        
+        let normal_friend_list = [];
+        for (let friend_remark in normal_friends) {
+            for (let we_chat_id in normal_friends[friend_remark]) {
+                normal_friend_list.push(normal_friends[friend_remark][we_chat_id]);
+            }
         }
-        ui.list.setDataSource(list_data);
-        ui.delete_button.enabled = list_data.length > 0;
+        ui.normal_friend_list.setDataSource(normal_friend_list);
+        
+        let ignored_friend_list = [];
+        for (let friend_remark in ignored_friends) {
+            ignored_friend_list.push(friend_remark);
+        }
+        ui.ignored_friend_list.setDataSource(ignored_friend_list);
 
-        let ignore_friends = COMMON.getIgnoreFriends();
-        for (let ignore_friend in ignore_friends) {
-            ui.ignore_friends_text.setText(ui.ignore_friends_text.text() + ignore_friend + "\n");
+        ui.clear_friends_data_button.setText(language["clear_friend_data"]);
+        ui.delete_friends_button.setText(language["delete_friend"]);
+        ui.test_friends_button.setText(language["test_friend"]);
+        let supported_language = checkSupportedLanguage();
+        ui.delete_friends_button.enabled = supported_language;
+        ui.test_friends_button.enabled = supported_language;
+        if (!supported_language) {
+            ui.delete_friends_button.textColor = colors.parseColor("#B2B2B2");
+            ui.test_friends_button.textColor = colors.parseColor("#B2B2B2");
+            dialogs.build({
+                content: "Does not support system language",
+                positive: "Confirm",
+                positiveColor: "#008274",
+                cancelable: false
+            }).show();
         }
     }
+    initUI();
+    ui.emitter.on("resume", initUI);
 
-    ui.emitter.on("resume", init);
-
-    ui.list.on("item_bind", (itemView, itemHolder) => {
-        itemView.single_assertion_friend_checkbox.on("check", (checked) => {
-            let item = itemHolder.item;
-            if (abnormal_friends[item.we_chat_name].is_delete != checked) {
-                abnormal_friends[item.we_chat_name].is_delete = checked;
-                COMMON.putAbnormalFriends(abnormal_friends);
+    /**
+     * 检验语言
+     */
+    function checkSupportedLanguage() {
+        let local_language = context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country;
+        for (let i = 0; i < config["supported_language"].length; i++) {
+            if (config["supported_language"][i] == local_language) {
+                return true;
             }
-        });
-        itemView.single_assertion_friend_checkbox.on("click", () => {
-            let item = itemHolder.item;
-            let assertion = item.assertion;
-            let checked = itemView.single_assertion_friend_checkbox.checked;
-            if (checked && assertion != "请确认你和他（她）的好友关系是否正常" && assertion != "你不是收款方好友，对方添加你为好友后才能发起转账") {
-                dialogs.build({
-                    content: "对方没有拉黑或删除你，确定将对方加入待删除名单？",
-                    positive: "确定",
-                    negative: "取消"
-                }).on("positive", () => {
-                }).on("cancel", () => {
-                    itemView.single_assertion_friend_checkbox.checked = false;
-                }).show();
-            }
-        });
-    });
+        }
+        return false;
+    }
 
-    ui.clear_button.on("click", () => {
-        dialogs.build({
-            content: "清空数据，包括所有的异常好友，已检查过的好友",
-            positive: "确定",
-            negative: "取消"
-        }).on("positive", () => {
-            COMMON.putAbnormalFriends({});
-            COMMON.putCheckedFriends({});
-            COMMON.putIgnoreFriends({});
-            ui.ignore_friends_text.setText("");
-            toast("已清空");
-            init();
-        }).on("cancel", () => {
-        }).show();
-    });
+    /**
+     * 校验已安装微信
+     * @returns {boolean}
+     */
+    function checkInstalledWeChat() {
+        let installed_we_chat = getAppName(config["we_chat_package_name"]) != null;
+        if (!installed_we_chat) {
+            dialogs.build({
+                content: language["uninstalled_we_chat_alert_dialog_message"],
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                cancelable: false
+            }).show();
+        }
+        return installed_we_chat;
+    }
 
-    ui.delete_button.on("click", () => {
-        let selected = false;
-        for (let we_chat_name in abnormal_friends) {
-            if (abnormal_friends[we_chat_name].is_delete) {
-                selected = true;
+    /**
+     * 校验支持微信版本
+     * @returns {boolean}
+     */
+    function checkSupportedWeChatVersion() {
+        let app_util = require("./utils/app_util.js");
+        let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
+        let min_supported_version = config["min_supported_version"];
+        let max_supported_version = config["max_supported_version"];
+        let supported = app_util.isSupportVersion(we_chat_version, min_supported_version, max_supported_version);
+        if (!supported) {
+            dialogs.build({
+                content: language["unsupported_we_chat_version_alert_dialog_message"].replace("%min_supported_version", min_supported_version).replace("%max_supported_version", max_supported_version).replace("%we_chat_version", we_chat_version),
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                cancelable: false
+            }).show();
+        }
+        return supported;
+    }
+
+    /**
+     * 校验文件
+     * @returns {boolean}
+     */
+    function checkFile() {
+        let app_util = require("./utils/app_util.js");
+        let min_supported_version, max_supported_version;
+        let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
+        for (let i = 0; i < config["supported_version"].length; i++) {
+            if (app_util.isSupportVersion(we_chat_version, config["supported_version"][i]["min_supported_version"], config["supported_version"][i]["max_supported_version"])) {
+                min_supported_version = config["supported_version"][i]["min_supported_version"];
+                max_supported_version = config["supported_version"][i]["max_supported_version"];
                 break;
             }
         }
-        if (selected) {
+        let exists = files.exists("./config/text_id/" + min_supported_version + "-" + max_supported_version + ".json");
+        if (!exists) {
             dialogs.build({
-                title: "危险操作！！！",
-                titleColor: "red",
-                content: "删除选中的好友",
-                positive: "确定",
-                negative: "取消"
-            }).on("positive", () => {
-                threads.start(function () {
-                    DELETE_ABNORMAL_FRIENDS.main();
-                });
-            }).on("cancel", () => {
+                content: language["file_lost_alert_dialog_message"].replace("%file_name", "./config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"),
+                positive: language["confirm"],
+                negativeColor: "#008274",
+                cancelable: false
             }).show();
-        } else {
-            toast("至少勾选一个复选框");
         }
-    });
+        return exists;
+    }
+    
+    /**
+     * 校验已开启无障碍服务
+     * @returns {boolean}
+     */
+    function checkService() {
+        let enabled = auto.service != null;
+        if (!enabled) {
+            dialogs.build({
+                content: language["jump_to_settings_alert_dialog_message"],
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                negative: language["cancel"],
+                negativeColor: "#008274",
+                cancelable: false
+            }).on("positive", () => {
+                app.startActivity({
+                    action: "android.settings.ACCESSIBILITY_SETTINGS"
+                });
+            }).show();
+        }
+        return enabled;
+    }
 
-    ui.assertion_button.on("click", () => {
-        threads.start(function () {
-            ASSERTION_FRIENDS.main();
+    // 创建选项菜单(右上角)
+    ui.emitter.on("create_options_menu", menu => {
+        menu.add(language["about"]);
+    });
+    // 监听选项菜单点击
+    ui.emitter.on("options_item_selected", (e, item) => {
+        switch (item.getTitle()) {
+            case language["about"]:
+                dialogs.build({
+                    content: language["about_alert_dialog_message"],
+                    positive: language["open_in_browser"],
+                    positiveColor: "#008274",
+                    negative: language["confirm"],
+                    negativeColor: "#008274",
+                    cancelable: false
+                }).on("positive", () => {
+                    app.openUrl("https://github.com/L8426936/");
+                }).show();
+                break;
+        }
+        e.consumed = true;
+    });
+    ui.toolbar.title = language["app_name"];
+    activity.setSupportActionBar(ui.toolbar);
+
+    // 设置滑动页面的标题
+    ui.viewpager.setTitles([language["abnormal_friend"], language["normal_friend"], language["ignored_friend"]]);
+    // 让滑动页面和标签栏联动
+    ui.tabs.setupWithViewPager(ui.viewpager);
+
+    ui.abnormal_friend_list.on("item_bind", (itemView, itemHolder) => {
+        itemView.selected_checkbox.on("check", () => {
+            itemView.selected_checkbox.enabled = !itemHolder.item["deleted"];
+            itemView.friend_remark_text.enabled = !itemHolder.item["deleted"];
+            itemView.we_chat_id_text.enabled = !itemHolder.item["deleted"];
+            itemView.abnormal_message_text.enabled = !itemHolder.item["deleted"];
+        });
+        itemView.selected_checkbox.on("click", () => {
+            let item = itemHolder.item;
+            let abnormal_message = item.abnormal_message;
+            if (!no_more_warning && itemView.selected_checkbox.checked && texts["blacklisted_message"].match(abnormal_message) == null && texts["deleted_message"].match(abnormal_message) == null) {
+                let selected_no_more_warning = false;
+                dialogs.build({
+                    title: language["warning"],
+                    content: language["selected_warining_alert_dialog_message"],
+                    checkBoxPrompt: language["no_more_warning"],
+                    positive: language["cancel"],
+                    positiveColor: "#008274",
+                    negative: language["confirm"],
+                    negativeColor: "#CC0000",
+                    cancelable: false
+                }).on("check", (checked) => {
+                    selected_no_more_warning = checked;
+                }).on("positive", () => {
+                    itemView.selected_checkbox.checked = false;
+                }).on("negative", () => {
+                    no_more_warning = selected_no_more_warning;
+                    abnormal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = true;
+                    files.write("./data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+                }).show();
+            } else {
+                abnormal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = itemView.selected_checkbox.checked;
+                files.write("./data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+            }
         });
     });
 
-    init();
+    ui.normal_friend_list.on("item_bind", (itemView, itemHolder) => {
+        itemView.selected_checkbox.on("check", () => {
+            itemView.selected_checkbox.enabled = !itemHolder.item["deleted"];
+            itemView.friend_remark_text.enabled = !itemHolder.item["deleted"];
+            itemView.we_chat_id_text.enabled = !itemHolder.item["deleted"];
+        });
+        itemView.selected_checkbox.on("click", () => {
+            let item = itemHolder.item;
+            if (!no_more_warning && itemView.selected_checkbox.checked) {
+                let selected_no_more_warning = false;
+                dialogs.build({
+                    title: language["warning"],
+                    content: language["selected_warining_alert_dialog_message"],
+                    checkBoxPrompt: language["no_more_warning"],
+                    positive: language["cancel"],
+                    positiveColor: "#008274",
+                    negative: language["confirm"],
+                    negativeColor: "#CC0000",
+                    cancelable: false
+                }).on("check", (checked) => {
+                    selected_no_more_warning = checked;
+                }).on("positive", () => {
+                    itemView.selected_checkbox.checked = false;
+                }).on("negative", () => {
+                    no_more_warning = selected_no_more_warning;
+                    normal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = true;
+                    files.write("./data/normal_friends.json", JSON.stringify(normal_friends));
+                }).show();
+            } else {
+                normal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = itemView.selected_checkbox.checked;
+                files.write("./data/normal_friends.json", JSON.stringify(normal_friends));
+            }
+        });
+    });
+
+    ui.clear_friends_data_button.on("click", () => {
+        dialogs.build({
+            content: language["clear_friend_data_alert_dialog_message"],
+            positive: language["cancel"],
+            positiveColor: "#008274",
+            negative: language["confirm"],
+            negativeColor: "#008274",
+            cancelable: false
+        }).on("negative", () => {
+            files.remove("./data/abnormal_friends.json");
+            files.remove("./data/normal_friends.json");
+            files.remove("./data/ignored_friends.json");
+            initConfig();
+            initUI();
+        }).show();
+    });
+    
+    ui.delete_friends_button.on("click", () => {
+        let selected = false;
+        check_abnormal_friends:
+        for (let friend_remark in abnormal_friends) {
+            for (let we_chat_id in abnormal_friends[friend_remark]) {
+                if (!abnormal_friends[friend_remark][we_chat_id].deleted && abnormal_friends[friend_remark][we_chat_id].selected) {
+                    selected = true;
+                    break check_abnormal_friends;
+                }
+            }
+        }
+        if (!selected) {
+            check_normal_friends:
+            for (let friend_remark in normal_friends) {
+                for (let we_chat_id in normal_friends[friend_remark]) {
+                    if (!normal_friends[friend_remark][we_chat_id].deleted && normal_friends[friend_remark][we_chat_id].selected) {
+                        selected = true;
+                        break check_normal_friends;
+                    }
+                }
+            }
+        }
+        if (selected) {
+            if (checkInstalledWeChat() && checkSupportedWeChatVersion() && checkFile() && checkService()) {
+                dialogs.build({
+                    title: language["warning"],
+                    content: language["delete_friend_alert_dialog_message"],
+                    positive: language["cancel"],
+                    positiveColor: "#008274",
+                    negative: language["confirm"],
+                    negativeColor: "#CC0000",
+                    cancelable: false
+                }).on("negative", () => {
+                    threads.start(function () {
+                        let delete_friends = require("./modules/delete_friends.js");
+                        delete_friends.main();
+                    });
+                }).show();
+            }
+        } else {
+            dialogs.build({
+                content: language["not_select_friend_alert_dialog_message"],
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                cancelable: false
+            }).show();
+        }
+    });
+
+    ui.test_friends_button.on("click", () => {
+        if (checkInstalledWeChat() && checkSupportedWeChatVersion() && checkFile() && checkService()) {
+            dialogs.build({
+                content: language["test_friend_alert_dialog_message"],
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                negative: language["cancel"],
+                negativeColor: "#008274",
+                cancelable: false
+            }).on("positive", () => {
+                threads.start(function () {
+                    let test_friends = require("./modules/test_friends.js");
+                    test_friends.main();
+                });
+            }).show();
+        }
+    });
 })();

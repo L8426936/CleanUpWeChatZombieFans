@@ -11,9 +11,9 @@
     "hideLogs": true
   },
   "main": "main.js",
-  "name": "微信好友清理",
+  "name": "微信僵尸好友",
   "packageName": "com.niming",
   "scripts": {},
-  "versionCode": 4,
-  "versionName": "1.1.1"
+  "versionCode": 5,
+  "versionName": "2.0.0"
 }
