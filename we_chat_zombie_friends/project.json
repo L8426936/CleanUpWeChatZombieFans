@@ -14,6 +14,21 @@
   "name": "WeChatZombieFriends",
   "packageName": "com.niming",
   "scripts": {},
-  "versionCode": 6,
-  "versionName": "2.0.1"
+  "versionCode": 7,
+  "versionName": "2.1.0",
+  "files": [
+    "main.js",
+    "project.json",
+    "config/config.json",
+    "config/languages/zh-CN.json",
+    "config/text_id/7.0.9-7.0.11.json",
+    "config/text_id/7.0.12-7.0.12.json",
+    "config/text_id/7.0.13-7.0.13.json",
+    "config/text_id/text.json",
+    "modules/delete_friends.js",
+    "modules/test_friends.js",
+    "utils/app_util.js",
+    "utils/node_util.js",
+    "utils/update_util.js"
+  ]
 }

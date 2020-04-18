@@ -52,10 +52,33 @@
      * 初始化配置
      */
     function initConfig() {
-        config = JSON.parse(open("./config/config.json").read());
-        texts = JSON.parse(open("./config/text_id/text.json").read());
+        config = JSON.parse(files.read("config/config.json"));
+        texts = JSON.parse(files.read("config/text_id/text.json"));
         let default_language = checkSupportedLanguage() ? context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country : "zh-CN";
-        language = JSON.parse(open("./config/languages/" + default_language + ".json").read());
+        language = JSON.parse(files.read("config/languages/" + default_language + ".json"));
+
+        threads.start(function () {
+            let update_util = require("utils/update_util.js");
+            if (update_util.checkUpdate()) {
+                let keep = true, yes = false;
+                dialogs.build({
+                    content: language["update_alert_dialog_message"],
+                    positive: language["confirm"],
+                    positiveColor: "#008274",
+                    negative: language["cancel"],
+                    negativeColor: "#008274",
+                    cancelable: false
+                }).on("positive", () => {
+                    yes = true;
+                    keep = false;
+                }).show();
+                while(keep) {
+                }
+                if (yes) {
+                    update(update_util);
+                }
+            }
+        });
     }
     initConfig();
 
@@ -63,9 +86,9 @@
      * 初始化UI
      */
     function initUI() {
-        abnormal_friends = files.exists("./data/abnormal_friends.json") ? JSON.parse(open("./data/abnormal_friends.json").read()) : {};
-        normal_friends = files.exists("./data/normal_friends.json") ? JSON.parse(open("./data/normal_friends.json").read()) : {};
-        let ignored_friends = files.exists("./data/ignored_friends.json") ? JSON.parse(open("./data/ignored_friends.json").read()) : {};
+        abnormal_friends = files.exists("data/abnormal_friends.json") ? JSON.parse(files.read("data/abnormal_friends.json")) : {};
+        normal_friends = files.exists("data/normal_friends.json") ? JSON.parse(files.read("data/normal_friends.json")) : {};
+        let ignored_friends = files.exists("data/ignored_friends.json") ? JSON.parse(files.read("data/ignored_friends.json")) : {};
         
         let abnormal_friend_list = [];
         for (let friend_remark in abnormal_friends) {
@@ -110,6 +133,34 @@
     ui.emitter.on("resume", initUI);
 
     /**
+     * 更新
+     * @param {*} update_util 
+     */
+    function update(update_util) {
+        let dialog = dialogs.build({
+            progress: {
+                max: 100,
+                showMinMax: true
+            },
+            cancelable: false
+        }).show();
+        let updated = update_util.update(dialog);
+        dialog.dismiss();
+        if (updated) {
+            toast(language["update_success"]);
+            engines.myEngine().forceStop();
+            engines.execScriptFile("main.js");
+        } else {
+            dialogs.build({
+                content: language["update_fail_alert_dialog_message"],
+                negative: language["confirm"],
+                negativeColor: "#008274",
+                cancelable: false
+            }).show();
+        }
+    }
+
+    /**
      * 检验语言
      */
     function checkSupportedLanguage() {
@@ -144,7 +195,7 @@
      * @returns {boolean}
      */
     function checkSupportedWeChatVersion() {
-        let app_util = require("./utils/app_util.js");
+        let app_util = require("utils/app_util.js");
         let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
         let min_supported_version = config["min_supported_version"];
         let max_supported_version = config["max_supported_version"];
@@ -165,7 +216,7 @@
      * @returns {boolean}
      */
     function checkFile() {
-        let app_util = require("./utils/app_util.js");
+        let app_util = require("utils/app_util.js");
         let min_supported_version, max_supported_version;
         let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
         for (let i = 0; i < config["supported_version"].length; i++) {
@@ -175,10 +226,10 @@
                 break;
             }
         }
-        let exists = files.exists("./config/text_id/" + min_supported_version + "-" + max_supported_version + ".json");
+        let exists = files.exists("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json");
         if (!exists) {
             dialogs.build({
-                content: language["file_lost_alert_dialog_message"].replace("%file_name", "./config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"),
+                content: language["file_lost_alert_dialog_message"].replace("%file_name", "config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"),
                 positive: language["confirm"],
                 negativeColor: "#008274",
                 cancelable: false
@@ -212,11 +263,27 @@
 
     // 创建选项菜单(右上角)
     ui.emitter.on("create_options_menu", menu => {
+        menu.add(language["update"]);
         menu.add(language["about"]);
     });
     // 监听选项菜单点击
     ui.emitter.on("options_item_selected", (e, item) => {
         switch (item.getTitle()) {
+            case language["update"]:
+                threads.start(function () {
+                    let update_util = require("utils/update_util.js");
+                    if (update_util.checkUpdate()) {
+                        update(update_util);
+                    } else {
+                        dialogs.build({
+                            content: language["no_need_update_alert_dialog_message"],
+                            positive: language["confirm"],
+                            positiveColor: "#008274",
+                            cancelable: false
+                        }).show();
+                    }
+                });
+                break;
             case language["about"]:
                 dialogs.build({
                     content: language["about_alert_dialog_message"],
@@ -228,7 +295,7 @@
                 }).on("positive", () => {
                     app.openUrl("https://github.com/L8426936/");
                 }).show();
-                break;
+                break
         }
         e.consumed = true;
     });
@@ -268,11 +335,11 @@
                 }).on("negative", () => {
                     no_more_warning = selected_no_more_warning;
                     abnormal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = true;
-                    files.write("./data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+                    files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
                 }).show();
             } else {
                 abnormal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = itemView.selected_checkbox.checked;
-                files.write("./data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+                files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
             }
         });
     });
@@ -303,11 +370,11 @@
                 }).on("negative", () => {
                     no_more_warning = selected_no_more_warning;
                     normal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = true;
-                    files.write("./data/normal_friends.json", JSON.stringify(normal_friends));
+                    files.write("data/normal_friends.json", JSON.stringify(normal_friends));
                 }).show();
             } else {
                 normal_friends[item["friend_remark"]][item["we_chat_id"]]["selected"] = itemView.selected_checkbox.checked;
-                files.write("./data/normal_friends.json", JSON.stringify(normal_friends));
+                files.write("data/normal_friends.json", JSON.stringify(normal_friends));
             }
         });
     });
@@ -321,9 +388,9 @@
             negativeColor: "#008274",
             cancelable: false
         }).on("negative", () => {
-            files.remove("./data/abnormal_friends.json");
-            files.remove("./data/normal_friends.json");
-            files.remove("./data/ignored_friends.json");
+            files.remove("data/abnormal_friends.json");
+            files.remove("data/normal_friends.json");
+            files.remove("data/ignored_friends.json");
             initConfig();
             initUI();
         }).show();
@@ -363,7 +430,7 @@
                     cancelable: false
                 }).on("negative", () => {
                     threads.start(function () {
-                        let delete_friends = require("./modules/delete_friends.js");
+                        let delete_friends = require("modules/delete_friends.js");
                         delete_friends.main();
                     });
                 }).show();
@@ -389,7 +456,7 @@
                 cancelable: false
             }).on("positive", () => {
                 threads.start(function () {
-                    let test_friends = require("./modules/test_friends.js");
+                    let test_friends = require("modules/test_friends.js");
                     test_friends.main();
                 });
             }).show();

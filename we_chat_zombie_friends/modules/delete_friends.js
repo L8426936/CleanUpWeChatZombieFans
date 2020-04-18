@@ -193,9 +193,9 @@ module.exports = (() => {
      */
     function stopScript() {
         run = false;
-        files.ensureDir("./data/");
-        files.write("./data/abnormal_friends.json", JSON.stringify(abnormal_friends));
-        files.write("./data/normal_friends.json", JSON.stringify(normal_friends));
+        files.ensureDir("data/");
+        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         window.close();
@@ -203,9 +203,9 @@ module.exports = (() => {
     }
 
     function main() {
-        config = JSON.parse(open("./config/config.json").read());
+        config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
-            texts = JSON.parse(open("./config/text_id/text.json").read());
+            texts = JSON.parse(files.read("config/text_id/text.json"));
             node_util = require("../utils/node_util.js");
 
             let app_util = require("../utils/app_util.js");
@@ -218,10 +218,10 @@ module.exports = (() => {
                     break;
                 }
             }
-            ids = JSON.parse(open("./config/text_id/" + min_supported_version + "-" + max_supported_version + ".json").read());
+            ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
             
-            normal_friends = files.exists("./data/normal_friends.json") ? JSON.parse(open("./data/normal_friends.json").read()) : {};
-            abnormal_friends = files.exists("./data/abnormal_friends.json") ? JSON.parse(open("./data/abnormal_friends.json").read()) : {};
+            normal_friends = files.exists("data/normal_friends.json") ? JSON.parse(files.read("data/normal_friends.json")) : {};
+            abnormal_friends = files.exists("data/abnormal_friends.json") ? JSON.parse(files.read("data/abnormal_friends.json")) : {};
             
             last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true;
             keyDownListenerByVolumeDown();
@@ -235,7 +235,7 @@ module.exports = (() => {
                     break;
                 }
             }
-            language = JSON.parse(open("./config/languages/" + default_language + ".json").read());
+            language = JSON.parse(files.read("config/languages/" + default_language + ".json"));
 
             window = floaty.window(
                 <frame>
