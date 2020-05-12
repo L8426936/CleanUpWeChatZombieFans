@@ -14,7 +14,7 @@
   "name": "WeChatZombieFriends",
   "packageName": "com.niming",
   "scripts": {},
-  "versionCode": 8,
+  "versionCode": 9,
   "versionName": "2.1.0",
   "files": [
     "main.js",
@@ -31,5 +31,21 @@
     "utils/app_util.js",
     "utils/node_util.js",
     "utils/update_util.js"
-  ]
+  ],
+  "files_md5": {
+    "main.js": "b51faa013720a47e6c91f04e904dc496",
+    "project.json": "c2a7aa043b277f8afc0be78f07f565de",
+    "config/config.json": "bcfe81ad163dcf56426460f8e664ad59",
+    "config/languages/zh-CN.json": "6eb758de599ea5d4efa3e448e8702a9a",
+    "config/text_id/7.0.9-7.0.11.json": "91b332903896add89514e274371d430c",
+    "config/text_id/7.0.12-7.0.12.json": "9b7925b2760c84169778b093e5323112",
+    "config/text_id/7.0.13-7.0.13.json": "0a6fa20c8d6619043f744341f81350b2",
+    "config/text_id/7.0.14-7.0.14.json": "436e85fb4e9f90883c20d0e141172593",
+    "config/text_id/text.json": "44b9954f86c004f917a3323fed6cd0fd",
+    "modules/delete_friends.js": "bc3e87241f9cb4ecc3d1e7ec7b308ef0",
+    "modules/test_friends.js": "e05c11ee2ca34ab13200e3970e7e08e9",
+    "utils/app_util.js": "1ab5889e21aca21b0e344c0adfdf8608",
+    "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
+    "utils/update_util.js": "71774ebde58ee7e9969417d8ed6407e5"
+  }
 }
