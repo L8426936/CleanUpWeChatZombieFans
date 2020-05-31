@@ -1,0 +1,20 @@
+{
+    "contacts_id": "cns",
+    "friend_list_id": "f4",
+    "friend_remark_id": "dy5",
+    "contacts_count_id": "azb",
+    "send_message_id": "g6f",
+    "we_chat_id": "b2f",
+    "back_to_friend_list_id": "dn",
+    "more_function_by_transfer_id": "aks",
+    "transfer_function_id": "pb",
+    "transfer_amount_id": "gwo",
+    "confirm_transfer_id": "cxi",
+    "abnormal_message_id": "dos",
+    "confirm_abnormal_message_id": "doz",
+    "back_to_chat_id": "dn",
+    "back_to_chats_id": "rs",
+    "more_function_by_delete_id": "cj",
+    "delete_id": "g6f",
+    "confirm_delete_id": "doz"
+}

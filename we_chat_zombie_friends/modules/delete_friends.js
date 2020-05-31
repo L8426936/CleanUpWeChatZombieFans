@@ -25,10 +25,6 @@ module.exports = (() => {
      */
     let abnormal_friends;
     /**
-     * 已删除的好友
-     */
-    let deleted_friends;
-    /**
      * 好友备注
      */
     let last_friend_remark;
