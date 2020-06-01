@@ -2,7 +2,7 @@
  * 删除好友
  */
 
-module.exports = (() => {
+(() => {
     /**
      * 控件id
      */
@@ -160,6 +160,7 @@ module.exports = (() => {
                 normal_friends[last_friend_remark][last_we_chat_id]["selected"] = false;
                 normal_friends[last_friend_remark][last_we_chat_id]["deleted"] = true;
             }
+            saveFriends();
             step = 5;
             last_index--;
             ui.run(() => {
@@ -189,22 +190,30 @@ module.exports = (() => {
      */
     function stopScript() {
         run = false;
-        files.ensureDir("data/");
-        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
-        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
+        saveFriends();
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         window.close();
         toast(language["script_stopped"]);
+        engines.myEngine().forceStop();
+    }
+
+    /**
+     * 保存好友
+     */
+    function saveFriends() {
+        files.ensureDir("data/");
+        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
     }
 
     function main() {
         config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
             texts = JSON.parse(files.read("config/text_id/text.json"));
-            node_util = require("../utils/node_util.js");
+            node_util = require("utils/node_util.js");
 
-            let app_util = require("../utils/app_util.js");
+            let app_util = require("utils/app_util.js");
             let min_supported_version, max_supported_version;
             let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
             for (let i = 0; i < config["supported_version"].length; i++) {
@@ -306,5 +315,5 @@ module.exports = (() => {
         }
     }
 
-    return {main: main};
+    main();
 })();

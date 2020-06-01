@@ -2,7 +2,7 @@
  * 检测微信好友关系
  */
 
-module.exports = (() => {
+(() => {
     /**
      * 控件id
      */
@@ -96,6 +96,7 @@ module.exports = (() => {
         }
         if (index >= friends_remark.size()) {
             if (id(ids["contacts_count_id"]).find().empty()) {
+                saveFriends();
                 scrollFriendList();
             } else {
                 stopScript();
@@ -250,23 +251,31 @@ module.exports = (() => {
      */
     function stopScript() {
         run = false;
-        files.ensureDir("data/");
-        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
-        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
-        files.write("data/ignored_friends.json", JSON.stringify(ignored_friends));
+        saveFriends();
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         toast(language["script_stopped"]);
         window.close();
+        engines.myEngine().forceStop();
+    }
+
+    /**
+     * 保存好友
+     */
+    function saveFriends() {
+        files.ensureDir("data/");
+        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
+        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
+        files.write("data/ignored_friends.json", JSON.stringify(ignored_friends));
     }
 
     function main() {
         let config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
             texts = JSON.parse(files.read("config/text_id/text.json"));
-            node_util = require("../utils/node_util.js");
+            node_util = require("utils/node_util.js");
     
-            let app_util = require("../utils/app_util.js");
+            let app_util = require("utils/app_util.js");
             let min_supported_version, max_supported_version;
             let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
             for (let i = 0; i < config["supported_version"].length; i++) {
@@ -359,5 +368,5 @@ module.exports = (() => {
         }
     }
 
-    return { main: main };
+    main();
 })();

@@ -261,6 +261,18 @@
         return enabled;
     }
 
+    /**
+     * 停止已在运行的脚本，确保单脚本运行
+     */
+    function stopScript() {
+        let scripts = engines.all();
+        for (let i = 0; i < scripts.length; i++) {
+            if (/.+modules\/(test_friends|delete_friends)\.js/.test(scripts[i].getSource().toString())) {
+                scripts[i].forceStop();
+            }
+        }
+    }
+
     // 创建选项菜单(右上角)
     ui.emitter.on("create_options_menu", menu => {
         menu.add(language["update"]);
@@ -429,10 +441,8 @@
                     negativeColor: "#CC0000",
                     cancelable: false
                 }).on("negative", () => {
-                    threads.start(function () {
-                        let delete_friends = require("modules/delete_friends.js");
-                        delete_friends.main();
-                    });
+                    stopScript();
+                    engines.execScriptFile("modules/delete_friends.js");
                 }).show();
             }
         } else {
@@ -455,10 +465,8 @@
                 negativeColor: "#008274",
                 cancelable: false
             }).on("positive", () => {
-                threads.start(function () {
-                    let test_friends = require("modules/test_friends.js");
-                    test_friends.main();
-                });
+                stopScript();
+                engines.execScriptFile("modules/test_friends.js");
             }).show();
         }
     });
