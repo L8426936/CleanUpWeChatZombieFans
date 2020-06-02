@@ -12,18 +12,7 @@
      */
     let texts;
     let node_util;
-    /**
-     * 待删除的好友
-     */
-    let waiting_delete_friends;
-    /**
-     * 正常好友
-     */
-    let normal_friends;
-    /**
-     * 异常好友
-     */
-    let abnormal_friends;
+    let db_util;
     /**
      * 好友备注
      */
@@ -83,7 +72,7 @@
         let friends_remark = id(ids["friend_remark_id"]).untilFind();
         let index = 0;
         for (let i = 0; i < friends_remark.size(); i++) {
-            if (waiting_delete_friends[friends_remark.get(i).text()] != undefined) {
+            if (db_util.hasSelectedFriendByFriendRemark(friends_remark.get(i).text())) {
                 index = i;
                 break;
             }
@@ -92,7 +81,7 @@
         while (index <= last_index) {
             index++;
         }
-        if (index >= friends_remark.size() || waiting_delete_friends[friends_remark.get(index).text()] == undefined) {
+        if (index >= friends_remark.size() || !db_util.hasSelectedFriendByFriendRemark(friends_remark.get(index).text())) {
             if (id(ids["contacts_count_id"]).find().empty()) {
                 scrollFriendList();
             } else {
@@ -113,7 +102,7 @@
     */
     function checkWeChatId() {
         let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-        if (waiting_delete_friends[last_friend_remark][we_chat_id] != undefined) {
+        if (db_util.hasSelectedFriendByWeChatID(we_chat_id)) {
             last_we_chat_id = we_chat_id;
             step = 2;
         } else {
@@ -151,16 +140,7 @@
      */
     function clickConfirmDelete() {
         if (node_util.backtrackClickNode(id(ids["confirm_delete_id"]).findOne())) {
-            waiting_delete_friends[last_friend_remark][last_we_chat_id]["selected"] = false;
-            waiting_delete_friends[last_friend_remark][last_we_chat_id]["deleted"] = true;
-            if (abnormal_friends[last_friend_remark] != undefined && abnormal_friends[last_friend_remark][last_we_chat_id] != undefined) {
-                abnormal_friends[last_friend_remark][last_we_chat_id]["selected"] = false;
-                abnormal_friends[last_friend_remark][last_we_chat_id]["deleted"] = true;
-            } else {
-                normal_friends[last_friend_remark][last_we_chat_id]["selected"] = false;
-                normal_friends[last_friend_remark][last_we_chat_id]["deleted"] = true;
-            }
-            saveFriends();
+            db_util.modifyFriend({we_chat_id: last_we_chat_id, selected: true, deleted: true});
             step = 5;
             last_index--;
             ui.run(() => {
@@ -190,21 +170,12 @@
      */
     function stopScript() {
         run = false;
-        saveFriends();
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         window.close();
         toast(language["script_stopped"]);
         engines.myEngine().forceStop();
-    }
-
-    /**
-     * 保存好友
-     */
-    function saveFriends() {
-        files.ensureDir("data/");
-        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
-        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
+        engines.execScriptFile("main.js");
     }
 
     function main() {
@@ -224,9 +195,6 @@
                 }
             }
             ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
-            
-            normal_friends = files.exists("data/normal_friends.json") ? JSON.parse(files.read("data/normal_friends.json")) : {};
-            abnormal_friends = files.exists("data/abnormal_friends.json") ? JSON.parse(files.read("data/abnormal_friends.json")) : {};
             
             last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true;
             keyDownListenerByVolumeDown();
@@ -262,51 +230,31 @@
                 stopScript();
             });
 
-            waiting_delete_friends = {};
-            for (let friend_remark in abnormal_friends) {
-                for (let we_chat_id in abnormal_friends[friend_remark]) {
-                    let friend = abnormal_friends[friend_remark][we_chat_id];
-                    if (friend["selected"] && !friend["deleted"]) {
-                        waiting_delete_friends[friend_remark] = waiting_delete_friends[friend_remark] || {}
-                        waiting_delete_friends[friend_remark][we_chat_id] = friend;
-                    }
-                }
-            }
-            for (let friend_remark in normal_friends) {
-                for (let we_chat_id in normal_friends[friend_remark]) {
-                    let friend = normal_friends[friend_remark][we_chat_id];
-                    if (friend["selected"] && !friend["deleted"]) {
-                        waiting_delete_friends[friend_remark] = waiting_delete_friends[friend_remark] || {}
-                        waiting_delete_friends[friend_remark][we_chat_id] = friend;
-                    }
-                }
-            }
-
             if (clickContacts()) {
-                for (let friend_remark in waiting_delete_friends) {
-                    for (let we_chat_id in waiting_delete_friends[friend_remark]) {
-                        deleted:
-                        while (run) {
-                            switch (step) {
-                                case 0:
-                                    clickFriend();
-                                    break;
-                                case 1:
-                                    checkWeChatId();
-                                    break;
-                                case 2:
-                                    clickMoreFunction();
-                                    break;
-                                case 3:
-                                    clickDeleteFunction();
-                                    break;
-                                case 4:
-                                    clickConfirmDelete();
-                                    break;
-                                case 5:
-                                    step = 0;
-                                    break deleted;
-                            }
+                db_util = require("utils/db_util.js");
+                let count_selected_friend = db_util.countSelectedFriend();
+                for (let i = 0; i < count_selected_friend; i++) {
+                    deleted:
+                    while (run) {
+                        switch (step) {
+                            case 0:
+                                clickFriend();
+                                break;
+                            case 1:
+                                checkWeChatId();
+                                break;
+                            case 2:
+                                clickMoreFunction();
+                                break;
+                            case 3:
+                                clickDeleteFunction();
+                                break;
+                            case 4:
+                                clickConfirmDelete();
+                                break;
+                            case 5:
+                                step = 0;
+                                break deleted;
                         }
                     }
                 }

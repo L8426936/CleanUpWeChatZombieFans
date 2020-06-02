@@ -12,22 +12,11 @@
      */
     let texts;
     let node_util;
-    /**
-     * 忽略测试的好友
-     */
-    let ignored_friends;
+    let db_util;
     /**
      * 悬浮窗
      */
     let window;
-    /**
-     * 正常好友
-     */
-    let normal_friends;
-    /**
-     * 异常好友
-     */
-    let abnormal_friends;
     /**
      * 好友的微信号
      */
@@ -96,7 +85,6 @@
         }
         if (index >= friends_remark.size()) {
             if (id(ids["contacts_count_id"]).find().empty()) {
-                saveFriends();
                 scrollFriendList();
             } else {
                 stopScript();
@@ -104,7 +92,7 @@
         } else {
             last_friend_remark = friends_remark.get(index).text();
             last_index = index;
-            if ((skip || (normal_friends[last_friend_remark] == undefined && abnormal_friends[last_friend_remark] == undefined)) && node_util.backtrackClickNode(friends_remark.get(index))) {
+            if ((skip || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friends_remark.get(index))) {
                 step = 2;
             } else {
                 step = 1;
@@ -124,7 +112,7 @@
         if (nodes.size() < 2) {
             if (node_util.backtrackClickNode(id(ids["back_to_friend_list_id"]).findOne())) {
                 step = 1;
-                ignored_friends[last_friend_remark] = true;
+                db_util.addFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
                 ui.run(() => {
                     window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
                     window.ignored_friends_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
@@ -132,7 +120,7 @@
             }
         } else {
             let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-            if ((normal_friends[last_friend_remark] == undefined || normal_friends[last_friend_remark][we_chat_id] == undefined) && (abnormal_friends[last_friend_remark] == undefined || abnormal_friends[last_friend_remark][we_chat_id] == undefined)) {
+            if (!db_util.hasFriendByWeChatID(we_chat_id)) {
                 for (let i = 0; i < nodes.size(); i++) {
                     let node = nodes.get(i);
                     if (texts["send_message_text"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
@@ -195,14 +183,12 @@
         while (true) {
             let node = id(ids["abnormal_message_id"]).findOne(500);
             if (node == null && node_util.backtrackClickNode(descMatches(texts["close_text"]).findOnce())) {
-                normal_friends[last_friend_remark] = normal_friends[last_friend_remark] || {};
-                normal_friends[last_friend_remark][last_we_chat_id] = { we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, selected: false, deleted: false };
+                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             } else if (node_util.backtrackClickNode(id(ids["confirm_abnormal_message_id"]).findOnce())) {
                 let selected = texts["blacklisted_message"].match(node.text()) != null || texts["deleted_message"].match(node.text()) != null;
-                abnormal_friends[last_friend_remark] = abnormal_friends[last_friend_remark] || {};
-                abnormal_friends[last_friend_remark][last_we_chat_id] = { we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: node.text(), selected: selected, deleted: false };
+                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: node.text(), selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
@@ -251,22 +237,12 @@
      */
     function stopScript() {
         run = false;
-        saveFriends();
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         toast(language["script_stopped"]);
         window.close();
         engines.myEngine().forceStop();
-    }
-
-    /**
-     * 保存好友
-     */
-    function saveFriends() {
-        files.ensureDir("data/");
-        files.write("data/abnormal_friends.json", JSON.stringify(abnormal_friends));
-        files.write("data/normal_friends.json", JSON.stringify(normal_friends));
-        files.write("data/ignored_friends.json", JSON.stringify(ignored_friends));
+        engines.execScriptFile("main.js");
     }
 
     function main() {
@@ -287,10 +263,10 @@
             }
             ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
     
-            normal_friends = files.exists("data/normal_friends.json") ? JSON.parse(files.read("data/normal_friends.json")) : {};
-            abnormal_friends = files.exists("data/abnormal_friends.json") ? JSON.parse(files.read("data/abnormal_friends.json")) : {};
+            db_util = require("utils/db_util.js");
+            db_util.deleteAllIgnoredFriend();
             
-            last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true, ignored_friends = {};
+            last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言
