@@ -14,8 +14,8 @@
   "name": "WeChatZombieFriends",
   "packageName": "com.niming",
   "scripts": {},
-  "versionCode": 12,
-  "versionName": "2.2.0",
+  "versionCode": 13,
+  "versionName": "2.2.1",
   "files": [
     "main.js",
     "project.json",
@@ -36,7 +36,7 @@
   ],
   "files_md5": {
     "main.js": "dda9b8ab93e2765fec730115fac20e8f",
-    "project.json": "7f21c36f612684120ecfd8cb5d88e8e6",
+    "project.json": "0fae683d0b5559cd2aa6863e05b0a291",
     "config/config.json": "bcfe81ad163dcf56426460f8e664ad59",
     "config/languages/zh-CN.json": "87df9dd4a6f81083e1ac3cb37d2247de",
     "config/text_id/7.0.9-7.0.11.json": "91b332903896add89514e274371d430c",
@@ -50,6 +50,6 @@
     "utils/app_util.js": "1ab5889e21aca21b0e344c0adfdf8608",
     "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
     "utils/update_util.js": "71774ebde58ee7e9969417d8ed6407e5",
-    "utils/db_util.js": "68cdc87d775a2083e4149712b5f2718a"
+    "utils/db_util.js": "9fb1b20ec3e49782697fb8139d2a7ec0"
   }
 }

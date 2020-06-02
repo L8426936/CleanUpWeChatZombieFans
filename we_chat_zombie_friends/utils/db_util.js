@@ -10,6 +10,7 @@ module.exports = (() => {
      */
     function open() {
         let base_path = files.cwd();
+        files.ensureDir(base_path + "/data/");
         if (!files.exists(base_path + "/data/we_chat.db")) {
             let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
             db.execSQL("CREATE TABLE IF NOT EXISTS friends("
