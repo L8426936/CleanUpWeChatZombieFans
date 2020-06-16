@@ -283,7 +283,15 @@
             case language["update"]:
                 threads.start(function () {
                     let update_util = require("utils/update_util.js");
-                    if (update_util.checkUpdate()) {
+                    let result = update_util.checkUpdate();
+                    if (result == undefined) {
+                        dialogs.build({
+                            content: language["get_update_info_fail_alert_dialog_message"],
+                            positive: language["confirm"],
+                            positiveColor: "#008274",
+                            cancelable: false
+                        }).show();
+                    } else if (result) {
                         update(update_util);
                     } else {
                         dialogs.build({

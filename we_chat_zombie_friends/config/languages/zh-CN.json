@@ -33,6 +33,7 @@
     "update_fail_alert_dialog_message": "部分文件更新失败，使用右上角菜单手动更新",
     "update_success": "更新成功",
     "update": "更新",
+    "get_update_info_fail_alert_dialog_message": "更新信息获取失败，请重试",
     "no_need_update_alert_dialog_message": "已是最新版，无需更新",
     "previous_page_button_text": "上一页",
     "next_page_button_text": "下一页"
