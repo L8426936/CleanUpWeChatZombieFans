@@ -181,14 +181,17 @@
      */
     function assertionFriend() {
         while (true) {
-            let node = id(ids["abnormal_message_id"]).findOne(500);
-            if (node == null && node_util.backtrackClickNode(descMatches(texts["close_text"]).findOnce())) {
+            if (node_util.backtrackClickNode(descMatches(texts["close_text"]).findOnce())) {
                 db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
-            } else if (node_util.backtrackClickNode(id(ids["confirm_abnormal_message_id"]).findOnce())) {
-                let selected = texts["blacklisted_message"].match(node.text()) != null || texts["deleted_message"].match(node.text()) != null;
-                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: node.text(), selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
+            }
+            let abnormal_message_node = id(ids["abnormal_message_id"]).findOnce();
+            let abnormal_message = abnormal_message_node != null ? abnormal_message_node.text() : null;
+            let confirm_abnormal_message_node = id(ids["confirm_abnormal_message_id"]).findOnce();
+            if (abnormal_message != null && node_util.backtrackClickNode(confirm_abnormal_message_node)) {
+                let selected = texts["blacklisted_message"].match(abnormal_message) != null || texts["deleted_message"].match(abnormal_message) != null;
+                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
