@@ -60,7 +60,7 @@
         if (id(ids["friend_list_id"]).findOne().scrollForward()) {
             last_we_chat_id = "";
             last_friend_remark = "";
-            last_index = -1;
+            last_index = 0;
             sleep(800);
         }
     }
@@ -69,30 +69,18 @@
      * 点击好友
      */
     function clickFriend() {
-        let friends_remark = id(ids["friend_remark_id"]).untilFind();
-        let index = 0;
-        for (let i = 0; i < friends_remark.size(); i++) {
-            if (friends_remark.get(i).text() == last_friend_remark) {
-                index = i + 1;
-                break;
-            }
-        }
-        // 跳过连续可见的相同备注的好友
-        let skip = false;
-        while (index <= last_index) {
-            skip = true;
-            index++;
-        }
-        if (index >= friends_remark.size()) {
-            if (id(ids["contacts_count_id"]).find().empty()) {
+        let friend_remark_nodes = id(ids["friend_remark_id"]).untilFind();
+        if (last_index >= friend_remark_nodes.size()) {
+            if (id(ids["contacts_count_id"]).findOnce() == null) {
                 scrollFriendList();
             } else {
                 stopScript();
             }
         } else {
-            last_friend_remark = friends_remark.get(index).text();
-            last_index = index;
-            if ((skip || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friends_remark.get(index))) {
+            let friend_remark_node = friend_remark_nodes.get(last_index);
+            last_friend_remark = friend_remark_node.text();
+            let repeat_friend_remark = last_index - 1 >= 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark;
+            if ((repeat_friend_remark || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friend_remark_node)) {
                 step = 2;
             } else {
                 step = 1;
@@ -101,6 +89,7 @@
                     window.tested_friends_scroll.scrollTo(0, window.tested_friends_text.getHeight());
                 });
             }
+            last_index++;
         }
     }
 
@@ -188,8 +177,7 @@
             }
             let abnormal_message_node = id(ids["abnormal_message_id"]).findOnce();
             let abnormal_message = abnormal_message_node != null ? abnormal_message_node.text() : null;
-            let confirm_abnormal_message_node = id(ids["confirm_abnormal_message_id"]).findOnce();
-            if (abnormal_message != null && node_util.backtrackClickNode(confirm_abnormal_message_node)) {
+            if (abnormal_message != null && node_util.backtrackClickNode(id(ids["confirm_abnormal_message_id"]).findOnce())) {
                 let selected = texts["blacklisted_message"].match(abnormal_message) != null || texts["deleted_message"].match(abnormal_message) != null;
                 db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 step = 8;
@@ -244,8 +232,8 @@
         events.removeAllKeyDownListeners("volume_down");
         toast(language["script_stopped"]);
         window.close();
-        engines.myEngine().forceStop();
         engines.execScriptFile("main.js");
+        engines.myEngine().forceStop();
     }
 
     function main() {
@@ -269,7 +257,7 @@
             db_util = require("utils/db_util.js");
             db_util.deleteAllIgnoredFriend();
             
-            last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true;
+            last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言

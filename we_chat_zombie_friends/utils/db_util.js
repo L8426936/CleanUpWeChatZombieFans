@@ -41,12 +41,13 @@ module.exports = (() => {
      * @property {string} friend_remark
      * @property {string} abnormal_message
      * @property {boolean} selected
-     * @property {boolean} delteed
+     * @property {boolean} deleted
      * @property {number} friend_type
      */
     /**
      * 新增好友
      * @param {Friend} friend 
+     * @returns {boolean} 
      */
     function addFriend(friend) {
         let db = open();
@@ -56,9 +57,12 @@ module.exports = (() => {
         }
         let result = db.insert("friends", null, values);
         close(db);
-        return result;
+        return result > 0;
     }
 
+    /**
+     * @returns {Friend}
+     */
     function cursorRowToFriend(cursor) {
         return {
             we_chat_id: cursor.getString(cursor.getColumnIndex("we_chat_id")),
@@ -72,6 +76,7 @@ module.exports = (() => {
     /**
      * 是否有记录
      * @param {string} we_chat_id 微信号
+     * @returns {boolean} 
      */
     function hasFriendByWeChatID(we_chat_id) {
         let db = open();
@@ -79,50 +84,54 @@ module.exports = (() => {
         let result = cursor.getCount();
         cursor.close();
         close(db);
-        return result;
+        return result > 0;
     }
     
     /**
      * 是否有记录
      * @param {string} friend_remark 好友备注
+     * @returns {boolean} 
      */
     function hasFriendByFriendRemark(friend_remark) {
         let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_remark = ?", [friend_remark]);
+        let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_remark = ? AND friend_type != " + IGNORED_FRIEND_TYPE, [friend_remark]);
         let result = cursor.getCount();
         cursor.close();
         close(db);
-        return result;
+        return result > 0;
     }
 
     /**
      * 是否有选中好友
      * @param {string} friend_remark 好友备注
+     * @returns {boolean} 
      */
     function hasSelectedFriendByFriendRemark(friend_remark) {
         let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND friend_remark = ?", [friend_remark]);
+        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND friend_remark = ? AND friend_type != " + IGNORED_FRIEND_TYPE, [friend_remark]);
         let result = cursor.getCount();
         cursor.close();
         close(db);
-        return result;
+        return result > 0;
     }
     
     /**
      * 是否有选中好友
      * @param {string} we_chat_id 微信号
+     * @returns {boolean} 
      */
     function hasSelectedFriendByWeChatID(we_chat_id) {
         let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND we_chat_id = ?", [we_chat_id]);
+        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND we_chat_id = ? AND friend_type != " + IGNORED_FRIEND_TYPE, [we_chat_id]);
         let result = cursor.getCount();
         cursor.close();
         close(db);
-        return result;
+        return result > 0;
     }
 
     /**
      * 是否有选中待删除的好友
+     * @returns {boolean} 
      */
     function hasSelectedFriend() {
         return countSelectedFriend() > 0;
@@ -130,16 +139,21 @@ module.exports = (() => {
 
     /**
      * 统计待删除的好友
+     * @returns {Number} 
      */
     function countSelectedFriend() {
         let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true'", null);
+        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND friend_type != " + IGNORED_FRIEND_TYPE, null);
         let result = cursor.getCount();
         cursor.close();
         close(db);
         return result;
     }
 
+    /**
+     * @param {Friend} friend 
+     * @returns {boolean} 
+     */
     function modifyFriend(friend) {
         let db = open();
         let values = new ContentValues();
@@ -149,9 +163,9 @@ module.exports = (() => {
             }
             values.put(key, String(friend[key]));
         }
-        let result = db.update("friends", values, "we_chat_id = ?", [friend["we_chat_id"]]) > 0;
+        let result = db.update("friends", values, "we_chat_id = ?", [friend["we_chat_id"]]);
         close(db);
-        return result;
+        return result > 0;
     }
 
     function findAllFriendByFriendType(friend_type, page) {

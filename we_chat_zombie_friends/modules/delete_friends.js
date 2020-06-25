@@ -60,7 +60,7 @@
         if (id(ids["friend_list_id"]).findOne().scrollForward()) {
             last_we_chat_id = "";
             last_friend_remark = "";
-            last_index = -1;
+            last_index = 0;
             sleep(800);
         }
     }
@@ -69,30 +69,24 @@
      * 点击好友
      */
     function clickFriend() {
-        let friends_remark = id(ids["friend_remark_id"]).untilFind();
-        let index = 0;
-        for (let i = 0; i < friends_remark.size(); i++) {
-            if (db_util.hasSelectedFriendByFriendRemark(friends_remark.get(i).text())) {
-                index = i;
-                break;
-            }
-        }
-        // 跳过连续可见的相同昵称的好友
-        while (index <= last_index) {
-            index++;
-        }
-        if (index >= friends_remark.size() || !db_util.hasSelectedFriendByFriendRemark(friends_remark.get(index).text())) {
-            if (id(ids["contacts_count_id"]).find().empty()) {
+        let friend_remark_nodes = id(ids["friend_remark_id"]).untilFind();
+        if (last_index >= friend_remark_nodes.size()) {
+            if (id(ids["contacts_count_id"]).findOnce() == null) {
                 scrollFriendList();
             } else {
-                stopScript();
+                step = 6;
             }
         } else {
-            let friend_remark = friends_remark.get(index);
-            if (node_util.backtrackClickNode(friend_remark)) {
-                last_friend_remark = friend_remark.text();
-                step = 1;
-                last_index = index;
+            while (last_index < friend_remark_nodes.size()) {
+                let friend_remark_node = friend_remark_nodes.get(last_index++);
+                let friend_remark = friend_remark_node.text();
+                if (db_util.hasSelectedFriendByFriendRemark(friend_remark)) {
+                    if (node_util.backtrackClickNode(friend_remark_node)) {
+                        last_friend_remark = friend_remark;
+                        step = 1;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -174,8 +168,8 @@
         events.removeAllKeyDownListeners("volume_down");
         window.close();
         toast(language["script_stopped"]);
-        engines.myEngine().forceStop();
         engines.execScriptFile("main.js");
+        engines.myEngine().forceStop();
     }
 
     function main() {
@@ -196,7 +190,7 @@
             }
             ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
             
-            last_we_chat_id = "", last_friend_remark = "", last_index = -1, step = 0, run = true;
+            last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言
@@ -233,7 +227,8 @@
             if (clickContacts()) {
                 db_util = require("utils/db_util.js");
                 let count_selected_friend = db_util.countSelectedFriend();
-                for (let i = 0; i < count_selected_friend; i++) {
+                over:
+                for (let i = 0; run && i < count_selected_friend; i++) {
                     deleted:
                     while (run) {
                         switch (step) {
@@ -255,6 +250,8 @@
                             case 5:
                                 step = 0;
                                 break deleted;
+                            case 6:
+                                break over;
                         }
                     }
                 }

@@ -506,7 +506,7 @@
                 }).on("negative", () => {
                     stopScript();
                     engines.execScriptFile("modules/delete_friends.js");
-                    exit();
+                    engines.myEngine().forceStop();
                 }).show();
             }
         } else {
@@ -531,7 +531,7 @@
             }).on("positive", () => {
                 stopScript();
                 engines.execScriptFile("modules/test_friends.js");
-                exit();
+                engines.myEngine().forceStop();
             }).show();
         }
     });
