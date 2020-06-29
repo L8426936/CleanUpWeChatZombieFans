@@ -8,7 +8,7 @@ module.exports = (() => {
      */
     function checkUpdate() {
         let project_result = download(base_url + "project.json");
-        if (project_result["success"]) {
+        if (project_result["success"] && files.exists("project.json")) {
             let remote_project = JSON.parse(project_result["content"]);
             let local_project = JSON.parse(files.read("project.json"));
             return local_project["versionCode"] < remote_project["versionCode"];
@@ -20,8 +20,8 @@ module.exports = (() => {
      * 更新文件
      */
     function update(dialog) {
-        let download_all_file = true;
         let remote_files_md5_result = download(base_url + "config/files_md5.json");
+        let completed_all_file = remote_files_md5_result["success"];
         if (remote_files_md5_result["success"]) {
             let remote_files_md5 = JSON.parse(remote_files_md5_result["content"]);
             let local_files_md5 = files.exists("config/files_md5.json") ? JSON.parse(files.read("config/files_md5.json")) : {};
@@ -40,22 +40,28 @@ module.exports = (() => {
                         files.createWithDirs(".download_files/" + key);
                         files.write(".download_files/" + key, result["content"]);
                     } else {
-                        download_all_file = false;
+                        completed_all_file = false;
+                        break;
                     }
                 }
             }
-            if (download_all_file) {
+            if (completed_all_file) {
                 for (let key in remote_files_md5) {
                     if (local_files_md5[key] == undefined || local_files_md5[key] != remote_files_md5[key]) {
-                        files.copy(".download_files/" + key, key);
+                        completed_all_file &= files.copy(".download_files/" + key, key);
+                    }
+                }
+                if (completed_all_file) {
+                    for (let key in local_files_md5) {
+                        if (remote_files_md5[key] == undefined) {
+                            files.remove(key);
+                        }
                     }
                 }
             }
             files.removeDir(".download_files/");
-        } else {
-            download_all_file = false;
         }
-        return download_all_file;
+        return completed_all_file;
     }
 
     function download(url) {

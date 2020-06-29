@@ -1,7 +1,7 @@
 {
     "we_chat_package_name": "com.tencent.mm",
     "min_supported_version": "7.0.9",
-    "max_supported_version": "7.0.15",
+    "max_supported_version": "7.0.16",
     "supported_language": [
         "zh-CN"
     ],
@@ -24,7 +24,7 @@
         },
         {
             "min_supported_version": "7.0.15",
-            "max_supported_version": "7.0.15"
+            "max_supported_version": "7.0.16"
         }
     ]
 }
