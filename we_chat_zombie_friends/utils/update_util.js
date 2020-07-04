@@ -19,7 +19,7 @@ module.exports = (() => {
     /**
      * 更新文件
      */
-    function update(dialog) {
+    function update() {
         let remote_files_md5_result = download(base_url + "config/files_md5.json");
         let completed_all_file = remote_files_md5_result["success"];
         if (remote_files_md5_result["success"]) {
@@ -31,6 +31,13 @@ module.exports = (() => {
                     diff_file_count++;
                 }
             }
+            let dialog = dialogs.build({
+                progress: {
+                    max: 100,
+                    showMinMax: true
+                },
+                cancelable: false
+            }).show();
             let count = 1;
             for (let key in remote_files_md5) {
                 if (local_files_md5[key] == undefined || local_files_md5[key] != remote_files_md5[key]) {
@@ -45,6 +52,7 @@ module.exports = (() => {
                     }
                 }
             }
+            dialog.dismiss();
             if (completed_all_file) {
                 for (let key in remote_files_md5) {
                     if (local_files_md5[key] == undefined || local_files_md5[key] != remote_files_md5[key]) {
@@ -52,6 +60,8 @@ module.exports = (() => {
                     }
                 }
                 if (completed_all_file) {
+                    let db_util = require(files.cwd() + "/utils/db_util.js");
+                    db_util.updateDatabase();
                     for (let key in local_files_md5) {
                         if (remote_files_md5[key] == undefined) {
                             files.remove(key);

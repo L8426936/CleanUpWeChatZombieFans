@@ -1,9 +1,10 @@
 {
     "blacklisted_message": "请确认你和他（她）的好友关系是否正常",
     "deleted_message": "你不是收款方好友，对方添加你为好友后才能发起转账",
-    "contacts_text": "通讯录",
-    "delete_text": "删除",
-    "close_text": "关闭",
-    "transfer_text": "转账",
-    "send_message_text": "发消息"
+    "contacts": "通讯录",
+    "delete": "删除",
+    "close": "关闭",
+    "transfer": "转账",
+    "send_message": "发消息",
+    "label": "标签"
 }

@@ -9,4 +9,10 @@
 
 ## 运行方式二
 * 下载[build](./build/)文件夹下的apk
+
+
+## 界面截图
+| 主界面 | 标签白名单 | 好友白名单 | 右上角菜单 | 侧边菜单 |
+|:----:|:----:|:----:|:----:|:----:|
+| ![主界面](res/Screenshots/Screenshot_20200704-144434.jpg) | ![标签白名单](res/Screenshots/Screenshot_20200704-144444.jpg) | ![好友白名单](res/Screenshots/Screenshot_20200704-144448.jpg) | ![右上角菜单](res/Screenshots/Screenshot_20200704-144437.jpg) | ![侧边菜单](res/Screenshots/Screenshot_20200704-144441.jpg) |
 --------------------------------------

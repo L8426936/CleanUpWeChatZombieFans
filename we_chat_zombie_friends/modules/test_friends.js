@@ -43,10 +43,10 @@
      * 点击通讯录
      */
     function clickContacts() {
-        let nodes = id(ids["contacts_id"]).untilFind();
+        let nodes = id(ids["contacts"]).untilFind();
         for (let i = 0; i < nodes.size(); i++) {
             let node = nodes.get(i);
-            if (texts["contacts_text"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+            if (texts["contacts"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
                 step = 1;
                 break;
             }
@@ -57,11 +57,11 @@
      * 滚动好友列表
      */
     function scrollFriendList() {
-        if (id(ids["friend_list_id"]).findOne().scrollForward()) {
+        if (id(ids["friend_list"]).findOne().scrollForward()) {
             last_we_chat_id = "";
             last_friend_remark = "";
             last_index = 0;
-            sleep(800);
+            sleep(500);
         }
     }
 
@@ -69,9 +69,9 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = id(ids["friend_remark_id"]).untilFind();
+        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
         if (last_index >= friend_remark_nodes.size()) {
-            if (id(ids["contacts_count_id"]).findOnce() == null) {
+            if (id(ids["contacts_count"]).findOnce() == null) {
                 scrollFriendList();
             } else {
                 stopScript();
@@ -80,14 +80,10 @@
             let friend_remark_node = friend_remark_nodes.get(last_index);
             last_friend_remark = friend_remark_node.text();
             let repeat_friend_remark = last_index - 1 >= 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark;
-            if ((repeat_friend_remark || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friend_remark_node)) {
+            if (!db_util.ignoredFriendRemark(last_friend_remark) && (repeat_friend_remark || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friend_remark_node)) {
                 step = 2;
             } else {
                 step = 1;
-                ui.run(() => {
-                    window.tested_friends_text.setText(window.tested_friends_text.text() + last_friend_remark + "\n");
-                    window.tested_friends_scroll.scrollTo(0, window.tested_friends_text.getHeight());
-                });
             }
             last_index++;
         }
@@ -97,28 +93,34 @@
      * 点击发送信息
      */
     function clickSendMessage() {
-        let nodes = id(ids["send_message_id"]).untilFind();
-        if (nodes.size() < 2) {
-            if (node_util.backtrackClickNode(id(ids["back_to_friend_list_id"]).findOne())) {
-                step = 1;
-                db_util.addFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
-                ui.run(() => {
-                    window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
-                    window.ignored_friends_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
-                });
-            }
+        let nodes = id(ids["send_message"]).untilFind();
+        if (nodes.size() < 2 && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+            db_util.addFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+            ui.run(() => {
+                window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
+                window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
+            });
+            step = 1;
         } else {
             let we_chat_id = id(ids["we_chat_id"]).findOne().text();
             if (!db_util.hasFriendByWeChatID(we_chat_id)) {
-                for (let i = 0; i < nodes.size(); i++) {
-                    let node = nodes.get(i);
-                    if (texts["send_message_text"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                        last_we_chat_id = we_chat_id;
-                        step = 3;
-                        break;
+                let friend_label_node = id(ids["friend_label"]).findOnce();
+                let labels = friend_label_node != null ? friend_label_node.text().split(language["comma"]) : null;
+                if (labels != null && labels.length != 0 && db_util.ignoredLabels(labels) && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                    last_we_chat_id = we_chat_id;
+                    db_util.addFriend({we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+                    step = 1;
+                } else {
+                    for (let i = 0; i < nodes.size(); i++) {
+                        let node = nodes.get(i);
+                        if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                            last_we_chat_id = we_chat_id;
+                            step = 3;
+                            break;
+                        }
                     }
                 }
-            } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list_id"]).findOne())) {
+            } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
                 step = 1;
             }
         }
@@ -128,7 +130,7 @@
      * 点击更多功能
      */
     function clickMoreFunction() {
-        if (node_util.backtrackClickNode(id(ids["more_function_by_transfer_id"]).findOne())) {
+        if (node_util.backtrackClickNode(id(ids["more_function_by_transfer"]).findOne())) {
             step = 4;
         }
     }
@@ -137,10 +139,10 @@
      * 点击转账功能
      */
     function clickTransferFunction() {
-        let nodes = id(ids["transfer_function_id"]).untilFind();
+        let nodes = id(ids["transfer_function"]).untilFind();
         for (let i = 0; i < nodes.size(); i++) {
             let node = nodes.get(i);
-            if (texts["transfer_text"].match(node.text()) && node_util.backtrackClickNode(node)) {
+            if (texts["transfer"].match(node.text()) && node_util.backtrackClickNode(node)) {
                 step = 5;
                 break;
             }
@@ -151,7 +153,11 @@
      * 输入转账金额
      */
     function setTransferAmount() {
-        if (id(ids["transfer_amount_id"]).findOne().setText("0.01")) {
+        let payee = id(ids["payee"]).findOne().text();
+        if (payee != "" && payee != last_friend_remark) {
+            db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+            step = 8;
+        } else if (id(ids["transfer_amount"]).findOne().setText("0.01")) {
             step = 6;
         }
     }
@@ -160,7 +166,7 @@
      * 点击确认转账
      */
     function clickConfirmTransfer() {
-        if (node_util.backtrackClickNode(id(ids["confirm_transfer_id"]).enabled().findOne())) {
+        if (node_util.backtrackClickNode(id(ids["confirm_transfer"]).enabled().findOne())) {
             step = 7;
         }
     }
@@ -170,31 +176,27 @@
      */
     function assertionFriend() {
         while (true) {
-            if (node_util.backtrackClickNode(descMatches(texts["close_text"]).findOnce())) {
+            if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce())) {
                 db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
-            let abnormal_message_node = id(ids["abnormal_message_id"]).findOnce();
+            let abnormal_message_node = id(ids["abnormal_message"]).findOnce();
             let abnormal_message = abnormal_message_node != null ? abnormal_message_node.text() : null;
-            if (abnormal_message != null && node_util.backtrackClickNode(id(ids["confirm_abnormal_message_id"]).findOnce())) {
+            if (abnormal_message != null && node_util.backtrackClickNode(id(ids["confirm_abnormal_message"]).findOnce())) {
                 let selected = texts["blacklisted_message"].match(abnormal_message) != null || texts["deleted_message"].match(abnormal_message) != null;
                 db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
         }
-        ui.run(() => {
-            window.tested_friends_text.setText(window.tested_friends_text.text() + last_friend_remark + " " + last_we_chat_id + "\n");
-            window.tested_friends_scroll.scrollTo(0, window.tested_friends_text.getHeight());
-        });
     }
 
     /**
      * 返回聊天页面
      */
     function clickBackToChat() {
-        if (node_util.backtrackClickNode(id(ids["back_to_chat_id"]).findOne())) {
+        if (node_util.backtrackClickNode(id(ids["back_to_chat"]).findOne())) {
             step = 9;
         }
     }
@@ -203,7 +205,7 @@
      * 返回聊天列表
      */
     function clickBackToChats() {
-        if (node_util.backtrackClickNode(id(ids["back_to_chats_id"]).findOne())) {
+        if (node_util.backtrackClickNode(id(ids["back_to_chats"]).findOne())) {
             step = 0;
         }
     }
@@ -239,59 +241,28 @@
     function main() {
         let config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
-            texts = JSON.parse(files.read("config/text_id/text.json"));
             node_util = require("utils/node_util.js");
-    
-            let app_util = require("utils/app_util.js");
-            let min_supported_version, max_supported_version;
-            let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
-            for (let i = 0; i < config["supported_version"].length; i++) {
-                if (app_util.supported(we_chat_version, config["supported_version"][i]["min_supported_version"], config["supported_version"][i]["max_supported_version"])) {
-                    min_supported_version = config["supported_version"][i]["min_supported_version"];
-                    max_supported_version = config["supported_version"][i]["max_supported_version"];
-                    break;
-                }
-            }
-            ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
-    
             db_util = require("utils/db_util.js");
+            let app_util = require("utils/app_util.js");
+            
+            ids = app_util.weChatIds();
+            texts = JSON.parse(files.read("config/text_id/text.json"));
+    
             db_util.deleteAllIgnoredFriend();
             
             last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();
             
-            // 获取系统语言
-            let default_language = "zh-CN";
-            let local_language = context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country;
-            for (let i = 0; i < config["supported_language"].length; i++) {
-                if (config["supported_language"][i] == local_language) {
-                    default_language = local_language;
-                    break;
-                }
-            }
-            language = JSON.parse(files.read("config/languages/" + default_language + ".json"));
+            language = JSON.parse(files.read("config/languages/" + app_util.localLanguage() + ".json"));
 
             window = floaty.window(
-                <frame>
-                    <vertical padding="8" bg="#000000" w="*">
-                        <vertical layout_weight="1" w="*">
-                            <vertical layout_weight="1" w="*">
-                                <text textColor="#FF8000" w="*" id="ignored_friends_title"/>
-                                <scroll w="*" h="60" id="ignored_friends_scroll"><text textColor="#FF8000" layout_gravity="top" id="ignored_friends_text"/></scroll>
-                            </vertical>
-                            <vertical layout_weight="1" w="*">
-                                <text textColor="green" w="*" id="tested_friends_title"/>
-                                <scroll w="*" h="60" id="tested_friends_scroll"><text textColor="green" layout_gravity="top" id="tested_friends_text"/></scroll>
-                            </vertical>
-                        </vertical>
-                        <horizontal>
-                            <button id="stop_button" w="*" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
-                        </horizontal>
-                    </vertical>
-                </frame>
+                <vertical padding="8" bg="#000000">
+                    <text textColor="#FFCC00" id="ignored_friends_title"/>
+                    <scroll h="100" id="ignored_friends_text_scroll"><text textColor="#FFCC00" layout_gravity="top" id="ignored_friends_text"/></scroll>
+                    <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
+                </vertical>
             );
             window.ignored_friends_title.setText(language["ignored_friends_title"]);
-            window.tested_friends_title.setText(language["tested_friends_title"]);
             window.stop_button.setText(language["stop"]);
             window.setAdjustEnabled(true);
             window.stop_button.on("click", () => {

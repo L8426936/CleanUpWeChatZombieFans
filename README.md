@@ -10,6 +10,11 @@
 2. 被删除：你不是收款方好友，对方添加你为好友后才能发起转账
 
 ### 支持的语言和微信版本
-* 适用微信7.0.9~7.0.15版本
+* 适用微信7.0.9~7.0.16版本
 * 仅支持简体中文
+
+### 界面截图
+| 主界面 | 标签白名单 | 好友白名单 | 右上角菜单 | 侧边菜单 |
+|:----:|:----:|:----:|:----:|:----:|
+| ![主界面](we_chat_zombie_friends/res/Screenshots/Screenshot_20200704-144434.jpg) | ![标签白名单](we_chat_zombie_friends/res/Screenshots/Screenshot_20200704-144444.jpg) | ![好友白名单](we_chat_zombie_friends/res/Screenshots/Screenshot_20200704-144448.jpg) | ![右上角菜单](we_chat_zombie_friends/res/Screenshots/Screenshot_20200704-144437.jpg) | ![侧边菜单](we_chat_zombie_friends/res/Screenshots/Screenshot_20200704-144441.jpg) |
 ---------------------------------------------------------

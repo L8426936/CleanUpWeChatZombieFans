@@ -43,10 +43,10 @@
      * 点击通讯录
      */
     function clickContacts() {
-        let nodes = id(ids["contacts_id"]).untilFind();
+        let nodes = id(ids["contacts"]).untilFind();
         for (let i = 0; i < nodes.size(); i++) {
             let node = nodes.get(i);
-            if (texts["contacts_text"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+            if (texts["contacts"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
                 return true;
             }
         }
@@ -57,11 +57,11 @@
      * 滚动好友列表
      */
     function scrollFriendList() {
-        if (id(ids["friend_list_id"]).findOne().scrollForward()) {
+        if (id(ids["friend_list"]).findOne().scrollForward()) {
             last_we_chat_id = "";
             last_friend_remark = "";
             last_index = 0;
-            sleep(800);
+            sleep(500);
         }
     }
 
@@ -69,12 +69,12 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = id(ids["friend_remark_id"]).untilFind();
+        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
         if (last_index >= friend_remark_nodes.size()) {
-            if (id(ids["contacts_count_id"]).findOnce() == null) {
+            if (id(ids["contacts_count"]).findOnce() == null) {
                 scrollFriendList();
             } else {
-                step = 6;
+                stopScript();
             }
         } else {
             while (last_index < friend_remark_nodes.size()) {
@@ -100,7 +100,7 @@
             last_we_chat_id = we_chat_id;
             step = 2;
         } else {
-            if (node_util.backtrackClickNode(id(ids["back_to_friend_list_id"]).findOne())) {
+            if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
                 step = 0;
             }
         }
@@ -110,7 +110,7 @@
      * 点击更多功能
      */
     function clickMoreFunction() {
-        if (node_util.backtrackClickNode(id(ids["more_function_by_delete_id"]).findOne())) {
+        if (node_util.backtrackClickNode(id(ids["more_function_by_delete"]).findOne())) {
             step = 3;
         }
     }
@@ -119,10 +119,10 @@
      * 点击删除功能
      */
     function clickDeleteFunction() {
-        let nodes = id(ids["delete_id"]).untilFind();
+        let nodes = id(ids["delete"]).untilFind();
         for (let i = 0; i < nodes.size(); i++) {
             let node = nodes.get(i);
-            if (texts["delete_text"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+            if (texts["delete"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
                 step = 4;
                 break;
             }
@@ -133,13 +133,14 @@
      * 点击确认删除
      */
     function clickConfirmDelete() {
-        if (node_util.backtrackClickNode(id(ids["confirm_delete_id"]).findOne())) {
-            db_util.modifyFriend({we_chat_id: last_we_chat_id, selected: true, deleted: true});
+        if (node_util.backtrackClickNode(id(ids["confirm_delete"]).findOne())) {
+            db_util.modifyFriend({we_chat_id: last_we_chat_id, deleted: true});
+            db_util.deleteFriendWhitelist(last_friend_remark);
             step = 5;
             last_index--;
             ui.run(() => {
-                window.deleted_text.setText(window.deleted_text.text() + last_friend_remark + " " + last_we_chat_id + "\n");
-                window.deleted_text_scroll.scrollTo(0, window.deleted_text.getHeight());
+                window.deleted_friends_text.setText(window.deleted_friends_text.text() + last_friend_remark + " " + last_we_chat_id + "\n");
+                window.deleted_friends_text_scroll.scrollTo(0, window.deleted_friends_text.getHeight());
             });
         }
     }
@@ -175,47 +176,22 @@
     function main() {
         config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
-            texts = JSON.parse(files.read("config/text_id/text.json"));
             node_util = require("utils/node_util.js");
-
             let app_util = require("utils/app_util.js");
-            let min_supported_version, max_supported_version;
-            let we_chat_version = app_util.getAppVersion(config["we_chat_package_name"]);
-            for (let i = 0; i < config["supported_version"].length; i++) {
-                if (app_util.supported(we_chat_version, config["supported_version"][i]["min_supported_version"], config["supported_version"][i]["max_supported_version"])) {
-                    min_supported_version = config["supported_version"][i]["min_supported_version"];
-                    max_supported_version = config["supported_version"][i]["max_supported_version"];
-                    break;
-                }
-            }
-            ids = JSON.parse(files.read("config/text_id/" + min_supported_version + "-" + max_supported_version + ".json"));
+
+            ids = app_util.weChatIds();
+            language = JSON.parse(files.read("config/languages/" + app_util.localLanguage() + ".json"));
+            texts = JSON.parse(files.read("config/text_id/text.json"));
             
             last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();
             
-            // 获取系统语言
-            let default_language = "zh-CN";
-            let local_language = context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country;
-            for (let i = 0; i < config["supported_language"].length; i++) {
-                if (config["supported_language"][i] == local_language) {
-                    default_language = local_language;
-                    break;
-                }
-            }
-            language = JSON.parse(files.read("config/languages/" + default_language + ".json"));
-
             window = floaty.window(
-                <frame>
-                    <vertical padding="8" bg="#000000" w="*">
-                        <vertical layout_weight="1" w="*">
-                            <text textColor="red" w="*" id="deleted_friends_title"/>
-                            <scroll w="*" h="60" id="deleted_text_scroll"><text textColor="red" layout_gravity="top" id="deleted_text"/></scroll>
-                        </vertical>
-                        <horizontal>
-                            <button id="stop_button" w="*" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
-                        </horizontal>
-                    </vertical>
-                </frame>
+                <vertical padding="8" bg="#000000">
+                    <text textColor="red" id="deleted_friends_title"/>
+                    <scroll h="100" id="deleted_friends_text_scroll"><text textColor="red" layout_gravity="top" id="deleted_friends_text"/></scroll>
+                    <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
+                </vertical>
             );
             window.deleted_friends_title.setText(language["deleted_friends_title"]);
             window.stop_button.setText(language["stop"]);
@@ -227,8 +203,7 @@
             if (clickContacts()) {
                 db_util = require("utils/db_util.js");
                 let count_selected_friend = db_util.countSelectedFriend();
-                over:
-                for (let i = 0; run && i < count_selected_friend; i++) {
+                while (run && count_selected_friend > 0) {
                     deleted:
                     while (run) {
                         switch (step) {
@@ -246,16 +221,17 @@
                                 break;
                             case 4:
                                 clickConfirmDelete();
+                                count_selected_friend--;
                                 break;
                             case 5:
                                 step = 0;
                                 break deleted;
-                            case 6:
-                                break over;
                         }
                     }
                 }
-                stopScript();
+                if (count_selected_friend == 0) {
+                    stopScript();
+                }
             }
         }
     }
