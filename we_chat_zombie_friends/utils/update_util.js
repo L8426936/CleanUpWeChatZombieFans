@@ -60,8 +60,6 @@ module.exports = (() => {
                     }
                 }
                 if (completed_all_file) {
-                    let db_util = require(files.cwd() + "/utils/db_util.js");
-                    db_util.updateDatabase();
                     for (let key in local_files_md5) {
                         if (remote_files_md5[key] == undefined) {
                             files.remove(key);

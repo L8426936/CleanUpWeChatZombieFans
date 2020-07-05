@@ -258,7 +258,7 @@
             window = floaty.window(
                 <vertical padding="8" bg="#000000">
                     <text textColor="#FFCC00" id="ignored_friends_title"/>
-                    <scroll h="100" id="ignored_friends_text_scroll"><text textColor="#FFCC00" layout_gravity="top" id="ignored_friends_text"/></scroll>
+                    <scroll h="100" layout_weight="1" id="ignored_friends_text_scroll"><text textColor="#FFCC00" layout_gravity="top" id="ignored_friends_text"/></scroll>
                     <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
                 </vertical>
             );

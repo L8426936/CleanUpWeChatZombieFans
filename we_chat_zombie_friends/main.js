@@ -1,7 +1,4 @@
 "ui";
-
-const app_util = require("./utils/app_util");
-
 (() => {
     ui.layout(
         <drawer id="drawer">
@@ -66,17 +63,16 @@ const app_util = require("./utils/app_util");
         </drawer>
     );
 
-    let config, language, texts, db_util, app_util, page_infos, current_page_index = 0, no_more_warning = false;
+    let language, db_util, app_util, page_infos, current_page_index = 0, no_more_warning = false;
 
     /**
      * 初始化配置
      */
     function init() {
         db_util = require("utils/db_util.js");
+        db_util.updateDatabase();
         app_util = require("utils/app_util.js");
 
-        config = JSON.parse(files.read("config/config.json"));
-        texts = JSON.parse(files.read("config/text_id/text.json"));
         language = JSON.parse(files.read("config/languages/" + app_util.localLanguage() + ".json"));
 
         ui.previous_page_button.setText(language["previous_page"]);
@@ -321,7 +317,7 @@ const app_util = require("./utils/app_util");
         itemView.selected_checkbox.on("click", () => {
             let friend = itemHolder.item;
             let abnormal_message = friend.abnormal_message;
-            if (!no_more_warning && itemView.selected_checkbox.checked && texts["blacklisted_message"].match(abnormal_message) == null && texts["deleted_message"].match(abnormal_message) == null) {
+            if (!no_more_warning && itemView.selected_checkbox.checked && language["blacklisted_message"].match(abnormal_message) == null && language["deleted_message"].match(abnormal_message) == null) {
                 let selected_no_more_warning = false;
                 dialogs.build({
                     title: language["warning"],

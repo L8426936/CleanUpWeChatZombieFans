@@ -127,7 +127,7 @@
             window = floaty.window(
                 <vertical padding="8" bg="#000000">
                     <text textColor="red" id="import_labels_fail_title"/>
-                    <scroll h="100" id="import_labels_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_labels_fail_text"/></scroll>
+                    <scroll h="100" layout_weight="1" id="import_labels_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_labels_fail_text"/></scroll>
                     <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
                 </vertical>
             );

@@ -9,14 +9,7 @@ module.exports = (() => {
      * 打开数据库连接
      */
     function open() {
-        let base_path = files.cwd();
-        files.ensureDir(base_path + "/data/");
-        if (!files.exists(base_path + "/data/we_chat.db")) {
-            let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
-            updateDatabase();
-            return db;
-        }
-        return SQLiteDatabase.openDatabase(base_path + "/data/we_chat.db", null, SQLiteDatabase.OPEN_READWRITE);
+        return SQLiteDatabase.openDatabase(files.cwd() + "/data/we_chat.db", null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     /**
@@ -425,7 +418,9 @@ module.exports = (() => {
     }
 
     function updateDatabase() {
-        let db = open();
+        let base_path = files.cwd();
+        files.ensureDir(base_path + "/data/");
+        let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
         db.execSQL("CREATE TABLE IF NOT EXISTS friends("
         + "we_chat_id VARCHAR(64) PRIMARY KEY,"
         + "friend_remark VARCHAR(64),"
@@ -442,7 +437,7 @@ module.exports = (() => {
         + "label VARCHAR(64) PRIMARY KEY,"
         + "ignored BOOLEAN"
         + ")");
-        db.close();
+        close(db);
     }
 
     return {
