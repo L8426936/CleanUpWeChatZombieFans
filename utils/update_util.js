@@ -79,7 +79,7 @@ module.exports = (() => {
         http.get(url, {}, function (res, err) {
             if (err) {
                 log(err);
-            } else {
+            } else if (res.statusCode == 200) {
                 content = res.body.string();
                 success = true;
             }

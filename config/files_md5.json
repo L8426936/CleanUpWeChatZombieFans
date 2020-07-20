@@ -1,10 +1,10 @@
 {
     "main.js": "f92afb1e57cee4c30e53022675b87220",
-    "project.json": "8179ee8904bcfe1a2e85757a75ccc3e6",
+    "project.json": "e3c2c76bee020c76874cfb41e8dd02ef",
     "activity/friend_whitelist.js": "a2ffedf6125d3bd6e55e473e5ff289a8",
     "activity/label_whitelist.js": "ce3417e07fd5a4195e24937f9dbf5381",
     "config/config.json": "a86ac47755a4dd92a478a474c6d06e56",
-    "config/files_md5.json" : "8c0d5340a2c4c47e1fdd64c8e97a2701",
+    "config/files_md5.json" : "df3779f85a762668c9a6a5660793693f",
     "config/languages/zh-CN.json": "db81467c4197d898dad8aea462e782ab",
     "config/text_id/7.0.9~7.0.11.json": "71aa9d47f0520c301e8763a71b012549",
     "config/text_id/7.0.12~7.0.12.json": "875471edf10cf20b4392e6f1d2d51256",
@@ -16,8 +16,8 @@
     "modules/import_friends.js": "06ad6248fd5f52b09f909ce474259bfc",
     "modules/import_labels.js": "4cc56d03aac8559389d79a2318234fe6",
     "modules/test_friends.js": "dd2eef60cec9f96a21d0256ff081d4f2",
-    "utils/app_util.js": "fbdcf7be77fe8f7fbaa969a7c8f25a1f",
+    "utils/app_util.js": "0036ecf69ce294f507031844517dc8b1",
     "utils/db_util.js": "8bdb27f963673c3e144c948fcd89c29d",
     "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
-    "utils/update_util.js": "d3ccb47c3a38dd6d22e783668e74cbe4"
+    "utils/update_util.js": "4ab943cc2a3a89ec175ab9c439a5a4be"
 }

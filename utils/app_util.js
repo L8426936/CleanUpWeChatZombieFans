@@ -166,7 +166,7 @@ module.exports = (() => {
     function stopScript() {
         let scripts = engines.all();
         for (let i = 0; i < scripts.length; i++) {
-            if (/.+(main|activity\/(friend|label)_whitelist|modules\/import_labels|(test|delete|import)_friends)\.js/.test(scripts[i].getSource().toString())) {
+            if (/.+CleanUpWeChatZombieFans\/(main|(activity|modules).+)\.js/.test(scripts[i].getSource().toString())) {
                 scripts[i].forceStop();
             }
         }
