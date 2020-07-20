@@ -202,7 +202,7 @@
                     negativeColor: "#008274",
                     cancelable: false
                 }).on("positive", () => {
-                    app.openUrl("https://github.com/L8426936/");
+                    app.openUrl("https://github.com/L8426936/CleanUpWeChatZombieFans");
                 }).show();
                 break
         }

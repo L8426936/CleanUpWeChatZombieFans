@@ -9,14 +9,14 @@
 
 
 ## 支持的语言和微信版本
-* 适用微信7.0.9~7.0.17版本
+* 适用微信7.0.9~7.0.16版本
 * 仅支持简体中文
 
 
 ## 使用教程
 ### 运行方式一
 1. 安装[Auto.js](https://github.com/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk?raw=true)
-2. 下载[CleanUpWeChatZombieFans](./)到Auto.js的脚本文件路径
+2. 下载CleanUpWeChatZombieFans到Auto.js的脚本文件路径
 3. 运行[main.js](./main.js)
 ### 运行方式二
 * 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFans/releases/latest)，安装apk
