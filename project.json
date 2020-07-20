@@ -1,0 +1,19 @@
+{
+  "assets": [],
+  "build": {
+    "build_id": "",
+    "build_number": 0,
+    "build_time": 0
+  },
+  "useFeatures": [],
+  "icon": "res/logo.png",
+  "launchConfig": {
+    "hideLogs": true
+  },
+  "main": "main.js",
+  "name": "CleanUpWeChatZombieFans",
+  "packageName": "com.niming.cleanupwechatzombiefans",
+  "scripts": {},
+  "versionCode": 20,
+  "versionName": "3.0.0"
+}
