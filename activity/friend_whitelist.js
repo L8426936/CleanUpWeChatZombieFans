@@ -18,6 +18,7 @@
             <horizontal bg="#EBEBEB">
                 <button id="clear_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
                 <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
             </horizontal>
         </vertical>
     );
@@ -36,10 +37,13 @@
         ui.next_page_button.setText(language["next_page"]);
         ui.clear_friends_button.setText(language["clear_friend"]);
         ui.import_friends_button.setText(language["import_friend"]);
+        ui.test_friends_button.setText(language["test_friend"]);
         
         if (!app_util.checkSupportedLanguage()) {
             ui.import_friends_button.enabled = false;
+            ui.test_friends_button.enabled = false;
             ui.import_friends_button.textColor = colors.parseColor("#B2B2B2");
+            ui.test_friends_button.textColor = colors.parseColor("#B2B2B2");
         }
     }
     init();
@@ -107,6 +111,22 @@
                 cancelable: false
             }).on("positive", () => {
                 engines.execScriptFile("modules/import_friends.js", {delay: 500});
+                app_util.stopScript();
+            }).show();
+        }
+    });
+
+    ui.test_friends_button.on("click", () => {
+        if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
+            dialogs.build({
+                content: language["before_running_alert_dialog_message"],
+                positive: language["confirm"],
+                positiveColor: "#008274",
+                negative: language["cancel"],
+                negativeColor: "#008274",
+                cancelable: false
+            }).on("positive", () => {
+                engines.execScriptFile("modules/test_friends.js", {delay: 500});
                 app_util.stopScript();
             }).show();
         }

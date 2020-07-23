@@ -81,10 +81,9 @@
         ui.delete_friends_button.setText(language["delete_friend"]);
         ui.test_friends_button.setText(language["test_friend"]);
 
-        let supported_language = app_util.checkSupportedLanguage();
-        ui.delete_friends_button.enabled = supported_language;
-        ui.test_friends_button.enabled = supported_language;
-        if (!supported_language) {
+        if (!app_util.checkSupportedLanguage()) {
+            ui.delete_friends_button.enabled = false;
+            ui.test_friends_button.enabled = false;
             ui.delete_friends_button.textColor = colors.parseColor("#B2B2B2");
             ui.test_friends_button.textColor = colors.parseColor("#B2B2B2");
             dialogs.build({
