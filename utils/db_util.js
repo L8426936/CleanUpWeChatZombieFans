@@ -89,6 +89,21 @@ module.exports = (() => {
     }
 
     /**
+     * 
+     * @param {*} friend_label_whitelist
+     */
+    function addFriendLabelWhitelist(friend_label_whitelist) {
+        let db = open();
+        let values = new ContentValues();
+        for (let key in friend_label_whitelist) {
+            values.put(key, String(friend_label_whitelist[key]));
+        }
+        let result = db.insert("friend_label_whitelist", null, values);
+        close(db);
+        return result > 0;
+    }
+
+    /**
      * @returns {Friend}
      */
     function cursorRowToFriend(cursor) {
@@ -136,6 +151,21 @@ module.exports = (() => {
     function hasLabelWhitelist(label) {
         let db = open();
         let cursor = db.rawQuery("SELECT * FROM label_whitelist WHERE label = ?", [label]);
+        let result = cursor.getCount();
+        cursor.close();
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 
+     * @param {String} friend_remark 
+     * @param {String} label 
+     * @returns {boolean}
+     */
+    function hasFriendLabelWhitelist(friend_remark, label) {
+        let db = open();
+        let cursor = db.rawQuery("SELECT * FROM friend_label_whitelist WHERE friend_remark = ? AND label = ?", [friend_remark, label]);
         let result = cursor.getCount();
         cursor.close();
         close(db);
@@ -292,6 +322,13 @@ module.exports = (() => {
         return result > 0;
     }
 
+    function modifyFriendLabelWhitelist(label_whitelist) {
+        let db = open();
+        let result = db.execSQL("UPDATE friend_whitelist SET ignored = '" + label_whitelist.ignored + "' WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = '" + label_whitelist.label +"' GROUP BY friend_remark)");
+        close(db);
+        return result > 0;
+    }
+
     function findAllFriendByFriendType(friend_type, page) {
         let db = open();
         let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_type = ? LIMIT 200 OFFSET ?", [friend_type, (page - 1) * 200]);
@@ -399,6 +436,24 @@ module.exports = (() => {
         close(db);
     }
 
+    function deleteAllFriendLabelWhitelist() {
+        let db = open();
+        db.execSQL("DELETE FROM friend_label_whitelist");
+        close(db);
+    }
+
+    /**
+     * 
+     * @param {String} friend_remark 
+     * @returns {boolean} 
+     */
+    function deleteFriendLabelWhitelist(friend_remark) {
+        let db = open();
+        let result = db.delete("friend_label_whitelist", "friend_remark = ?", [friend_remark]);
+        close(db);
+        return result > 0;
+    }
+
     /**
      * 
      * @param {String} friend_remark 
@@ -421,22 +476,32 @@ module.exports = (() => {
         let base_path = files.cwd();
         files.ensureDir(base_path + "/data/");
         let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
+
         db.execSQL("CREATE TABLE IF NOT EXISTS friends("
         + "we_chat_id VARCHAR(64) PRIMARY KEY,"
-        + "friend_remark VARCHAR(64),"
+        + "friend_remark VARCHAR(128),"
         + "abnormal_message VARCHAR(255),"
         + "selected BOOLEAN,"
         + "deleted BOOLEAN,"
         + "friend_type TINYINT"
         + ")");
+
         db.execSQL("CREATE TABLE IF NOT EXISTS friend_whitelist("
-        + "friend_remark VARCHAR(64) PRIMARY KEY,"
+        + "friend_remark VARCHAR(128) PRIMARY KEY,"
         + "ignored BOOLEAN"
         + ")");
+
         db.execSQL("CREATE TABLE IF NOT EXISTS label_whitelist("
         + "label VARCHAR(64) PRIMARY KEY,"
         + "ignored BOOLEAN"
         + ")");
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS friend_label_whitelist("
+        + "friend_remark VARCHAR(128),"
+        + "label VARCHAR(64),"
+        + "PRIMARY KEY (friend_remark, label)"
+        + ")");
+
         close(db);
     }
 
@@ -444,15 +509,18 @@ module.exports = (() => {
         addFriend: addFriend,
         addFriendWhitelist: addFriendWhitelist,
         addLabelWhitelist: addLabelWhitelist,
+        addFriendLabelWhitelist: addFriendLabelWhitelist,
         modifyFriend: modifyFriend,
         modifyFriendWhitelist: modifyFriendWhitelist,
         modifyLabelWhitelist: modifyLabelWhitelist,
+        modifyFriendLabelWhitelist: modifyFriendLabelWhitelist,
         hasSelectedFriendByWeChatID: hasSelectedFriendByWeChatID,
         hasSelectedFriendByFriendRemark: hasSelectedFriendByFriendRemark,
         hasSelectedFriend: hasSelectedFriend,
         hasFriendByWeChatID: hasFriendByWeChatID,
         hasFriendByFriendRemark: hasFriendByFriendRemark,
         hasLabelWhitelist: hasLabelWhitelist,
+        hasFriendLabelWhitelist: hasFriendLabelWhitelist,
         ignoredLabels: ignoredLabels,
         hasFriendWhitelist: hasFriendWhitelist,
         ignoredFriendRemark: ignoredFriendRemark,
@@ -469,6 +537,8 @@ module.exports = (() => {
         getIgnoredFriendTotalPage: getIgnoredFriendTotalPage,
         deleteAllFriend: deleteAllFriend,
         deleteAllFriendWhitelist: deleteAllFriendWhitelist,
+        deleteAllFriendLabelWhitelist: deleteAllFriendLabelWhitelist,
+        deleteFriendLabelWhitelist: deleteFriendLabelWhitelist,
         deleteFriendWhitelist: deleteFriendWhitelist,
         deleteAllLabelWhitelist: deleteAllLabelWhitelist,
         updateDatabase: updateDatabase,

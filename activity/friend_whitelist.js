@@ -4,7 +4,7 @@
         <vertical>
             <list id="friend_whitelist" layout_weight="1">
                 <horizontal padding="8" w="*">
-                    <text text="{{friend_remark}}" layout_weight="1"/>
+                    <text text="{{friend_remark}}" layout_weight="1" maxLines="1" ellipsize="end"/>
                     <Switch id="ignored_switch" checked="{{ignored}}"/>
                 </horizontal>
             </list>
@@ -96,6 +96,7 @@
             cancelable: false
         }).on("negative", () => {
             db_util.deleteAllFriendWhitelist();
+            db_util.deleteAllFriendLabelWhitelist();
             initUI();
         }).show();
     });
@@ -117,18 +118,6 @@
     });
 
     ui.test_friends_button.on("click", () => {
-        if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-            dialogs.build({
-                content: language["before_running_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                negative: language["cancel"],
-                negativeColor: "#008274",
-                cancelable: false
-            }).on("positive", () => {
-                engines.execScriptFile("modules/test_friends.js", {delay: 500});
-                app_util.stopScript();
-            }).show();
-        }
+        app_util.testFriends();
     });
 })();

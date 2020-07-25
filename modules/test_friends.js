@@ -38,6 +38,7 @@
      */
     let run;
     let language;
+    let running_config;
 
     /**
      * 点击通讯录
@@ -106,7 +107,11 @@
             if (!db_util.hasFriendByWeChatID(we_chat_id)) {
                 let friend_labels_node = id(ids["friend_labels"]).findOnce();
                 let labels = friend_labels_node != null ? friend_labels_node.text().split(language["comma"]) : null;
-                if (labels != null && labels.length != 0 && db_util.ignoredLabels(labels) && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                if (running_config["test_friend_mode"] == 1
+                    && labels != null
+                    && labels.length != 0
+                    && db_util.ignoredLabels(labels)
+                    && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
                     last_we_chat_id = we_chat_id;
                     db_util.addFriend({we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                     step = 1;
@@ -254,6 +259,7 @@
             keyDownListenerByVolumeDown();
             
             language = app_util.language();
+            running_config = app_util.runningConfig();
 
             window = floaty.window(
                 <vertical padding="8" bg="#000000">

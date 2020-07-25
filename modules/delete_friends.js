@@ -136,6 +136,7 @@
         if (node_util.backtrackClickNode(id(ids["confirm_delete"]).findOne())) {
             db_util.modifyFriend({we_chat_id: last_we_chat_id, deleted: true});
             db_util.deleteFriendWhitelist(last_friend_remark);
+            db_util.deleteFriendLabelWhitelist(last_friend_remark);
             step = 5;
             last_index--;
             ui.run(() => {

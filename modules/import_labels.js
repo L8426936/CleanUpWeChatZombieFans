@@ -26,7 +26,9 @@
      */
     let run;
     let language;
+    let running_config;
     let last_label;
+    let last_index;
 
     /**
      * 点击通讯录
@@ -42,6 +44,9 @@
         }
     }
 
+    /**
+     * 点击标签
+     */
     function clickLabel() {
         step = 0;
         let nodes = id(ids["labels"]).find();
@@ -54,34 +59,73 @@
         }
     }
 
+    function synchronizeLabels() {
+        if (id(ids["add_label"]).text(texts["add_label"]).findOnce() != null && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+            stopScript();
+        }
+        let label_nodes = id(ids["label"]).find();
+        let count_nodes = id(ids["contacts_count_by_label"]).find();
+        if ((label_nodes.size() | count_nodes.size()) > 0 && label_nodes.size() == count_nodes.size()) {
+            if (last_index < label_nodes.size()) {
+                let label = label_nodes.get(last_index).text();
+                let count = count_nodes.get(last_index).text().match(/\d+/g)[0];
+                if (!db_util.hasLabelWhitelist(label)) {
+                    if (db_util.addLabelWhitelist({label: label, ignored: false})) {
+                        if (!!(running_config["import_label_include_friends"]) && count > 0 && node_util.backtrackClickNode(label_nodes.get(last_index))) {
+                            last_label = label;
+                            step = 3;
+                        }
+                    } else {
+                        ui.run(() => {
+                            window.import_labels_fail_text.setText(window.import_labels_fail_text.text() + label + "\n");
+                            window.import_labels_fail_text_scroll.scrollTo(0, window.import_labels_fail_text.getHeight());
+                        });
+                    }
+                }
+                last_index++;
+            } else {
+                step = 5;
+            }
+        }
+    }
+
+    function synchronizeFriends() {
+        let friend_remark_nodes = id(ids["friend_remark_by_label"]).untilFind();
+        for (let i = 0; i < friend_remark_nodes.size(); i++) {
+            let friend_remark = friend_remark_nodes.get(i).text();
+            if (!(db_util.hasFriendWhitelist(friend_remark) || db_util.addFriendWhitelist({friend_remark: friend_remark, ignored: false})) || !(db_util.hasFriendLabelWhitelist(friend_remark, last_label) || db_util.addFriendLabelWhitelist({friend_remark: friend_remark, label: last_label}))) {
+                ui.run(() => {
+                    window.import_labels_fail_text.setText(window.import_labels_fail_text.text() + friend_remark + "\n");
+                    window.import_labels_fail_text_scroll.scrollTo(0, window.import_labels_fail_text.getHeight());
+                });
+            }
+        }
+        step = 4;
+    }
+
     /**
      * 滚动好友列表
+     */
+    function scrollFriendList() {
+        if (id(ids["delete_label"]).text(texts["delete_label"]).findOnce() != null && node_util.backtrackClickNode(id(ids["back_to_label_list"]).findOne())) {
+            step = 2;
+        } else if (id(ids["friend_list_by_label"]).findOne().scrollForward()) {
+            sleep(800);
+            step = 3;
+        }
+    }
+
+    /**
+     * 滚动标签列表
      */
     function scrollLabelList() {
         if (id(ids["label_list"]).findOne().scrollForward()) {
             sleep(800);
             step = 2;
-        } else {
-            let label_nodes = id(ids["label"]).untilFind();
-            if (label_nodes.size() > 0 && label_nodes.get(label_nodes.size() - 1).text() == last_label && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-                stopScript();
-            }
+            last_index = 0;
+        } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+            stopScript();
         }
-    }
-
-    function synchronizeLabels() {
-        let label_nodes = id(ids["label"]).untilFind();
-        for (let i = 0; i < label_nodes.size(); i++) {
-            let label = label_nodes.get(i).text();
-            if (!db_util.hasLabelWhitelist(label) && !db_util.addLabelWhitelist({label: label, ignored: false})) {
-                ui.run(() => {
-                    window.import_labels_fail_text.setText(window.import_labels_fail_text.text() + label + "\n");
-                    window.import_labels_fail_text_scroll.scrollTo(0, window.import_labels_fail_text.getHeight());
-                });
-            }
-            last_label = label;
-        }
-        step = 3;
     }
 
     /**
@@ -122,11 +166,12 @@
             ids = app_util.weChatIds();
             texts = JSON.parse(files.read("config/text_id/text.json"));
 
-            last_label = "", step = 0, run = true;
+            last_label = "", step = 0, run = true, last_index = 0;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言
             language = app_util.language();
+            running_config = app_util.runningConfig();
 
             window = floaty.window(
                 <vertical padding="8" bg="#000000">
@@ -154,6 +199,12 @@
                         synchronizeLabels();
                         break;
                     case 3:
+                        synchronizeFriends();
+                        break;
+                    case 4:
+                        scrollFriendList();
+                        break;
+                    case 5:
                         scrollLabelList();
                         break;
                 }

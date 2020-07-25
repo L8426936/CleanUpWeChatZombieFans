@@ -4,7 +4,7 @@
         <vertical>
             <list id="label_whitelist" layout_weight="1">
                 <horizontal padding="8" w="*">
-                    <text text="{{label}}" layout_weight="1"/>
+                    <text text="{{label}}" layout_weight="1" maxLines="1" ellipsize="end"/>
                     <Switch id="ignored_switch" checked="{{ignored}}"/>
                 </horizontal>
             </list>
@@ -53,6 +53,7 @@
             if (label_whitelist.ignored != itemView.ignored_switch.checked) {
                 label_whitelist.ignored = itemView.ignored_switch.checked;
                 db_util.modifyLabelWhitelist(label_whitelist);
+                db_util.modifyFriendLabelWhitelist(label_whitelist);
             }
         });
     });
@@ -67,19 +68,26 @@
             cancelable: false
         }).on("negative", () => {
             db_util.deleteAllLabelWhitelist();
+            db_util.deleteAllFriendLabelWhitelist();
             initUI();
         }).show();
     });
     
     ui.import_labels_button.on("click", () => {
         if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
+            let running_config = app_util.runningConfig();
             dialogs.build({
                 content: language["before_running_alert_dialog_message"],
+                checkBoxPrompt: language["import_label_include_friends"],
+                checkBoxChecked: !!(running_config["import_label_include_friends"]),
                 positive: language["confirm"],
                 positiveColor: "#008274",
                 negative: language["cancel"],
                 negativeColor: "#008274",
                 cancelable: false
+            }).on("check", checked => {
+                running_config["import_label_include_friends"] = checked;
+                files.write("config/running_config.json", JSON.stringify(running_config));
             }).on("positive", () => {
                 engines.execScriptFile("modules/import_labels.js", {delay: 500});
                 app_util.stopScript();
@@ -88,18 +96,6 @@
     });
 
     ui.test_friends_button.on("click", () => {
-        if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-            dialogs.build({
-                content: language["before_running_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                negative: language["cancel"],
-                negativeColor: "#008274",
-                cancelable: false
-            }).on("positive", () => {
-                engines.execScriptFile("modules/test_friends.js", {delay: 500});
-                app_util.stopScript();
-            }).show();
-        }
+        app_util.testFriends();
     });
 })();

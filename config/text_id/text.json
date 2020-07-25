@@ -6,5 +6,7 @@
     "close": "关闭",
     "transfer": "转账",
     "send_message": "发消息",
-    "label": "标签"
+    "label": "标签",
+    "delete_label": "删除标签",
+    "add_label": "新建标签"
 }

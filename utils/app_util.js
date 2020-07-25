@@ -54,6 +54,10 @@ module.exports = (() => {
         return JSON.parse(files.read("config/languages/" + (config["supported_languages"].match(local_language) != null ? local_language : "zh-CN") + ".json"));
     }
 
+    function runningConfig() {
+        return files.exists("config/running_config.json") ? JSON.parse(files.read("config/running_config.json")) : {};
+    }
+
     function weChatIds() {
         let we_chat_version = getAppVersion(config["we_chat_package_name"]);
         for (let i = 0; i < config["supported_versions"].length; i++) {
@@ -172,8 +176,32 @@ module.exports = (() => {
         }
     }
 
+    function testFriends() {
+        if (checkInstalledWeChat() && checkSupportedWeChatVersion() && checkFile() && checkService()) {
+            let running_config = runningConfig();
+            dialogs.build({
+                content: default_language["before_running_alert_dialog_message"],
+                items: [default_language["friend_remark_first"], default_language["label_first"]],
+                itemsSelectMode: "single",
+                itemsSelectedIndex: running_config["test_friend_mode"],
+                positive: default_language["confirm"],
+                positiveColor: "#008274",
+                negative: default_language["cancel"],
+                negativeColor: "#008274",
+                cancelable: false
+            }).on("single_choice", (index, item) => {
+                running_config["test_friend_mode"] = index;
+                files.write("config/running_config.json", JSON.stringify(running_config));
+            }).on("positive", () => {
+                engines.execScriptFile("modules/test_friends.js", {delay: 500});
+                stopScript();
+            }).show();
+        }
+    }
+
     return {
         language: language,
+        runningConfig: runningConfig,
         weChatIds: weChatIds,
         getAppVersion: getAppVersion,
         supportedApplicationVersion: supportedApplicationVersion,
@@ -182,6 +210,7 @@ module.exports = (() => {
         checkSupportedWeChatVersion: checkSupportedWeChatVersion,
         checkFile: checkFile,
         checkService: checkService,
-        stopScript: stopScript
+        stopScript: stopScript,
+        testFriends: testFriends
     };
 })();

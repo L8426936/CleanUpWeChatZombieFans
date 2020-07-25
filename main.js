@@ -14,9 +14,9 @@
                                 <horizontal padding="0 8">
                                     <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
                                     <vertical>
-                                        <text id="friend_remark_text" text="{{friend_remark}}" />
-                                        <text id="we_chat_id_text" text="{{we_chat_id}}" />
-                                        <text id="abnormal_message_text" text="{{abnormal_message}}" />
+                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
+                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end"/>
+                                        <text id="abnormal_message_text" text="{{abnormal_message}}" maxLines="1" ellipsize="end"/>
                                     </vertical>
                                 </horizontal>
                             </list>
@@ -26,15 +26,15 @@
                                 <horizontal padding="0 8">
                                     <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
                                     <vertical>
-                                        <text id="friend_remark_text" text="{{friend_remark}}" />
-                                        <text id="we_chat_id_text" text="{{we_chat_id}}" />
+                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
+                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end"/>
                                     </vertical>
                                 </horizontal>
                             </list>
                         </frame>
                         <frame>
                             <list id="ignored_friend_list">
-                                <text padding="8" text="{{friend_remark}}" />
+                                <text padding="8" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
                             </list>
                         </frame>
                     </viewpager>
@@ -81,7 +81,14 @@
         ui.delete_friends_button.setText(language["delete_friend"]);
         ui.test_friends_button.setText(language["test_friend"]);
 
-        if (!app_util.checkSupportedLanguage()) {
+        let running_config = app_util.runningConfig();
+        if (app_util.checkSupportedLanguage()) {
+            if (!!(running_config["first_time_run"])) {
+                running_config["first_time_run"] = false;
+                files.write("config/running_config.json", JSON.stringify(running_config));
+                showInstructionsForUse();
+            }
+        } else {
             ui.delete_friends_button.enabled = false;
             ui.test_friends_button.enabled = false;
             ui.delete_friends_button.textColor = colors.parseColor("#B2B2B2");
@@ -161,9 +168,20 @@
         }
     }
 
+    function showInstructionsForUse() {
+        dialogs.build({
+            title: language["instructions_for_use_title"],
+            content: language["instructions_for_use_content"],
+            positive: language["confirm"],
+            positiveColor: "#008274",
+            cancelable: false
+        }).show();
+    }
+
     // 创建选项菜单(右上角)
     ui.emitter.on("create_options_menu", menu => {
         menu.add(language["update"]);
+        menu.add(language["instructions_for_use_title"]);
         menu.add(language["about"]);
     });
     // 监听选项菜单点击
@@ -191,6 +209,9 @@
                         }).show();
                     }
                 });
+                break;
+            case language["instructions_for_use_title"]:
+                showInstructionsForUse();
                 break;
             case language["about"]:
                 dialogs.build({
@@ -422,18 +443,6 @@
     });
 
     ui.test_friends_button.on("click", () => {
-        if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-            dialogs.build({
-                content: language["before_running_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                negative: language["cancel"],
-                negativeColor: "#008274",
-                cancelable: false
-            }).on("positive", () => {
-                engines.execScriptFile("modules/test_friends.js", {delay: 500});
-                app_util.stopScript();
-            }).show();
-        }
+        app_util.testFriends();
     });
 })();
