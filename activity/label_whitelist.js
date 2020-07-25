@@ -3,8 +3,9 @@
     ui.layout(
         <vertical>
             <list id="label_whitelist" layout_weight="1">
-                <horizontal padding="8" w="*">
-                    <text text="{{label}}" layout_weight="1" maxLines="1" ellipsize="end"/>
+                <horizontal w="*">
+                    <text paddingLeft="8" paddingTop="10" paddingBottom="10" id="label" text="{{label}}" maxLines="1" ellipsize="end"/>
+                    <text paddingTop="10" paddingBottom="10" id="count" text="({{count}})" layout_weight="1" maxLines="1" ellipsize="end"/>
                     <Switch id="ignored_switch" checked="{{ignored}}"/>
                 </horizontal>
             </list>
@@ -46,8 +47,25 @@
         ui.label_whitelist.setDataSource(db_util.findAllLabelWhitelist());
     }
     initUI();
+    // 当用户回到本界面时，resume事件会被触发
+    ui.emitter.on("resume", function() {
+        initUI();
+    });
+
+    function showFriendList(label) {
+        let running_config = app_util.runningConfig();
+        running_config["label"] = label;
+        files.write("config/running_config.json", JSON.stringify(running_config));
+        engines.execScriptFile("activity/friend_list.js");
+    }
 
     ui.label_whitelist.on("item_bind", (itemView, itemHolder) => {
+        itemView.label.on("click", () => {
+            showFriendList(itemHolder.item.label);
+        });
+        itemView.count.on("click", () => {
+            showFriendList(itemHolder.item.label);
+        });
         itemView.ignored_switch.on("click", () => {
             let label_whitelist = itemHolder.item;
             if (label_whitelist.ignored != itemView.ignored_switch.checked) {

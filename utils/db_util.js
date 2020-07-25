@@ -309,6 +309,7 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function modifyLabelWhitelist(label_whitelist) {
+        delete label_whitelist["count"];
         let db = open();
         let values = new ContentValues();
         for (let key in label_whitelist) {
@@ -358,14 +359,32 @@ module.exports = (() => {
         return friend_whitelist;
     }
 
+    function findAllFriendWhitelistByLabel(label, page) {
+        let db = open();
+        let cursor = db.rawQuery("SELECT * FROM friend_whitelist WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = ?) LIMIT 200 OFFSET ?", [label, ((page || 1) - 1) * 200]);
+        let friend_whitelist = [];
+        while (cursor.moveToNext()) {
+            friend_whitelist.push(
+                {
+                    friend_remark: cursor.getString(cursor.getColumnIndex("friend_remark")),
+                    ignored: cursor.getString(cursor.getColumnIndex("ignored")) == 'true'
+                }
+            );
+        }
+        cursor.close();
+        close(db);
+        return friend_whitelist;
+    }
+
     function findAllLabelWhitelist() {
         let db = open();
-        let cursor = db.rawQuery("SELECT * FROM label_whitelist", null);
+        let cursor = db.rawQuery("SELECT label_whitelist.label,COUNT(friend_label_whitelist.friend_remark) as count,label_whitelist.ignored FROM label_whitelist LEFT JOIN friend_label_whitelist ON friend_label_whitelist.label == label_whitelist.label LEFT JOIN friend_whitelist ON friend_whitelist.friend_remark == friend_label_whitelist.friend_remark GROUP BY label_whitelist.label,label_whitelist.ignored", null);
         let label_whitelist = [];
         while (cursor.moveToNext()) {
             label_whitelist.push(
                 {
                     label: cursor.getString(cursor.getColumnIndex("label")),
+                    count: cursor.getString(cursor.getColumnIndex("count")),
                     ignored: cursor.getString(cursor.getColumnIndex("ignored")) == 'true'
                 }
             );
@@ -387,6 +406,15 @@ module.exports = (() => {
     function getTotalPageByFriendsWhitelist() {
         let db = open();
         let cursor = db.rawQuery("SELECT * FROM friend_whitelist", null);
+        let total_page = parseInt(Math.ceil(cursor.getCount() / 200));
+        cursor.close();
+        close(db);
+        return total_page;
+    }
+
+    function getTotalPageByFriendLabelWhitelist(label) {
+        let db = open();
+        let cursor = db.rawQuery("SELECT * FROM friend_label_whitelist WHERE label = ?", [label]);
         let total_page = parseInt(Math.ceil(cursor.getCount() / 200));
         cursor.close();
         close(db);
@@ -436,9 +464,21 @@ module.exports = (() => {
         close(db);
     }
 
+    function deleteAllFriendWhitelistByLabel(label) {
+        let db = open();
+        db.execSQL("DELETE FROM friend_whitelist WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = '" + label + "')");
+        close(db);
+    }
+
     function deleteAllFriendLabelWhitelist() {
         let db = open();
         db.execSQL("DELETE FROM friend_label_whitelist");
+        close(db);
+    }
+
+    function deleteAllFriendLabelWhitelistByLabel(label) {
+        let db = open();
+        db.execSQL("DELETE FROM friend_label_whitelist WHERE label = '" + label + "'");
         close(db);
     }
 
@@ -530,14 +570,18 @@ module.exports = (() => {
         getNormalFriendTotalPage: getNormalFriendTotalPage,
         findAllIgnoredFriend: findAllIgnoredFriend,
         findAllFriendWhitelist: findAllFriendWhitelist,
+        findAllFriendWhitelistByLabel: findAllFriendWhitelistByLabel,
         getTotalPageByFriendsWhitelist: getTotalPageByFriendsWhitelist,
+        getTotalPageByFriendLabelWhitelist: getTotalPageByFriendLabelWhitelist,
         findAllLabelWhitelist: findAllLabelWhitelist,
         countSelectedFriend: countSelectedFriend,
         deleteAllIgnoredFriend: deleteAllIgnoredFriend,
         getIgnoredFriendTotalPage: getIgnoredFriendTotalPage,
         deleteAllFriend: deleteAllFriend,
         deleteAllFriendWhitelist: deleteAllFriendWhitelist,
+        deleteAllFriendWhitelistByLabel: deleteAllFriendWhitelistByLabel,
         deleteAllFriendLabelWhitelist: deleteAllFriendLabelWhitelist,
+        deleteAllFriendLabelWhitelistByLabel: deleteAllFriendLabelWhitelistByLabel,
         deleteFriendLabelWhitelist: deleteFriendLabelWhitelist,
         deleteFriendWhitelist: deleteFriendWhitelist,
         deleteAllLabelWhitelist: deleteAllLabelWhitelist,
