@@ -3,7 +3,55 @@ module.exports = (() => {
     importClass(android.content.ContentValues);
     importClass(android.database.Cursor);
     
-    const ABNORMAL_FRIEND_TYPE = 1, NORMAL_FRIEND_TYPE = 2, IGNORED_FRIEND_TYPE = 3;
+    const ABNORMAL_FRIEND_TYPE = 1, NORMAL_FRIEND_TYPE = 2, IGNORED_FRIEND_TYPE = 3, PAGE_SIZE = 200;
+    /**
+     * @typedef TestedFriend
+     * @property {String} we_chat_id
+     * @property {String} friend_remark
+     * @property {String} abnormal_message
+     * @property {boolean} selected
+     * @property {boolean} deleted
+     * @property {int} friend_type
+     */
+    const PROPERTY_MAPPING_TYPE_FOR_TESTED_FRIEND = {
+        "we_chat_id": "String",
+        "friend_remark": "String",
+        "abnormal_message": "String",
+        "selected": "boolean",
+        "deleted": "boolean",
+        "friend_type": "int"
+    };
+    /**
+     * @typedef Label
+     * @property {String} label
+     * @property {String} count
+     * @property {boolean} enabled
+     */
+    const PROPERTY_MAPPING_TYPE_FOR_LABEL = {
+        "label": "String",
+        "count": "String",
+        "enabled": "boolean"
+    };
+    /**
+     * @typedef Friend
+     * @property {String} friend_remark
+     * @property {boolean} enabled
+     */
+    const PROPERTY_MAPPING_TYPE_FOR_FRIEND = {
+        "friend_remark": "String",
+        "enabled": "boolean"
+    };
+    /**
+     * @typedef LabelFriend
+     * @property {String} label 
+     * @property {String} friend_remark 
+     * @property {boolean} enabled
+     */
+    const PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND = {
+        "label": "String",
+        "friend_remark": "String",
+        "enabled": "boolean"
+    };
 
     /**
      * 打开数据库连接
@@ -22,187 +70,436 @@ module.exports = (() => {
     }
 
     /**
-     * @typedef Friend
-     * @property {string} we_chat_id
-     * @property {string} friend_remark
-     * @property {string} abnormal_message
-     * @property {boolean} selected
-     * @property {boolean} deleted
-     * @property {number} friend_type
+     * 查询结果集转对象
+     * @param {Object} cursor
+     * @returns {Object}
      */
+    function cursorToObject(cursor, property_mapping_type) {
+        let object = {};
+        for (let i = cursor.getColumnCount() - 1; i >= 0; i--) {
+            let column_name = cursor.getColumnName(i);
+            switch (property_mapping_type[column_name]) {
+                case "String":
+                    object[column_name] = cursor.getString(i);
+                    break;
+                case "boolean":
+                    object[column_name] = cursor.getString(i) == "true";
+                    break;
+                case "int":
+                    object[column_name] = cursor.getInt(i);
+                    break;
+            }
+        }
+        return object;
+    }
+
+    /**
+     * 新增一行记录
+     * @param {String} table_name 
+     * @param {Object} object 
+     * @returns {boolean}
+     */
+    function addRow(table_name, object) {
+        let db = open();
+        let values = new ContentValues();
+        for (let key in object) {
+            values.put(key, String(object[key]));
+        }
+        let result = db.insert(table_name, null, values);
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 删除记录
+     * @param {String} table_name 
+     * @param {String} where_clause 
+     * @param {Array<String>} where_args 
+     * @returns {boolean}
+     */
+    function deleteRows(table_name, where_clause, where_args) {
+        let db = open();
+        let result = db.delete(table_name, where_clause, where_args);
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 修改记录
+     * @param {String} table_name 
+     * @param {Object} object 
+     * @param {String} primary_key 
+     * @returns {boolean}
+     */
+    function modifyRow(table_name, object, primary_key) {
+        let db = open();
+        let values = new ContentValues();
+        for (let key in object) {
+            if (key == primary_key) {
+                continue;
+            }
+            values.put(key, String(object[key]));
+        }
+        let result = db.update(table_name, values, primary_key + " = ?", [object[primary_key]]);
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 查询记录
+     * @param {String} sql 
+     * @param {Array<String>} selection_args 
+     * @param {Object} property_mapping_type 
+     * @returns {Array<Object>}
+     */
+    function findRows(sql, selection_args, property_mapping_type) {
+        let db = open();
+        let list = [];
+        let cursor = db.rawQuery(sql, selection_args);
+        while (cursor.moveToNext()) {
+            list.push(cursorToObject(cursor, property_mapping_type));
+        }
+        cursor.close();
+        close(db);
+        return list;
+    }
+
+    /**
+     * 存在记录
+     * @param {String} sql 
+     * @param {Array<String>} selection_args 
+     * @returns {boolean}
+     */
+    function isExistRow(sql, selection_args) {
+        let db = open();
+        let cursor = db.rawQuery(sql, selection_args);
+        let result = cursor.getCount();
+        cursor.close();
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 统计行数
+     * @param {String} sql 
+     * @param {Array<String>} selection_args 
+     * @returns {int}
+     */
+    function countRow(sql, selection_args) {
+        let db = open();
+        let cursor = db.rawQuery(sql, selection_args);
+        let count = cursor.getCount();
+        cursor.close();
+        close(db);
+        return count;
+    }
+
+    /**
+     * 获取记录页数
+     * @param {String} sql 
+     * @param {Array<String>} selection_args 
+     * @returns {int}
+     */
+    function getTotalPage(sql, selection_args) {
+        return parseInt(Math.ceil(countRow(sql, selection_args) / PAGE_SIZE));
+    }
+
+    /**
+     * 新增已测试的好友
+     * @param {TestedFriend} tested_friend 
+     * @returns {boolean} 
+     */
+    function addTestedFriend(tested_friend) {
+        return addRow("tested_friend_list", tested_friend);
+    }
+
+    /**
+     * 新增标签
+     * @param {Label} label 
+     * @returns {boolean} 
+     */
+    function addLabel(label) {
+        log("addLabel")
+        return addRow("label_list", label);
+    }
+
     /**
      * 新增好友
      * @param {Friend} friend 
      * @returns {boolean} 
      */
     function addFriend(friend) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in friend) {
-            values.put(key, String(friend[key]));
-        }
-        let result = db.insert("friends", null, values);
-        close(db);
-        return result > 0;
+        return addRow("friend_list", friend);
     }
 
     /**
-     * @typedef FriendWhitelist
-     * @property {string} friend_remark
-     * @property {boolean} ignored
-     */
-    /**
-     * 新增好友
-     * @param {FriendWhitelist} friend_whitelist 
+     * 新增标签，好友联动
+     * @param {LabelFriend} label_friend
      * @returns {boolean} 
      */
-    function addFriendWhitelist(friend_whitelist) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in friend_whitelist) {
-            values.put(key, String(friend_whitelist[key]));
-        }
-        let result = db.insert("friend_whitelist", null, values);
-        close(db);
-        return result > 0;
+    function addLabelFriend(label_friend) {
+        return addRow("label_friend_list", label_friend);
     }
 
     /**
-     * @typedef LabelWhitelist
-     * @property {string} label
-     * @property {boolean} ignored
-     */
-    /**
-     * 新增好友
-     * @param {LabelWhitelist} label_whitelist 
+     * 删除所有已测试的好友
      * @returns {boolean} 
      */
-    function addLabelWhitelist(label_whitelist) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in label_whitelist) {
-            values.put(key, String(label_whitelist[key]));
-        }
-        let result = db.insert("label_whitelist", null, values);
-        close(db);
-        return result > 0;
+    function deleteAllTestedFriend() {
+        return deleteRows("tested_friend_list", null, null);
     }
 
     /**
-     * 
-     * @param {*} friend_label_whitelist
-     */
-    function addFriendLabelWhitelist(friend_label_whitelist) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in friend_label_whitelist) {
-            values.put(key, String(friend_label_whitelist[key]));
-        }
-        let result = db.insert("friend_label_whitelist", null, values);
-        close(db);
-        return result > 0;
-    }
-
-    /**
-     * @returns {Friend}
-     */
-    function cursorRowToFriend(cursor) {
-        return {
-            we_chat_id: cursor.getString(cursor.getColumnIndex("we_chat_id")),
-            friend_remark: cursor.getString(cursor.getColumnIndex("friend_remark")),
-            abnormal_message: cursor.getString(cursor.getColumnIndex("abnormal_message")),
-            selected: cursor.getString(cursor.getColumnIndex("selected")) == 'true',
-            deleted: cursor.getString(cursor.getColumnIndex("deleted")) == 'true'
-        };
-    }
-
-    /**
-     * 是否有记录
-     * @param {string} we_chat_id 微信号
+     * 删除所有已忽略测试的好友
      * @returns {boolean} 
      */
-    function hasFriendByWeChatID(we_chat_id) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE we_chat_id = ?", [we_chat_id]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function deleteAllIgnoredTestFriend() {
+        return deleteRows("tested_friend_list", "friend_type = ?", [IGNORED_FRIEND_TYPE]);
+    }
+
+    /**
+     * 删除所有标签
+     * @returns {boolean}
+     */
+    function deleteAllLabel() {
+        return deleteRows("label_list", null, null);
     }
     
     /**
-     * 是否有记录
-     * @param {string} friend_remark 好友备注
+     * 删除所有好友
      * @returns {boolean} 
      */
-    function hasFriendByFriendRemark(friend_remark) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_remark = ? AND friend_type != ?", [friend_remark, IGNORED_FRIEND_TYPE]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function deleteAllFriend() {
+        return deleteRows("friend_list", null, null);
     }
 
     /**
+     * 删除好友
      * @param {String} label 
      * @returns {boolean} 
      */
-    function hasLabelWhitelist(label) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM label_whitelist WHERE label = ?", [label]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function deleteFriendByLabel(label) {
+        return deleteRows("friend_list", "friend_remark IN (SELECT friend_remark FROM label_friend_list WHERE label = ?)", [label]);
     }
 
     /**
-     * 
+     * 删除好友
      * @param {String} friend_remark 
+     * @returns {boolean} 
+     */
+    function deleteFriendByFriendRemark(friend_remark) {
+        return deleteRows("friend_list", "friend_remark = ?", [friend_remark]);
+    }
+
+    /**
+     * 所有删除标签、好友联动
+     * @returns {boolean} 
+     */
+    function deleteAllLabelFriend() {
+        return deleteRows("label_friend_list", null, null);
+    }
+
+    /**
+     * 删除标签、好友联动
      * @param {String} label 
+     * @returns {boolean} 
+     */
+    function deleteLabelFriendByLabel(label) {
+        return deleteRows("label_friend_list", "label = ?", [label]);
+    }
+
+    /**
+     * 删除标签、好友联动
+     * @param {String} friend_remark 
+     * @returns {boolean} 
+     */
+    function deleteLabelFriendByFriendRemark(friend_remark) {
+        return deleteRows("label_friend_list", "friend_remark = ?", [friend_remark]);
+    }
+
+    /**
+     * 修改已测试的好友
+     * @param {TestedFriend} tested_friend 
+     * @returns {boolean} 
+     */
+    function modifyTestedFriend(tested_friend) {
+        return modifyRow("tested_friend_list", tested_friend, "we_chat_id");
+    }
+
+    /**
+     * 修改标签
+     * @param {Label} label 
+     * @returns {boolean} 
+     */
+    function modifyLabel(label) {
+        return modifyRow("label_list", label, "label");
+    }
+
+    /**
+     * 修改标签
+     * @param {Label} label 
+     * @returns {boolean} 
+     */
+    function modifyLabelByLabel(label) {
+        let enabled = countRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND label = ?", [label]) > 0;
+        return modifyRow("label_list", {label: label, enabled: enabled}, "label");
+    }
+
+    /**
+     * 修改好友
+     * @param {Friend} friend 
+     * @returns {boolean} 
+     */
+    function modifyFriend(friend) {
+        return modifyRow("friend_list", friend, "friend_remark");
+    }
+
+    /**
+     * 标签联动，修改好友
+     * @param {Label} label 
+     * @returns {boolean} 
+     */
+    function modifyLabelFriendByLabel(label) {
+        let db = open();
+        let result = db.execSQL("UPDATE label_friend_list SET enabled = '" + label["enabled"] + "' WHERE label = '" + label["label"] + "'");
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 标签联动，修改好友
+     * @param {LabelFriend} label_friend 
+     * @returns {boolean} 
+     */
+    function modifyLabelFriend(label_friend) {
+        let db = open();
+        let result = db.execSQL("UPDATE label_friend_list SET enabled = '" + label_friend["enabled"] + "' WHERE friend_remark = '" + label_friend["friend_remark"] + "'");
+        close(db);
+        return result > 0;
+    }
+
+    /**
+     * 查找已测试过的好友
+     * @param {number} friend_type 
+     * @param {int} page 
+     * @returns {Array<TestedFriend>}
+     */
+    function findTestedFriendListByFriendType(friend_type, page) {
+        return findRows("SELECT * FROM tested_friend_list WHERE friend_type = ? LIMIT ? OFFSET ?", [friend_type, PAGE_SIZE, (page - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_TESTED_FRIEND);
+    }
+
+    /**
+     * 获取异常的好友
+     * @returns {Array<TestedFriend>} 
+     */
+    function findAbnormalFriendList(page) {
+        return findTestedFriendListByFriendType(ABNORMAL_FRIEND_TYPE, page || 1);
+    }
+
+    /**
+     * 获取正常的好友
+     * @returns {Array<TestedFriend>} 
+     */
+    function findNormalFriendList(page) {
+        return findTestedFriendListByFriendType(NORMAL_FRIEND_TYPE, page || 1);
+    }
+
+    /**
+     * 获取忽略测试的好友
+     * @returns {Array<TestedFriend>} 
+     */
+    function findIgnoredTestFriendList(page) {
+        return findTestedFriendListByFriendType(IGNORED_FRIEND_TYPE, page || 1);
+    }
+
+    /**
+     * 查找所有标签
+     * @returns {Array<Label>}
+     */
+    function findAllLabel() {
+        let label_list = findRows("SELECT * FROM label_list", null, PROPERTY_MAPPING_TYPE_FOR_LABEL);
+        let count_label_list = findRows("SELECT label, COUNT(*) AS count FROM label_friend_list GROUP BY label", null, {"label": "String", "count": "String"});
+        for (let i = 0; i < label_list.length; i++) {
+            for (let j = 0; j < count_label_list.length; j++) {
+                if (label_list[i]["label"] == count_label_list[j]["label"]) {
+                    label_list[i]["count"] = count_label_list[j]["count"];
+                }
+            }
+        }
+        return label_list;
+    }
+
+    /**
+     * 通过标签查找好友
+     * @param {String} label 
+     * @param {int} page 
+     * @returns {Array<Friend>}
+     */
+    function findLabelFriendListByLabel(label, page) {
+        return findRows("SELECT * FROM label_friend_list WHERE label = ? LIMIT ? OFFSET ?", [label, PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
+    }
+
+    /**
+     * 查找好友
+     * @param {int} page 
+     * @returns {Array<Friend>}
+     */
+    function findFriendList(page) {
+        return findRows("SELECT * FROM friend_list LIMIT ? OFFSET ?", [PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_FRIEND);
+    }
+
+    /**
+     * 好友已测试过
+     * @param {String} friend_remark 好友备注
+     * @returns {boolean} 
+     */
+    function isTestedFriendForFriendRemark(friend_remark) {
+        return isExistRow("SELECT * FROM tested_friend_list WHERE friend_remark = ? AND friend_type != ?", [friend_remark, IGNORED_FRIEND_TYPE]);
+    }
+
+    /**
+     * 好友已测试过
+     * @param {String} we_chat_id 微信号
+     * @returns {boolean} 
+     */
+    function isTestedFriendForWeChatID(we_chat_id) {
+        return isExistRow("SELECT * FROM tested_friend_list WHERE we_chat_id = ? AND friend_type != ?", [we_chat_id, IGNORED_FRIEND_TYPE]);
+    }
+    
+    /**
+     * 标签已存在
+     * @param {String} label 标签
+     * @returns {boolean} 
+     */
+    function isExistLabel(label) {
+        return isExistRow("SELECT * FROM label_list WHERE label = ?", [label]);
+    }
+
+    /**
+     * 好友备注已存在
+     * @param {String} friend_remark 
+     * @returns {boolean} 
+     */
+    function isExistFriendRemark(friend_remark) {
+        return isExistRow("SELECT * FROM friend_list WHERE friend_remark = ?", [friend_remark]);
+    }
+
+    /**
+     * 标签、好友备注已联动
+     * @param {String} label 
+     * @param {String} friend_remark 
      * @returns {boolean}
      */
-    function hasFriendLabelWhitelist(friend_remark, label) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_label_whitelist WHERE friend_remark = ? AND label = ?", [friend_remark, label]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function isExistLabelFriend(label, friend_remark) {
+        return isExistRow("SELECT * FROM label_friend_list WHERE label = ? AND friend_remark = ?", [label, friend_remark]);
     }
 
     /**
-     * 忽略有该标签的好友
-     * @param {Array<String>} labels 
-     * @returns {boolean} 
+     * 启用标签
+     * @param {String} label 
      */
-    function ignoredLabels(labels) {
-        let db = open();
-        let sql = "SELECT * FROM label_whitelist WHERE ignored = 'true' AND label IN(";
-        for (let i = 0; i < labels.length; i++) {
-            sql += "?,";
-        }
-        sql = sql.slice(0, -1);
-        sql += ")";
-        let cursor = db.rawQuery(sql, labels);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
-    }
-
-    /**
-     * @param {String} friend_remark 
-     * @returns {boolean} 
-     */
-    function hasFriendWhitelist(friend_remark) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_whitelist WHERE friend_remark = ?", [friend_remark]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function isEnabledForLabel(label) {
+        return isExistRow("SELECT * FROM label_list WHERE enabled = 'true' AND label = ?", [label]);
     }
 
     /**
@@ -210,306 +507,92 @@ module.exports = (() => {
      * @param {String} friend_remark 
      * @returns {boolean} 
      */
-    function ignoredFriendRemark(friend_remark) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_whitelist WHERE ignored = 'true' AND friend_remark = ?", [friend_remark]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function isIgnoreTestForLabelFriendListByFriendRemark(friend_remark) {
+        return isExistRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
     }
 
     /**
-     * 是否有选中好友
-     * @param {string} friend_remark 好友备注
+     * 忽略该备注的好友
+     * @param {String} friend_remark 
      * @returns {boolean} 
      */
-    function hasSelectedFriendByFriendRemark(friend_remark) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND friend_remark = ? AND friend_type != ?", [friend_remark, IGNORED_FRIEND_TYPE]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
+    function isIgnoreTestForFriendListByFriendRemark(friend_remark) {
+        return isExistRow("SELECT * FROM friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
+    }
+
+    /**
+     * 是否有选中删除好友
+     * @param {String} friend_remark 好友备注
+     * @returns {boolean} 
+     */
+    function isSelectedFriendForDeleteByFriendRemark(friend_remark) {
+        return isExistRow("SELECT * FROM tested_friend_list WHERE deleted = 'false' AND selected = 'true' AND friend_remark = ? AND friend_type != ?", [friend_remark, IGNORED_FRIEND_TYPE]);
     }
     
     /**
      * 是否有选中好友
-     * @param {string} we_chat_id 微信号
+     * @param {String} we_chat_id 微信号
      * @returns {boolean} 
      */
-    function hasSelectedFriendByWeChatID(we_chat_id) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND we_chat_id = ? AND friend_type != ?", [we_chat_id, IGNORED_FRIEND_TYPE]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result > 0;
-    }
-
-    /**
-     * 是否有选中待删除的好友
-     * @returns {boolean} 
-     */
-    function hasSelectedFriend() {
-        return countSelectedFriend() > 0;
+    function isSelectedFriendForDeleteByWeChatID(we_chat_id) {
+        return isExistRow("SELECT * FROM tested_friend_list WHERE deleted = 'false' AND selected = 'true' AND we_chat_id = ? AND friend_type != ?", [we_chat_id, IGNORED_FRIEND_TYPE]);
     }
 
     /**
      * 统计待删除的好友
-     * @returns {Number} 
+     * @returns {int} 
      */
-    function countSelectedFriend() {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE deleted = 'false' AND selected = 'true' AND friend_type != ?", [IGNORED_FRIEND_TYPE]);
-        let result = cursor.getCount();
-        cursor.close();
-        close(db);
-        return result;
+    function countWaitDeleteFriend() {
+        return countRow("SELECT * FROM tested_friend_list WHERE deleted = 'false' AND selected = 'true' AND friend_type != ?", [IGNORED_FRIEND_TYPE]);
     }
 
     /**
-     * @param {Friend} friend 
-     * @returns {boolean} 
+     * 获取已测试的好友页数
+     * @param {int} friend_type 
+     * @returns {int}
      */
-    function modifyFriend(friend) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in friend) {
-            if (key == "we_chat_id") {
-                continue;
-            }
-            values.put(key, String(friend[key]));
-        }
-        let result = db.update("friends", values, "we_chat_id = ?", [friend["we_chat_id"]]);
-        close(db);
-        return result > 0;
+    function getTestedFriendTotalPageByFriendType(friend_type) {
+        return getTotalPage("SELECT * FROM tested_friend_list WHERE friend_type = ?", [friend_type]);
     }
 
     /**
-     * @param {FriendWhitelist} friend_whitelist 
-     * @returns {boolean} 
+     * 获取好友页数
+     * @returns {int}
      */
-    function modifyFriendWhitelist(friend_whitelist) {
-        let db = open();
-        let values = new ContentValues();
-        for (let key in friend_whitelist) {
-            if (key == "friend_remark") {
-                continue;
-            }
-            values.put(key, String(friend_whitelist[key]));
-        }
-        let result = db.update("friend_whitelist", values, "friend_remark = ?", [friend_whitelist["friend_remark"]]);
-        close(db);
-        return result > 0;
+    function getFriendTotalPage() {
+        return getTotalPage("SELECT * FROM friend_list", null);
     }
 
     /**
-     * @param {LabelWhitelist} label_whitelist 
-     * @returns {boolean} 
+     * 获取好友页数
+     * @returns {int}
      */
-    function modifyLabelWhitelist(label_whitelist) {
-        delete label_whitelist["count"];
-        let db = open();
-        let values = new ContentValues();
-        for (let key in label_whitelist) {
-            if (key == "label") {
-                continue;
-            }
-            values.put(key, String(label_whitelist[key]));
-        }
-        let result = db.update("label_whitelist", values, "label = ?", [label_whitelist["label"]]);
-        close(db);
-        return result > 0;
+    function getLabelFriendTotalPageByLabel(label) {
+        return getTotalPage("SELECT * FROM label_friend_list WHERE label = ?", [label]);
     }
 
-    function modifyFriendLabelWhitelist(label_whitelist) {
-        let db = open();
-        let result = db.execSQL("UPDATE friend_whitelist SET ignored = '" + label_whitelist.ignored + "' WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = '" + label_whitelist.label +"' GROUP BY friend_remark)");
-        close(db);
-        return result > 0;
-    }
-
-    function findAllFriendByFriendType(friend_type, page) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_type = ? LIMIT 200 OFFSET ?", [friend_type, (page - 1) * 200]);
-        let friends = [];
-        while (cursor.moveToNext()) {
-            friends.push(cursorRowToFriend(cursor));
-        }
-        cursor.close();
-        close(db);
-        return friends;
-    }
-
-    function findAllFriendWhitelist(page) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_whitelist LIMIT 200 OFFSET ?", [((page || 1) - 1) * 200]);
-        let friend_whitelist = [];
-        while (cursor.moveToNext()) {
-            friend_whitelist.push(
-                {
-                    friend_remark: cursor.getString(cursor.getColumnIndex("friend_remark")),
-                    ignored: cursor.getString(cursor.getColumnIndex("ignored")) == 'true'
-                }
-            );
-        }
-        cursor.close();
-        close(db);
-        return friend_whitelist;
-    }
-
-    function findAllFriendWhitelistByLabel(label, page) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_whitelist WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = ?) LIMIT 200 OFFSET ?", [label, ((page || 1) - 1) * 200]);
-        let friend_whitelist = [];
-        while (cursor.moveToNext()) {
-            friend_whitelist.push(
-                {
-                    friend_remark: cursor.getString(cursor.getColumnIndex("friend_remark")),
-                    ignored: cursor.getString(cursor.getColumnIndex("ignored")) == 'true'
-                }
-            );
-        }
-        cursor.close();
-        close(db);
-        return friend_whitelist;
-    }
-
-    function findAllLabelWhitelist() {
-        let db = open();
-        let cursor = db.rawQuery("SELECT label_whitelist.label,COUNT(friend_label_whitelist.friend_remark) as count,label_whitelist.ignored FROM label_whitelist LEFT JOIN friend_label_whitelist ON friend_label_whitelist.label == label_whitelist.label LEFT JOIN friend_whitelist ON friend_whitelist.friend_remark == friend_label_whitelist.friend_remark GROUP BY label_whitelist.label,label_whitelist.ignored", null);
-        let label_whitelist = [];
-        while (cursor.moveToNext()) {
-            label_whitelist.push(
-                {
-                    label: cursor.getString(cursor.getColumnIndex("label")),
-                    count: cursor.getString(cursor.getColumnIndex("count")),
-                    ignored: cursor.getString(cursor.getColumnIndex("ignored")) == 'true'
-                }
-            );
-        }
-        cursor.close();
-        close(db);
-        return label_whitelist;
-    }
-
-    function getTotalPageByFriendType(friend_type) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friends WHERE friend_type = ?", [friend_type]);
-        let total_page = parseInt(Math.ceil(cursor.getCount() / 200));
-        cursor.close();
-        close(db);
-        return total_page;
-    }
-
-    function getTotalPageByFriendsWhitelist() {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_whitelist", null);
-        let total_page = parseInt(Math.ceil(cursor.getCount() / 200));
-        cursor.close();
-        close(db);
-        return total_page;
-    }
-
-    function getTotalPageByFriendLabelWhitelist(label) {
-        let db = open();
-        let cursor = db.rawQuery("SELECT * FROM friend_label_whitelist WHERE label = ?", [label]);
-        let total_page = parseInt(Math.ceil(cursor.getCount() / 200));
-        cursor.close();
-        close(db);
-        return total_page;
-    }
-
-    function findAllAbnormalFriend(page) {
-        return findAllFriendByFriendType(ABNORMAL_FRIEND_TYPE, page || 1);
-    }
-
+    /**
+     * 获取异常的好友页数
+     * @returns {int} 
+     */
     function getAbnormalFriendTotalPage() {
-        return getTotalPageByFriendType(ABNORMAL_FRIEND_TYPE);
+        return getTestedFriendTotalPageByFriendType(ABNORMAL_FRIEND_TYPE);
     }
 
-    function findAllNormalFriend(page) {
-        return findAllFriendByFriendType(NORMAL_FRIEND_TYPE, page || 1);
-    }
-
+    /**
+     * 获取正常好友页数
+     * @returns {int} 
+     */
     function getNormalFriendTotalPage() {
-        return getTotalPageByFriendType(NORMAL_FRIEND_TYPE);
-    }
-
-    function findAllIgnoredFriend(page) {
-        return findAllFriendByFriendType(IGNORED_FRIEND_TYPE, page || 1);
-    }
-
-    function getIgnoredFriendTotalPage() {
-        return getTotalPageByFriendType(IGNORED_FRIEND_TYPE);
-    }
-
-    function deleteAllIgnoredFriend() {
-        let db = open();
-        let result = db.delete("friends", "friend_type = ?", [IGNORED_FRIEND_TYPE]);
-        close(db);
-        return result;
-    }
-
-    function deleteAllFriend() {
-        let db = open();
-        db.execSQL("DELETE FROM friends");
-        close(db);
-    }
-
-    function deleteAllFriendWhitelist() {
-        let db = open();
-        db.execSQL("DELETE FROM friend_whitelist");
-        close(db);
-    }
-
-    function deleteAllFriendWhitelistByLabel(label) {
-        let db = open();
-        db.execSQL("DELETE FROM friend_whitelist WHERE friend_remark IN (SELECT friend_remark FROM friend_label_whitelist WHERE label = '" + label + "')");
-        close(db);
-    }
-
-    function deleteAllFriendLabelWhitelist() {
-        let db = open();
-        db.execSQL("DELETE FROM friend_label_whitelist");
-        close(db);
-    }
-
-    function deleteAllFriendLabelWhitelistByLabel(label) {
-        let db = open();
-        db.execSQL("DELETE FROM friend_label_whitelist WHERE label = '" + label + "'");
-        close(db);
+        return getTestedFriendTotalPageByFriendType(NORMAL_FRIEND_TYPE);
     }
 
     /**
-     * 
-     * @param {String} friend_remark 
-     * @returns {boolean} 
+     * 获取忽略测试的好友页数
+     * @returns {int} 
      */
-    function deleteFriendLabelWhitelist(friend_remark) {
-        let db = open();
-        let result = db.delete("friend_label_whitelist", "friend_remark = ?", [friend_remark]);
-        close(db);
-        return result > 0;
-    }
-
-    /**
-     * 
-     * @param {String} friend_remark 
-     * @returns {boolean} 
-     */
-    function deleteFriendWhitelist(friend_remark) {
-        let db = open();
-        let result = db.delete("friend_whitelist", "friend_remark = ?", [friend_remark]);
-        close(db);
-        return result > 0;
-    }
-
-    function deleteAllLabelWhitelist() {
-        let db = open();
-        db.execSQL("DELETE FROM label_whitelist");
-        close(db);
+    function getIgnoredTestFriendTotalPage() {
+        return getTestedFriendTotalPageByFriendType(IGNORED_FRIEND_TYPE);
     }
 
     function updateDatabase() {
@@ -517,7 +600,7 @@ module.exports = (() => {
         files.ensureDir(base_path + "/data/");
         let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
 
-        db.execSQL("CREATE TABLE IF NOT EXISTS friends("
+        db.execSQL("CREATE TABLE IF NOT EXISTS tested_friend_list("
         + "we_chat_id VARCHAR(64) PRIMARY KEY,"
         + "friend_remark VARCHAR(128),"
         + "abnormal_message VARCHAR(255),"
@@ -526,19 +609,21 @@ module.exports = (() => {
         + "friend_type TINYINT"
         + ")");
 
-        db.execSQL("CREATE TABLE IF NOT EXISTS friend_whitelist("
+        db.execSQL("CREATE TABLE IF NOT EXISTS friend_list("
         + "friend_remark VARCHAR(128) PRIMARY KEY,"
-        + "ignored BOOLEAN"
+        + "enabled BOOLEAN"
         + ")");
 
-        db.execSQL("CREATE TABLE IF NOT EXISTS label_whitelist("
+        db.execSQL("CREATE TABLE IF NOT EXISTS label_list("
         + "label VARCHAR(64) PRIMARY KEY,"
-        + "ignored BOOLEAN"
+        + "count INT,"
+        + "enabled BOOLEAN"
         + ")");
 
-        db.execSQL("CREATE TABLE IF NOT EXISTS friend_label_whitelist("
+        db.execSQL("CREATE TABLE IF NOT EXISTS label_friend_list("
         + "friend_remark VARCHAR(128),"
         + "label VARCHAR(64),"
+        + "enabled BOOLEAN,"
         + "PRIMARY KEY (friend_remark, label)"
         + ")");
 
@@ -546,45 +631,47 @@ module.exports = (() => {
     }
 
     return {
+        addTestedFriend: addTestedFriend,
+        addLabel: addLabel,
         addFriend: addFriend,
-        addFriendWhitelist: addFriendWhitelist,
-        addLabelWhitelist: addLabelWhitelist,
-        addFriendLabelWhitelist: addFriendLabelWhitelist,
-        modifyFriend: modifyFriend,
-        modifyFriendWhitelist: modifyFriendWhitelist,
-        modifyLabelWhitelist: modifyLabelWhitelist,
-        modifyFriendLabelWhitelist: modifyFriendLabelWhitelist,
-        hasSelectedFriendByWeChatID: hasSelectedFriendByWeChatID,
-        hasSelectedFriendByFriendRemark: hasSelectedFriendByFriendRemark,
-        hasSelectedFriend: hasSelectedFriend,
-        hasFriendByWeChatID: hasFriendByWeChatID,
-        hasFriendByFriendRemark: hasFriendByFriendRemark,
-        hasLabelWhitelist: hasLabelWhitelist,
-        hasFriendLabelWhitelist: hasFriendLabelWhitelist,
-        ignoredLabels: ignoredLabels,
-        hasFriendWhitelist: hasFriendWhitelist,
-        ignoredFriendRemark: ignoredFriendRemark,
-        findAllAbnormalFriend: findAllAbnormalFriend,
-        getAbnormalFriendTotalPage: getAbnormalFriendTotalPage,
-        findAllNormalFriend: findAllNormalFriend,
-        getNormalFriendTotalPage: getNormalFriendTotalPage,
-        findAllIgnoredFriend: findAllIgnoredFriend,
-        findAllFriendWhitelist: findAllFriendWhitelist,
-        findAllFriendWhitelistByLabel: findAllFriendWhitelistByLabel,
-        getTotalPageByFriendsWhitelist: getTotalPageByFriendsWhitelist,
-        getTotalPageByFriendLabelWhitelist: getTotalPageByFriendLabelWhitelist,
-        findAllLabelWhitelist: findAllLabelWhitelist,
-        countSelectedFriend: countSelectedFriend,
-        deleteAllIgnoredFriend: deleteAllIgnoredFriend,
-        getIgnoredFriendTotalPage: getIgnoredFriendTotalPage,
+        addLabelFriend: addLabelFriend,
+        deleteAllTestedFriend: deleteAllTestedFriend,
+        deleteAllIgnoredTestFriend: deleteAllIgnoredTestFriend,
+        deleteAllLabel: deleteAllLabel,
         deleteAllFriend: deleteAllFriend,
-        deleteAllFriendWhitelist: deleteAllFriendWhitelist,
-        deleteAllFriendWhitelistByLabel: deleteAllFriendWhitelistByLabel,
-        deleteAllFriendLabelWhitelist: deleteAllFriendLabelWhitelist,
-        deleteAllFriendLabelWhitelistByLabel: deleteAllFriendLabelWhitelistByLabel,
-        deleteFriendLabelWhitelist: deleteFriendLabelWhitelist,
-        deleteFriendWhitelist: deleteFriendWhitelist,
-        deleteAllLabelWhitelist: deleteAllLabelWhitelist,
+        deleteFriendByLabel: deleteFriendByLabel,
+        deleteFriendByFriendRemark: deleteFriendByFriendRemark,
+        deleteAllLabelFriend: deleteAllLabelFriend,
+        deleteLabelFriendByLabel: deleteLabelFriendByLabel,
+        deleteLabelFriendByFriendRemark: deleteLabelFriendByFriendRemark,
+        modifyTestedFriend: modifyTestedFriend,
+        modifyLabel: modifyLabel,
+        modifyLabelByLabel: modifyLabelByLabel,
+        modifyLabelFriendByLabel: modifyLabelFriendByLabel,
+        modifyLabelFriend: modifyLabelFriend,
+        modifyFriend: modifyFriend,
+        findAbnormalFriendList: findAbnormalFriendList,
+        findNormalFriendList: findNormalFriendList,
+        findIgnoredTestFriendList: findIgnoredTestFriendList,
+        findAllLabel: findAllLabel,
+        findLabelFriendListByLabel: findLabelFriendListByLabel,
+        findFriendList: findFriendList,
+        isTestedFriendForFriendRemark: isTestedFriendForFriendRemark,
+        isTestedFriendForWeChatID: isTestedFriendForWeChatID,
+        isExistLabel: isExistLabel,
+        isExistFriendRemark: isExistFriendRemark,
+        isExistLabelFriend: isExistLabelFriend,
+        isEnabledForLabel: isEnabledForLabel,
+        isIgnoreTestForLabelFriendListByFriendRemark: isIgnoreTestForLabelFriendListByFriendRemark,
+        isIgnoreTestForFriendListByFriendRemark: isIgnoreTestForFriendListByFriendRemark,
+        isSelectedFriendForDeleteByFriendRemark: isSelectedFriendForDeleteByFriendRemark,
+        isSelectedFriendForDeleteByWeChatID: isSelectedFriendForDeleteByWeChatID,
+        countWaitDeleteFriend: countWaitDeleteFriend,
+        getFriendTotalPage: getFriendTotalPage,
+        getLabelFriendTotalPageByLabel: getLabelFriendTotalPageByLabel,
+        getAbnormalFriendTotalPage: getAbnormalFriendTotalPage,
+        getNormalFriendTotalPage: getNormalFriendTotalPage,
+        getIgnoredTestFriendTotalPage: getIgnoredTestFriendTotalPage,
         updateDatabase: updateDatabase,
         ABNORMAL_FRIEND_TYPE: ABNORMAL_FRIEND_TYPE,
         NORMAL_FRIEND_TYPE: NORMAL_FRIEND_TYPE,

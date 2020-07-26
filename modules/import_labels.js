@@ -26,7 +26,6 @@
      */
     let run;
     let language;
-    let running_config;
     let last_label;
     let last_index;
 
@@ -69,16 +68,16 @@
             if (last_index < label_nodes.size()) {
                 let label = label_nodes.get(last_index).text();
                 let count = count_nodes.get(last_index).text().match(/\d+/g)[0];
-                if (!db_util.hasLabelWhitelist(label)) {
-                    if (db_util.addLabelWhitelist({label: label, ignored: false})) {
-                        if (!!(running_config["import_label_include_friends"]) && count > 0 && node_util.backtrackClickNode(label_nodes.get(last_index))) {
+                if (!db_util.isExistLabel(label)) {
+                    if (db_util.addLabel({label: label, count: 0, enabled: false})) {
+                        if (count > 0 && node_util.backtrackClickNode(label_nodes.get(last_index))) {
                             last_label = label;
                             step = 3;
                         }
                     } else {
                         ui.run(() => {
-                            window.import_labels_fail_text.setText(window.import_labels_fail_text.text() + label + "\n");
-                            window.import_labels_fail_text_scroll.scrollTo(0, window.import_labels_fail_text.getHeight());
+                            window.import_label_friend_fail_text.setText(window.import_label_friend_fail_text.text() + label + "\n");
+                            window.import_label_friend_fail_text_scroll.scrollTo(0, window.import_label_friend_fail_text.getHeight());
                         });
                     }
                 }
@@ -93,10 +92,10 @@
         let friend_remark_nodes = id(ids["friend_remark_by_label"]).untilFind();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
-            if (!(db_util.hasFriendWhitelist(friend_remark) || db_util.addFriendWhitelist({friend_remark: friend_remark, ignored: false})) || !(db_util.hasFriendLabelWhitelist(friend_remark, last_label) || db_util.addFriendLabelWhitelist({friend_remark: friend_remark, label: last_label}))) {
+            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addFriend({friend_remark: friend_remark, enabled: false})) || !(db_util.isExistLabelFriend(last_label, friend_remark) || db_util.addLabelFriend({label: last_label, friend_remark: friend_remark, enabled: false}))) {
                 ui.run(() => {
-                    window.import_labels_fail_text.setText(window.import_labels_fail_text.text() + friend_remark + "\n");
-                    window.import_labels_fail_text_scroll.scrollTo(0, window.import_labels_fail_text.getHeight());
+                    window.import_label_friend_fail_text.setText(window.import_label_friend_fail_text.text() + friend_remark + "\n");
+                    window.import_label_friend_fail_text_scroll.scrollTo(0, window.import_label_friend_fail_text.getHeight());
                 });
             }
         }
@@ -171,16 +170,15 @@
             
             // 获取系统语言
             language = app_util.language();
-            running_config = app_util.runningConfig();
 
             window = floaty.window(
                 <vertical padding="8" bg="#000000">
-                    <text textColor="red" id="import_labels_fail_title"/>
-                    <scroll h="100" layout_weight="1" id="import_labels_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_labels_fail_text"/></scroll>
+                    <text textColor="red" id="import_label_friend_fail_title"/>
+                    <scroll h="100" layout_weight="1" id="import_label_friend_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_label_friend_fail_text"/></scroll>
                     <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
                 </vertical>
             );
-            window.import_labels_fail_title.setText(language["import_labels_fail_title"]);
+            window.import_label_friend_fail_title.setText(language["import_label_friend_fail_title"]);
             window.stop_button.setText(language["stop"]);
             window.setAdjustEnabled(true);
             window.stop_button.on("click", () => {

@@ -181,7 +181,7 @@ module.exports = (() => {
             let running_config = runningConfig();
             dialogs.build({
                 content: default_language["before_running_alert_dialog_message"],
-                items: [default_language["friend_remark_first"], default_language["label_first"]],
+                items: [default_language["label_list_first"], default_language["friend_list_first"]],
                 itemsSelectMode: "single",
                 itemsSelectedIndex: running_config["test_friend_mode"],
                 positive: default_language["confirm"],

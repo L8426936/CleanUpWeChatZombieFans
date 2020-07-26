@@ -80,11 +80,20 @@
         } else {
             let friend_remark_node = friend_remark_nodes.get(last_index);
             last_friend_remark = friend_remark_node.text();
-            let repeat_friend_remark = last_index - 1 >= 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark;
-            if (!db_util.ignoredFriendRemark(last_friend_remark) && (repeat_friend_remark || !db_util.hasFriendByFriendRemark(last_friend_remark)) && node_util.backtrackClickNode(friend_remark_node)) {
-                step = 2;
-            } else {
-                step = 1;
+            let repeat_friend_remark = last_index > 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark;
+            if (repeat_friend_remark || !db_util.isTestedFriendForFriendRemark(last_friend_remark)) {
+                switch (running_config["test_friend_mode"]) {
+                    case 0:
+                        if (!db_util.isIgnoreTestForLabelFriendListByFriendRemark(last_friend_remark) && node_util.backtrackClickNode(friend_remark_node)) {
+                            step = 2;
+                        }
+                        break;
+                    case 1:
+                        if (!db_util.isIgnoreTestForFriendListByFriendRemark(last_friend_remark) && node_util.backtrackClickNode(friend_remark_node)) {
+                            step = 2;
+                        }
+                        break;
+                }
             }
             last_index++;
         }
@@ -96,7 +105,7 @@
     function clickSendMessage() {
         let nodes = id(ids["send_message"]).untilFind();
         if (nodes.size() < 2 && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-            db_util.addFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+            db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
             ui.run(() => {
                 window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
                 window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
@@ -104,25 +113,13 @@
             step = 1;
         } else {
             let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-            if (!db_util.hasFriendByWeChatID(we_chat_id)) {
-                let friend_labels_node = id(ids["friend_labels"]).findOnce();
-                let labels = friend_labels_node != null ? friend_labels_node.text().split(language["comma"]) : null;
-                if (running_config["test_friend_mode"] == 1
-                    && labels != null
-                    && labels.length != 0
-                    && db_util.ignoredLabels(labels)
-                    && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-                    last_we_chat_id = we_chat_id;
-                    db_util.addFriend({we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
-                    step = 1;
-                } else {
-                    for (let i = 0; i < nodes.size(); i++) {
-                        let node = nodes.get(i);
-                        if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                            last_we_chat_id = we_chat_id;
-                            step = 3;
-                            break;
-                        }
+            if (!db_util.isTestedFriendForWeChatID(we_chat_id)) {
+                for (let i = 0; i < nodes.size(); i++) {
+                    let node = nodes.get(i);
+                    if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                        last_we_chat_id = we_chat_id;
+                        step = 3;
+                        break;
                     }
                 }
             } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
@@ -160,7 +157,7 @@
     function setTransferAmount() {
         let payee = id(ids["payee"]).findOne().text();
         if (payee != "" && payee != last_friend_remark) {
-            db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+            db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
             step = 8;
         } else if (id(ids["transfer_amount"]).findOne().setText("0.01")) {
             step = 6;
@@ -182,7 +179,7 @@
     function assertionFriend() {
         while (true) {
             if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce())) {
-                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+                db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
@@ -190,7 +187,7 @@
             let abnormal_message = abnormal_message_node != null ? abnormal_message_node.text() : null;
             if (abnormal_message != null && node_util.backtrackClickNode(id(ids["confirm_abnormal_message"]).findOnce())) {
                 let selected = texts["blacklisted_message"].match(abnormal_message) != null || texts["deleted_message"].match(abnormal_message) != null;
-                db_util.addFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
+                db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
             }
@@ -253,7 +250,7 @@
             ids = app_util.weChatIds();
             texts = JSON.parse(files.read("config/text_id/text.json"));
     
-            db_util.deleteAllIgnoredFriend();
+            db_util.deleteAllIgnoredTestFriend();
             
             last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();

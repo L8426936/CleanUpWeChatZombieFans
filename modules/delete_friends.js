@@ -80,7 +80,7 @@
             while (last_index < friend_remark_nodes.size()) {
                 let friend_remark_node = friend_remark_nodes.get(last_index++);
                 let friend_remark = friend_remark_node.text();
-                if (db_util.hasSelectedFriendByFriendRemark(friend_remark)) {
+                if (db_util.isSelectedFriendForDeleteByFriendRemark(friend_remark)) {
                     if (node_util.backtrackClickNode(friend_remark_node)) {
                         last_friend_remark = friend_remark;
                         step = 1;
@@ -96,7 +96,7 @@
     */
     function checkWeChatId() {
         let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-        if (db_util.hasSelectedFriendByWeChatID(we_chat_id)) {
+        if (db_util.isSelectedFriendForDeleteByWeChatID(we_chat_id)) {
             last_we_chat_id = we_chat_id;
             step = 2;
         } else {
@@ -134,9 +134,9 @@
      */
     function clickConfirmDelete() {
         if (node_util.backtrackClickNode(id(ids["confirm_delete"]).findOne())) {
-            db_util.modifyFriend({we_chat_id: last_we_chat_id, deleted: true});
-            db_util.deleteFriendWhitelist(last_friend_remark);
-            db_util.deleteFriendLabelWhitelist(last_friend_remark);
+            db_util.modifyTestedFriend({we_chat_id: last_we_chat_id, deleted: true});
+            db_util.deleteFriendByFriendRemark(last_friend_remark);
+            db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
             step = 5;
             last_index--;
             ui.run(() => {
@@ -203,8 +203,8 @@
 
             if (clickContacts()) {
                 db_util = require("utils/db_util.js");
-                let count_selected_friend = db_util.countSelectedFriend();
-                while (run && count_selected_friend > 0) {
+                let count_wait_delete_friend = db_util.countWaitDeleteFriend();
+                while (run && count_wait_delete_friend > 0) {
                     deleted:
                     while (run) {
                         switch (step) {
@@ -222,7 +222,7 @@
                                 break;
                             case 4:
                                 clickConfirmDelete();
-                                count_selected_friend--;
+                                count_wait_delete_friend--;
                                 break;
                             case 5:
                                 step = 0;
@@ -230,7 +230,7 @@
                         }
                     }
                 }
-                if (count_selected_friend == 0) {
+                if (count_wait_delete_friend == 0) {
                     stopScript();
                 }
             }

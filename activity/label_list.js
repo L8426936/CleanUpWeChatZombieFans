@@ -2,11 +2,11 @@
 (() => {
     ui.layout(
         <vertical>
-            <list id="label_whitelist" layout_weight="1">
+            <list id="label_list" layout_weight="1">
                 <horizontal w="*">
                     <text paddingLeft="8" paddingTop="10" paddingBottom="10" id="label" text="{{label}}" maxLines="1" ellipsize="end"/>
                     <text paddingTop="10" paddingBottom="10" id="count" text="({{count}})" layout_weight="1" maxLines="1" ellipsize="end"/>
-                    <Switch id="ignored_switch" checked="{{ignored}}"/>
+                    <Switch id="enabled_switch" checked="{{enabled}}" layout_gravity="center"/>
                 </horizontal>
             </list>
             <horizontal bg="#EBEBEB">
@@ -44,7 +44,7 @@
      * 初始化UI
      */
     function initUI() {
-        ui.label_whitelist.setDataSource(db_util.findAllLabelWhitelist());
+        ui.label_list.setDataSource(db_util.findAllLabel());
     }
     initUI();
     // 当用户回到本界面时，resume事件会被触发
@@ -56,23 +56,21 @@
         let running_config = app_util.runningConfig();
         running_config["label"] = label;
         files.write("config/running_config.json", JSON.stringify(running_config));
-        engines.execScriptFile("activity/friend_list.js");
+        engines.execScriptFile("activity/label_friend_list.js");
     }
 
-    ui.label_whitelist.on("item_bind", (itemView, itemHolder) => {
+    ui.label_list.on("item_bind", (itemView, itemHolder) => {
         itemView.label.on("click", () => {
-            showFriendList(itemHolder.item.label);
+            showFriendList(itemHolder.item["label"]);
         });
         itemView.count.on("click", () => {
-            showFriendList(itemHolder.item.label);
+            showFriendList(itemHolder.item["label"]);
         });
-        itemView.ignored_switch.on("click", () => {
-            let label_whitelist = itemHolder.item;
-            if (label_whitelist.ignored != itemView.ignored_switch.checked) {
-                label_whitelist.ignored = itemView.ignored_switch.checked;
-                db_util.modifyLabelWhitelist(label_whitelist);
-                db_util.modifyFriendLabelWhitelist(label_whitelist);
-            }
+        itemView.enabled_switch.on("click", () => {
+            let label = itemHolder.item;
+            label["enabled"] = itemView.enabled_switch.checked;
+            db_util.modifyLabel(label);
+            db_util.modifyLabelFriendByLabel(label);
         });
     });
 
@@ -85,27 +83,21 @@
             negativeColor: "#008274",
             cancelable: false
         }).on("negative", () => {
-            db_util.deleteAllLabelWhitelist();
-            db_util.deleteAllFriendLabelWhitelist();
+            db_util.deleteAllLabel();
+            db_util.deleteAllLabelFriend();
             initUI();
         }).show();
     });
     
     ui.import_labels_button.on("click", () => {
         if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-            let running_config = app_util.runningConfig();
             dialogs.build({
                 content: language["before_running_alert_dialog_message"],
-                checkBoxPrompt: language["import_label_include_friends"],
-                checkBoxChecked: !!(running_config["import_label_include_friends"]),
                 positive: language["confirm"],
                 positiveColor: "#008274",
                 negative: language["cancel"],
                 negativeColor: "#008274",
                 cancelable: false
-            }).on("check", checked => {
-                running_config["import_label_include_friends"] = checked;
-                files.write("config/running_config.json", JSON.stringify(running_config));
             }).on("positive", () => {
                 engines.execScriptFile("modules/import_labels.js", {delay: 500});
                 app_util.stopScript();

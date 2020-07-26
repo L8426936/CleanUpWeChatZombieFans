@@ -83,7 +83,7 @@
 
         let running_config = app_util.runningConfig();
         if (app_util.checkSupportedLanguage()) {
-            if (!!(running_config["first_time_run"])) {
+            if (running_config["first_time_run"]) {
                 running_config["first_time_run"] = false;
                 files.write("config/running_config.json", JSON.stringify(running_config));
                 showInstructionsForUse();
@@ -132,16 +132,16 @@
      * 初始化UI
      */
     function initUI() {
-        ui.abnormal_friend_list.setDataSource(db_util.findAllAbnormalFriend());
-        ui.normal_friend_list.setDataSource(db_util.findAllNormalFriend());
-        ui.ignored_friend_list.setDataSource(db_util.findAllIgnoredFriend());
+        ui.abnormal_friend_list.setDataSource(db_util.findAbnormalFriendList());
+        ui.normal_friend_list.setDataSource(db_util.findNormalFriendList());
+        ui.ignored_friend_list.setDataSource(db_util.findIgnoredTestFriendList());
 
         page_infos = {};
         let abnormal_friends_total_page = db_util.getAbnormalFriendTotalPage();
         page_infos["abnormal_friends_page_info"] = {current_page: abnormal_friends_total_page > 0 ? 1 : '-', total_page: abnormal_friends_total_page > 0 ? abnormal_friends_total_page : '-'};
         let normal_friends_total_page = db_util.getNormalFriendTotalPage();
         page_infos["normal_friends_page_info"] = {current_page: normal_friends_total_page > 0 ? 1 : '-', total_page: normal_friends_total_page > 0 ? normal_friends_total_page : '-'};
-        let ignored_friends_total_page = db_util.getIgnoredFriendTotalPage();
+        let ignored_friends_total_page = db_util.getIgnoredTestFriendTotalPage();
         page_infos["ignored_friends_page_info"] = {current_page: ignored_friends_total_page > 0 ? 1 : '-', total_page: ignored_friends_total_page > 0 ? ignored_friends_total_page : '-'};
         
         modifyPageInfoShow(page_infos["abnormal_friends_page_info"]);
@@ -240,48 +240,48 @@
     ui.side_list.setDataSource([
         {
             icon: "@drawable/ic_label_black_48dp",
-            title: language["label_whitelist"]
+            title: language["label_list"]
         },
         {
             icon: "@drawable/ic_person_black_48dp",
-            title: language["friend_whitelist"]
+            title: language["friend_list"]
         }
     ]);
     ui.side_list.on("item_click", item => {
         switch(item.title) {
-            case language["label_whitelist"]:
-                engines.execScriptFile("activity/label_whitelist.js");
+            case language["label_list"]:
+                engines.execScriptFile("activity/label_list.js");
                 break;
-            case language["friend_whitelist"]:
-                engines.execScriptFile("activity/friend_whitelist.js");
+            case language["friend_list"]:
+                engines.execScriptFile("activity/friend_list.js");
                 break;
         }
     });
 
     function modifyPageInfoShow(page_info) {
-        ui.current_page_text.setText(String(page_info.current_page));
-        ui.total_page_text.setText(String(page_info.total_page));
-        ui.previous_page_button.enabled = page_info.current_page != 1 && page_info.current_page != '-';
-        ui.next_page_button.enabled = page_info.current_page != page_info.total_page;
+        ui.current_page_text.setText(String(page_info["current_page"]));
+        ui.total_page_text.setText(String(page_info["total_page"]));
+        ui.previous_page_button.enabled = page_info["current_page"] != 1 && page_info["current_page"] != '-';
+        ui.next_page_button.enabled = page_info["current_page"] != page_info["total_page"];
     }
 
     ui.previous_page_button.on("click", () => {
         switch (current_page_index) {
             case 0:
-                page_infos["abnormal_friends_page_info"].current_page -= 1;
-                ui.abnormal_friend_list.setDataSource(db_util.findAllAbnormalFriend(page_infos["abnormal_friends_page_info"].current_page));
+                page_infos["abnormal_friends_page_info"]["current_page"] -= 1;
+                ui.abnormal_friend_list.setDataSource(db_util.findAbnormalFriendList(page_infos["abnormal_friends_page_info"]["current_page"]));
                 ui.abnormal_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["abnormal_friends_page_info"]);
                 break;
             case 1:
-                page_infos["normal_friends_page_info"].current_page -= 1;
-                ui.normal_friend_list.setDataSource(db_util.findAllNormalFriend(page_infos["normal_friends_page_info"].current_page));
+                page_infos["normal_friends_page_info"]["current_page"] -= 1;
+                ui.normal_friend_list.setDataSource(db_util.findNormalFriendList(page_infos["normal_friends_page_info"]["current_page"]));
                 ui.normal_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["normal_friends_page_info"]);
                 break;
             case 2:
-                page_infos["ignored_friends_page_info"].current_page -= 1;
-                ui.ignored_friend_list.setDataSource(db_util.findAllIgnoredFriend(page_infos["ignored_friends_page_info"].current_page));
+                page_infos["ignored_friends_page_info"]["current_page"] -= 1;
+                ui.ignored_friend_list.setDataSource(db_util.findIgnoredTestFriendList(page_infos["ignored_friends_page_info"]["current_page"]));
                 ui.ignored_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["ignored_friends_page_info"]);
                 break;
@@ -291,20 +291,20 @@
     ui.next_page_button.on("click", () => {
         switch (current_page_index) {
             case 0:
-                page_infos["abnormal_friends_page_info"].current_page += 1;
-                ui.abnormal_friend_list.setDataSource(db_util.findAllAbnormalFriend(page_infos["abnormal_friends_page_info"].current_page));
+                page_infos["abnormal_friends_page_info"]["current_page"] += 1;
+                ui.abnormal_friend_list.setDataSource(db_util.findAbnormalFriendList(page_infos["abnormal_friends_page_info"]["current_page"]));
                 ui.abnormal_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["abnormal_friends_page_info"]);
                 break;
             case 1:
-                page_infos["normal_friends_page_info"].current_page += 1;
-                ui.normal_friend_list.setDataSource(db_util.findAllNormalFriend(page_infos["normal_friends_page_info"].current_page));
+                page_infos["normal_friends_page_info"]["current_page"] += 1;
+                ui.normal_friend_list.setDataSource(db_util.findNormalFriendList(page_infos["normal_friends_page_info"]["current_page"]));
                 ui.normal_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["normal_friends_page_info"]);
                 break;
             case 2:
-                page_infos["ignored_friends_page_info"].current_page += 1;
-                ui.ignored_friend_list.setDataSource(db_util.findAllIgnoredFriend(page_infos["ignored_friends_page_info"].current_page));
+                page_infos["ignored_friends_page_info"]["current_page"] += 1;
+                ui.ignored_friend_list.setDataSource(db_util.findIgnoredTestFriendList(page_infos["ignored_friends_page_info"]["current_page"]));
                 ui.ignored_friend_list.scrollToPosition(0);
                 modifyPageInfoShow(page_infos["ignored_friends_page_info"]);
                 break;
@@ -337,8 +337,8 @@
             itemView.abnormal_message_text.enabled = !itemHolder.item["deleted"];
         });
         itemView.selected_checkbox.on("click", () => {
-            let friend = itemHolder.item;
-            let abnormal_message = friend.abnormal_message;
+            let abnormal_friend = itemHolder.item;
+            let abnormal_message = abnormal_friend.abnormal_message;
             if (!no_more_warning && itemView.selected_checkbox.checked && language["blacklisted_message"].match(abnormal_message) == null && language["deleted_message"].match(abnormal_message) == null) {
                 let selected_no_more_warning = false;
                 dialogs.build({
@@ -356,12 +356,12 @@
                     itemView.selected_checkbox.checked = false;
                 }).on("negative", () => {
                     no_more_warning = selected_no_more_warning;
-                    friend["selected"] = true;
-                    db_util.modifyFriend(friend);
+                    abnormal_friend["selected"] = true;
+                    db_util.modifyTestedFriend(abnormal_friend);
                 }).show();
             } else {
-                friend["selected"] = itemView.selected_checkbox.checked;
-                db_util.modifyFriend(friend);
+                abnormal_friend["selected"] = itemView.selected_checkbox.checked;
+                db_util.modifyTestedFriend(abnormal_friend);
             }
         });
     });
@@ -373,7 +373,7 @@
             itemView.we_chat_id_text.enabled = !itemHolder.item["deleted"];
         });
         itemView.selected_checkbox.on("click", () => {
-            let friend = itemHolder.item;
+            let normal_friend = itemHolder.item;
             if (!no_more_warning && itemView.selected_checkbox.checked) {
                 let selected_no_more_warning = false;
                 dialogs.build({
@@ -391,18 +391,19 @@
                     itemView.selected_checkbox.checked = false;
                 }).on("negative", () => {
                     no_more_warning = selected_no_more_warning;
-                    friend["selected"] = true;
-                    db_util.modifyFriend(friend);
+                    normal_friend["selected"] = true;
+                    db_util.modifyTestedFriend(normal_friend);
                 }).show();
             } else {
-                friend["selected"] = itemView.selected_checkbox.checked;
-                db_util.modifyFriend(friend);
+                normal_friend["selected"] = itemView.selected_checkbox.checked;
+                db_util.modifyTestedFriend(normal_friend);
             }
         });
     });
 
     ui.clear_friends_button.on("click", () => {
         dialogs.build({
+            title: language["clear_friend_dialog_title"],
             content: language["clear_alert_dialog_message"],
             positive: language["cancel"],
             positiveColor: "#008274",
@@ -410,14 +411,14 @@
             negativeColor: "#008274",
             cancelable: false
         }).on("negative", () => {
-            db_util.deleteAllFriend();
+            db_util.deleteAllTestedFriend();
             initUI();
         }).show();
     });
     
     ui.delete_friends_button.on("click", () => {
-        let selected = db_util.hasSelectedFriend();
-        if (selected) {
+        let count = db_util.countWaitDeleteFriend();
+        if (count > 0) {
             if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
                 dialogs.build({
                     title: language["warning"],
