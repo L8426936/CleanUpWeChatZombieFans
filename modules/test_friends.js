@@ -82,17 +82,27 @@
             last_friend_remark = friend_remark_node.text();
             let repeat_friend_remark = last_index > 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark;
             if (repeat_friend_remark || !db_util.isTestedFriendForFriendRemark(last_friend_remark)) {
+                let enabled = true;
                 switch (running_config["test_friend_mode"]) {
+                    // 标签白名单
                     case 0:
-                        if (!db_util.isIgnoreTestForLabelFriendListByFriendRemark(last_friend_remark) && node_util.backtrackClickNode(friend_remark_node)) {
-                            step = 2;
-                        }
+                        enabled = !db_util.isEnabledForLabelFriendByFriendRemark(last_friend_remark);
                         break;
+                    // 标签黑名单
                     case 1:
-                        if (!db_util.isIgnoreTestForFriendListByFriendRemark(last_friend_remark) && node_util.backtrackClickNode(friend_remark_node)) {
-                            step = 2;
-                        }
+                        enabled = db_util.isEnabledForLabelFriendByFriendRemark(last_friend_remark);
                         break;
+                    // 好友白名单
+                    case 2:
+                        enabled = !db_util.isEnabledForFriendByFriendRemark(last_friend_remark);
+                        break;
+                    // 好友黑名单
+                    case 3:
+                        enabled = db_util.isEnabledForFriendByFriendRemark(last_friend_remark);
+                        break;
+                }
+                if (enabled && node_util.backtrackClickNode(friend_remark_node)) {
+                    step = 2;
                 }
             }
             last_index++;
@@ -236,7 +246,7 @@
         events.removeAllKeyDownListeners("volume_down");
         toast(language["script_stopped"]);
         window.close();
-        engines.execScriptFile("main.js");
+        engines.execScriptFile("main.js", {delay: 500});
         engines.myEngine().forceStop();
     }
 

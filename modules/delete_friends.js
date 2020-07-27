@@ -170,7 +170,7 @@
         events.removeAllKeyDownListeners("volume_down");
         window.close();
         toast(language["script_stopped"]);
-        engines.execScriptFile("main.js");
+        engines.execScriptFile("main.js", {delay: 500});
         engines.myEngine().forceStop();
     }
 

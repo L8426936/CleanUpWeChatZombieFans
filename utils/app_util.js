@@ -170,7 +170,7 @@ module.exports = (() => {
     function stopScript() {
         let scripts = engines.all();
         for (let i = 0; i < scripts.length; i++) {
-            if (/.+CleanUpWeChatZombieFans\/(main|(activity|modules).+)\.js/.test(scripts[i].getSource().toString())) {
+            if (/.+(main|(activity|modules).+)\.js/.test(scripts[i].getSource().toString())) {
                 scripts[i].forceStop();
             }
         }
@@ -181,7 +181,7 @@ module.exports = (() => {
             let running_config = runningConfig();
             dialogs.build({
                 content: default_language["before_running_alert_dialog_message"],
-                items: [default_language["label_list_first"], default_language["friend_list_first"]],
+                items: [default_language["label_whitelist_mode"], default_language["label_blacklist_mode"], default_language["friend_whitelist_mode"], default_language["friend_blacklist_mode"]],
                 itemsSelectMode: "single",
                 itemsSelectedIndex: running_config["test_friend_mode"],
                 positive: default_language["confirm"],

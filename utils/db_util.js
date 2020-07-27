@@ -283,15 +283,6 @@ module.exports = (() => {
 
     /**
      * 删除好友
-     * @param {String} label 
-     * @returns {boolean} 
-     */
-    function deleteFriendByLabel(label) {
-        return deleteRows("friend_list", "friend_remark IN (SELECT friend_remark FROM label_friend_list WHERE label = ?)", [label]);
-    }
-
-    /**
-     * 删除好友
      * @param {String} friend_remark 
      * @returns {boolean} 
      */
@@ -486,19 +477,11 @@ module.exports = (() => {
     }
 
     /**
-     * 启用标签
-     * @param {String} label 
-     */
-    function isEnabledForLabel(label) {
-        return isExistRow("SELECT * FROM label_list WHERE enabled = 'true' AND label = ?", [label]);
-    }
-
-    /**
      * 忽略该备注的好友
      * @param {String} friend_remark 
      * @returns {boolean} 
      */
-    function isIgnoreTestForLabelFriendListByFriendRemark(friend_remark) {
+    function isEnabledForLabelFriendByFriendRemark(friend_remark) {
         return isExistRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
     }
 
@@ -507,7 +490,7 @@ module.exports = (() => {
      * @param {String} friend_remark 
      * @returns {boolean} 
      */
-    function isIgnoreTestForFriendListByFriendRemark(friend_remark) {
+    function isEnabledForFriendByFriendRemark(friend_remark) {
         return isExistRow("SELECT * FROM friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
     }
 
@@ -630,7 +613,6 @@ module.exports = (() => {
         deleteAllLabel: deleteAllLabel,
         deleteLabelByLabel: deleteLabelByLabel,
         deleteAllFriend: deleteAllFriend,
-        deleteFriendByLabel: deleteFriendByLabel,
         deleteFriendByFriendRemark: deleteFriendByFriendRemark,
         deleteAllLabelFriend: deleteAllLabelFriend,
         deleteLabelFriendByLabel: deleteLabelFriendByLabel,
@@ -652,9 +634,8 @@ module.exports = (() => {
         isExistLabel: isExistLabel,
         isExistFriendRemark: isExistFriendRemark,
         isExistLabelFriend: isExistLabelFriend,
-        isEnabledForLabel: isEnabledForLabel,
-        isIgnoreTestForLabelFriendListByFriendRemark: isIgnoreTestForLabelFriendListByFriendRemark,
-        isIgnoreTestForFriendListByFriendRemark: isIgnoreTestForFriendListByFriendRemark,
+        isEnabledForLabelFriendByFriendRemark: isEnabledForLabelFriendByFriendRemark,
+        isEnabledForFriendByFriendRemark: isEnabledForFriendByFriendRemark,
         isSelectedFriendForDeleteByFriendRemark: isSelectedFriendForDeleteByFriendRemark,
         isSelectedFriendForDeleteByWeChatID: isSelectedFriendForDeleteByWeChatID,
         countWaitDeleteFriend: countWaitDeleteFriend,
