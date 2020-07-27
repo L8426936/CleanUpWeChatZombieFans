@@ -128,19 +128,19 @@ module.exports = (() => {
      * 修改记录
      * @param {String} table_name 
      * @param {Object} object 
-     * @param {String} primary_key 
+     * @param {String} where_key 
      * @returns {boolean}
      */
-    function modifyRow(table_name, object, primary_key) {
+    function modifyRow(table_name, object, where_key) {
         let db = open();
         let values = new ContentValues();
         for (let key in object) {
-            if (key == primary_key) {
+            if (key == where_key) {
                 continue;
             }
             values.put(key, String(object[key]));
         }
-        let result = db.update(table_name, values, primary_key + " = ?", [object[primary_key]]);
+        let result = db.update(table_name, values, where_key + " = ?", [object[where_key]]);
         close(db);
         return result > 0;
     }
@@ -219,7 +219,6 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function addLabel(label) {
-        log("addLabel")
         return addRow("label_list", label);
     }
 
@@ -265,6 +264,15 @@ module.exports = (() => {
         return deleteRows("label_list", null, null);
     }
     
+    /**
+     * 删除标签
+     * @param {String} label
+     * @returns {boolean}
+     */
+    function deleteLabelByLabel(label) {
+        return deleteRows("label_list", "label = ?", [label]);
+    }
+
     /**
      * 删除所有好友
      * @returns {boolean} 
@@ -336,16 +344,6 @@ module.exports = (() => {
     }
 
     /**
-     * 修改标签
-     * @param {Label} label 
-     * @returns {boolean} 
-     */
-    function modifyLabelByLabel(label) {
-        let enabled = countRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND label = ?", [label]) > 0;
-        return modifyRow("label_list", {label: label, enabled: enabled}, "label");
-    }
-
-    /**
      * 修改好友
      * @param {Friend} friend 
      * @returns {boolean} 
@@ -360,10 +358,7 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function modifyLabelFriendByLabel(label) {
-        let db = open();
-        let result = db.execSQL("UPDATE label_friend_list SET enabled = '" + label["enabled"] + "' WHERE label = '" + label["label"] + "'");
-        close(db);
-        return result > 0;
+        return modifyRow("label_friend_list", {enabled: label["enabled"], label: label["label"]}, "label");
     }
 
     /**
@@ -372,10 +367,16 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function modifyLabelFriend(label_friend) {
-        let db = open();
-        let result = db.execSQL("UPDATE label_friend_list SET enabled = '" + label_friend["enabled"] + "' WHERE friend_remark = '" + label_friend["friend_remark"] + "'");
-        close(db);
-        return result > 0;
+        return modifyRow("label_friend_list", label_friend, "friend_remark");
+    }
+
+    /**
+     * 联动标签
+     * @param {String} label 
+     */
+    function labelFriendLinkageLabel(label) {
+        let enabled = countRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND label = ?", [label], PROPERTY_MAPPING_TYPE_FOR_LABEL) > 0;
+        return modifyLabel({label: label, enabled: enabled});
     }
 
     /**
@@ -417,16 +418,7 @@ module.exports = (() => {
      * @returns {Array<Label>}
      */
     function findAllLabel() {
-        let label_list = findRows("SELECT * FROM label_list", null, PROPERTY_MAPPING_TYPE_FOR_LABEL);
-        let count_label_list = findRows("SELECT label, COUNT(*) AS count FROM label_friend_list GROUP BY label", null, {"label": "String", "count": "String"});
-        for (let i = 0; i < label_list.length; i++) {
-            for (let j = 0; j < count_label_list.length; j++) {
-                if (label_list[i]["label"] == count_label_list[j]["label"]) {
-                    label_list[i]["count"] = count_label_list[j]["count"];
-                }
-            }
-        }
-        return label_list;
+        return findRows("SELECT label_list.label,COUNT(*) AS count,label_list.enabled FROM label_list JOIN label_friend_list ON label_list.label = label_friend_list.label GROUP BY label_list.label", null, PROPERTY_MAPPING_TYPE_FOR_LABEL);
     }
 
     /**
@@ -486,12 +478,11 @@ module.exports = (() => {
 
     /**
      * 标签、好友备注已联动
-     * @param {String} label 
      * @param {String} friend_remark 
      * @returns {boolean}
      */
-    function isExistLabelFriend(label, friend_remark) {
-        return isExistRow("SELECT * FROM label_friend_list WHERE label = ? AND friend_remark = ?", [label, friend_remark]);
+    function isExistLabelFriend(friend_remark) {
+        return isExistRow("SELECT * FROM label_friend_list WHERE friend_remark = ?", [friend_remark]);
     }
 
     /**
@@ -621,10 +612,9 @@ module.exports = (() => {
         + ")");
 
         db.execSQL("CREATE TABLE IF NOT EXISTS label_friend_list("
-        + "friend_remark VARCHAR(128),"
+        + "friend_remark VARCHAR(128) PRIMARY KEY,"
         + "label VARCHAR(64),"
-        + "enabled BOOLEAN,"
-        + "PRIMARY KEY (friend_remark, label)"
+        + "enabled BOOLEAN"
         + ")");
 
         close(db);
@@ -638,6 +628,7 @@ module.exports = (() => {
         deleteAllTestedFriend: deleteAllTestedFriend,
         deleteAllIgnoredTestFriend: deleteAllIgnoredTestFriend,
         deleteAllLabel: deleteAllLabel,
+        deleteLabelByLabel: deleteLabelByLabel,
         deleteAllFriend: deleteAllFriend,
         deleteFriendByLabel: deleteFriendByLabel,
         deleteFriendByFriendRemark: deleteFriendByFriendRemark,
@@ -646,9 +637,9 @@ module.exports = (() => {
         deleteLabelFriendByFriendRemark: deleteLabelFriendByFriendRemark,
         modifyTestedFriend: modifyTestedFriend,
         modifyLabel: modifyLabel,
-        modifyLabelByLabel: modifyLabelByLabel,
         modifyLabelFriendByLabel: modifyLabelFriendByLabel,
         modifyLabelFriend: modifyLabelFriend,
+        labelFriendLinkageLabel: labelFriendLinkageLabel,
         modifyFriend: modifyFriend,
         findAbnormalFriendList: findAbnormalFriendList,
         findNormalFriendList: findNormalFriendList,

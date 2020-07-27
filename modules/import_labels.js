@@ -67,10 +67,10 @@
         if ((label_nodes.size() | count_nodes.size()) > 0 && label_nodes.size() == count_nodes.size()) {
             if (last_index < label_nodes.size()) {
                 let label = label_nodes.get(last_index).text();
-                let count = count_nodes.get(last_index).text().match(/\d+/g)[0];
-                if (!db_util.isExistLabel(label)) {
+                let count = count_nodes.get(last_index).text().match(/\d+(?=\)$)/g)[0];
+                if (count > 0 && !db_util.isExistLabel(label)) {
                     if (db_util.addLabel({label: label, count: 0, enabled: false})) {
-                        if (count > 0 && node_util.backtrackClickNode(label_nodes.get(last_index))) {
+                        if (node_util.backtrackClickNode(label_nodes.get(last_index))) {
                             last_label = label;
                             step = 3;
                         }
@@ -92,7 +92,7 @@
         let friend_remark_nodes = id(ids["friend_remark_by_label"]).untilFind();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
-            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addFriend({friend_remark: friend_remark, enabled: false})) || !(db_util.isExistLabelFriend(last_label, friend_remark) || db_util.addLabelFriend({label: last_label, friend_remark: friend_remark, enabled: false}))) {
+            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addFriend({friend_remark: friend_remark, enabled: false})) || !(db_util.isExistLabelFriend(friend_remark) || db_util.addLabelFriend({label: last_label, friend_remark: friend_remark, enabled: false}))) {
                 ui.run(() => {
                     window.import_label_friend_fail_text.setText(window.import_label_friend_fail_text.text() + friend_remark + "\n");
                     window.import_label_friend_fail_text_scroll.scrollTo(0, window.import_label_friend_fail_text.getHeight());

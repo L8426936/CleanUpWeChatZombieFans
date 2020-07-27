@@ -3,7 +3,7 @@
     "deleted_message": "你不是收款方好友，对方添加你为好友后才能发起转账",
     "app_name": "清理微信僵尸粉",
     "instructions_for_use_title": "使用说明",
-    "instructions_for_use_content": "1. 使用软件前，请仔细阅读以下内容\n2. 关闭后，可在右上角菜单重新打开\n3. 设置白名单可以减少测试时间\n4. 微信好友列表页面（包括标签的好友列表页面）多个相同备注、昵称的好友存储时只保留一个",
+    "instructions_for_use_content": "1. 使用软件前，请仔细阅读以下内容\n2. 关闭后，可在右上角菜单重新打开\n3. 设置白名单可以减少测试时间\n4. 相同备注、昵称的好友只保留一个",
     "abnormal_friend": "异常好友",
     "normal_friend": "正常好友",
     "ignored_friend": "忽略测试的好友",

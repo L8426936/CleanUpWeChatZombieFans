@@ -73,7 +73,7 @@
             let label_friend = itemHolder.item;
             label_friend["enabled"] = itemView.enabled_switch.checked;
             db_util.modifyLabelFriend(label_friend);
-            db_util.modifyLabelByLabel(label_friend["label"]);
+            db_util.labelFriendLinkageLabel(label);
         });
     });
 
@@ -95,8 +95,9 @@
             negativeColor: "#008274",
             cancelable: false
         }).on("negative", () => {
-            db_util.deleteLabelFriendByLabel(label);
-            initUI();
+            if (db_util.deleteLabelFriendByLabel(label) && db_util.deleteLabelByLabel(label)) {
+                initUI();
+            }
         }).show();
     });
     
