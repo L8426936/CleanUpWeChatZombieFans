@@ -70,7 +70,7 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
+        let friend_remark_nodes = id(ids["friend_remark"]).find();
         if (last_index >= friend_remark_nodes.size()) {
             if (id(ids["contacts_count"]).findOnce() == null) {
                 scrollFriendList();
@@ -113,28 +113,31 @@
      * 点击发送信息
      */
     function clickSendMessage() {
-        let nodes = id(ids["send_message"]).untilFind();
-        if (nodes.size() < 2 && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+        if (id(ids["more_function_by_delete"]).findOne(1000) != null) {
+            let we_chat_id = id(ids["we_chat_id"]).findOne().text();
+            if (!db_util.isTestedFriendForWeChatID(we_chat_id)) {
+                do {
+                    let nodes = id(ids["send_message"]).find();
+                    for (let i = 0; i < nodes.size(); i++) {
+                        let node = nodes.get(i);
+                        if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                            last_we_chat_id = we_chat_id;
+                            step = 3;
+                            return;
+                        }
+                    }
+                    id(ids["friend_details_page_list"]).findOne().scrollForward();
+                } while (step != 3);
+            } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                step = 1;
+            }
+        } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
             db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
             ui.run(() => {
                 window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
                 window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
             });
             step = 1;
-        } else {
-            let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-            if (!db_util.isTestedFriendForWeChatID(we_chat_id)) {
-                for (let i = 0; i < nodes.size(); i++) {
-                    let node = nodes.get(i);
-                    if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                        last_we_chat_id = we_chat_id;
-                        step = 3;
-                        break;
-                    }
-                }
-            } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-                step = 1;
-            }
         }
     }
 
@@ -188,7 +191,7 @@
      */
     function assertionFriend() {
         while (true) {
-            if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce())) {
+            if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce()) || node_util.backtrackClickNode(id(ids["close_transfer"]).findOnce())) {
                 db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;
@@ -202,6 +205,7 @@
                 break;
             }
         }
+        db_util.deleteIgnoredTestFriendByFriendRemark(last_friend_remark);
     }
 
     /**
@@ -259,9 +263,7 @@
             
             ids = app_util.weChatIds();
             texts = JSON.parse(files.read("config/text_id/text.json"));
-    
-            db_util.deleteAllIgnoredTestFriend();
-            
+
             last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
             keyDownListenerByVolumeDown();
             

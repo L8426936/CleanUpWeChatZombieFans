@@ -1,8 +1,8 @@
 {
     "contacts": "civ",
     "labels": "fw",
-    "label": "ct1",
     "add_label": "ct5",
+    "label": "ct1",
     "contacts_count_by_label": "ct0",
     "friend_remark_by_label": "evd",
     "friend_list_by_label": "android:id/list",
@@ -14,6 +14,7 @@
     "contacts_count": "awg",
     "send_message": "fwd",
     "friend_labels": "ax8",
+    "friend_details_page_list": "android:id/list",
     "we_chat_id": "azk",
     "back_to_friend_list": "dn",
     "more_function_by_transfer": "aja",
@@ -21,11 +22,13 @@
     "payee": "erc",
     "transfer_amount": "glb",
     "confirm_transfer": "csd",
+    "close_transfer": "#",
     "abnormal_message": "diz",
     "confirm_abnormal_message": "dj6",
     "back_to_chat": "dn",
     "back_to_chats": "ri",
     "more_function_by_delete": "cj",
+    "more_function_by_delete_list": "a5h",
     "delete": "g1l",
     "confirm_delete": "dj6"
 }

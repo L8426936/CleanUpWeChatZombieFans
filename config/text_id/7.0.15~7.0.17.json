@@ -1,8 +1,8 @@
 {
     "contacts": "cns",
     "labels": "fx",
-    "label": "cy8",
     "add_label": "cyb",
+    "label": "cy8",
     "contacts_count_by_label": "cy7",
     "friend_remark_by_label": "f3v",
     "friend_list_by_label": "android:id/list",
@@ -14,6 +14,7 @@
     "contacts_count": "azb",
     "send_message": "g6f",
     "friend_labels": "b03",
+    "friend_details_page_list": "android:id/list",
     "we_chat_id": "b2f",
     "back_to_friend_list": "dn",
     "more_function_by_transfer": "aks",
@@ -21,11 +22,13 @@
     "payee": "ez7",
     "transfer_amount": "gwo",
     "confirm_transfer": "cxi",
+    "close_transfer": "#",
     "abnormal_message": "dos",
     "confirm_abnormal_message": "doz",
     "back_to_chat": "dn",
     "back_to_chats": "rs",
     "more_function_by_delete": "cj",
+    "more_function_by_delete_list": "android:id/list",
     "delete": "g6f",
     "confirm_delete": "doz"
 }

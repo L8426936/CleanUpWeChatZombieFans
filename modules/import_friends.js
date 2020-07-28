@@ -52,7 +52,7 @@
     }
 
     function synchronizeFriends() {
-        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
+        let friend_remark_nodes = id(ids["friend_remark"]).find();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
             if (!db_util.isExistFriendRemark(friend_remark) && !db_util.addFriend({friend_remark: friend_remark, enabled: false})) {

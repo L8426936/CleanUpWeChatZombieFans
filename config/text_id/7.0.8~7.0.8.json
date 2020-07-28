@@ -22,7 +22,7 @@
     "payee": "eh6",
     "transfer_amount": "dm",
     "confirm_transfer": "g61",
-    "close_transfer": "#",
+    "close_transfer": "g52",
     "abnormal_message": "djx",
     "confirm_abnormal_message": "b49",
     "back_to_chat": "m1",

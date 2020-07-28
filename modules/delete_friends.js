@@ -119,14 +119,17 @@
      * 点击删除功能
      */
     function clickDeleteFunction() {
-        let nodes = id(ids["delete"]).untilFind();
-        for (let i = 0; i < nodes.size(); i++) {
-            let node = nodes.get(i);
-            if (texts["delete"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                step = 4;
-                break;
+        do {
+            let nodes = id(ids["delete"]).find();
+            for (let i = 0; i < nodes.size(); i++) {
+                let node = nodes.get(i);
+                if (texts["delete"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                    step = 4;
+                    return;
+                }
             }
-        }
+            id(ids["more_function_by_delete_list"]).findOne().scrollForward();
+        } while (step != 4);
     }
 
     /**

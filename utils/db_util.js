@@ -249,11 +249,12 @@ module.exports = (() => {
     }
 
     /**
-     * 删除所有已忽略测试的好友
+     * 删除已忽略测试的好友
+     * @param {String} friend_remark
      * @returns {boolean} 
      */
-    function deleteAllIgnoredTestFriend() {
-        return deleteRows("tested_friend_list", "friend_type = ?", [IGNORED_FRIEND_TYPE]);
+    function deleteIgnoredTestFriendByFriendRemark(friend_remark) {
+        return deleteRows("tested_friend_list", "we_chat_id = ? AND friend_type = ?", [friend_remark, IGNORED_FRIEND_TYPE]);
     }
 
     /**
@@ -609,7 +610,7 @@ module.exports = (() => {
         addFriend: addFriend,
         addLabelFriend: addLabelFriend,
         deleteAllTestedFriend: deleteAllTestedFriend,
-        deleteAllIgnoredTestFriend: deleteAllIgnoredTestFriend,
+        deleteIgnoredTestFriendByFriendRemark: deleteIgnoredTestFriendByFriendRemark,
         deleteAllLabel: deleteAllLabel,
         deleteLabelByLabel: deleteLabelByLabel,
         deleteAllFriend: deleteAllFriend,
