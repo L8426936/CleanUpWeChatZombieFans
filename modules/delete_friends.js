@@ -69,7 +69,7 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
+        let friend_remark_nodes = id(ids["friend_remark"]).find();
         if (last_index >= friend_remark_nodes.size()) {
             if (id(ids["contacts_count"]).findOnce() == null) {
                 scrollFriendList();
@@ -95,15 +95,23 @@
     * 检查微信号是否相同
     */
     function checkWeChatId() {
-        let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-        if (db_util.isSelectedFriendForDeleteByWeChatID(we_chat_id)) {
-            last_we_chat_id = we_chat_id;
-            step = 2;
-        } else {
-            if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-                step = 0;
+        do {
+            let we_chat_id_node = id(ids["we_chat_id"]).findOne(1000);
+            if (we_chat_id_node == null) {
+                id(ids["friend_details_page_list"]).findOne().scrollForward();
+            } else {
+                let we_chat_id = we_chat_id_node.text();
+                if (db_util.isSelectedFriendForDeleteByWeChatID(we_chat_id)) {
+                    last_we_chat_id = we_chat_id;
+                    step = 2;
+                } else {
+                    if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                        step = 0;
+                    }
+                }
+                break;
             }
-        }
+        } while (true);
     }
 
     /**

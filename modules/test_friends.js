@@ -114,23 +114,31 @@
      */
     function clickSendMessage() {
         if (id(ids["more_function_by_delete"]).findOne(1000) != null) {
-            let we_chat_id = id(ids["we_chat_id"]).findOne().text();
-            if (!db_util.isTestedFriendForWeChatID(we_chat_id)) {
-                do {
-                    let nodes = id(ids["send_message"]).find();
-                    for (let i = 0; i < nodes.size(); i++) {
-                        let node = nodes.get(i);
-                        if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                            last_we_chat_id = we_chat_id;
-                            step = 3;
-                            return;
-                        }
-                    }
+            do {
+                let we_chat_id_node = id(ids["we_chat_id"]).findOne(1000);
+                if (we_chat_id_node == null) {
                     id(ids["friend_details_page_list"]).findOne().scrollForward();
-                } while (step != 3);
-            } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-                step = 1;
-            }
+                } else {
+                    let we_chat_id = we_chat_id_node.text();
+                    if (!db_util.isTestedFriendForWeChatID(we_chat_id)) {
+                        do {
+                            let nodes = id(ids["send_message"]).find();
+                            for (let i = 0; i < nodes.size(); i++) {
+                                let node = nodes.get(i);
+                                if (texts["send_message"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                                    last_we_chat_id = we_chat_id;
+                                    step = 3;
+                                    return;
+                                }
+                            }
+                            id(ids["friend_details_page_list"]).findOne().scrollForward();
+                        } while (step != 3);
+                    } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                        step = 1;
+                    }
+                    break;
+                }
+            } while (true);
         } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
             db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
             ui.run(() => {
