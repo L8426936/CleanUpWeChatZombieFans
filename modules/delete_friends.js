@@ -186,7 +186,7 @@
     }
 
     function main() {
-        config = JSON.parse(files.read("config/config.json"));
+        let config = JSON.parse(files.read("config/config.json"));
         if (launch(config["we_chat_package_name"])) {
             node_util = require("utils/node_util.js");
             let app_util = require("utils/app_util.js");
