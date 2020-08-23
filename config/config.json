@@ -1,18 +1,31 @@
 {
     "we_chat_package_name": "com.tencent.mm",
-    "min_supported_version": "7.0.4",
-    "max_supported_version": "7.0.18",
     "supported_languages": "zh-CN",
-    "supported_versions": [
-        "7.0.4~7.0.4",
-        "7.0.5~7.0.5",
-        "7.0.6~7.0.6",
-        "7.0.7~7.0.7",
-        "7.0.8~7.0.8",
-        "7.0.9~7.0.11",
-        "7.0.12~7.0.12",
-        "7.0.13~7.0.13",
-        "7.0.14~7.0.14",
-        "7.0.15~7.0.18"
-    ]
+    "supported_we_chat_versions": {
+        "google_play_store": {
+            "min_supported_versions": "7.0.16",
+            "max_supported_versions": "7.0.16"
+        },
+        "other": {
+            "min_supported_versions": "7.0.4",
+            "max_supported_versions": "7.0.18"
+        }
+    },
+    "ids_versions": {
+        "google_play_store": [
+            "7.0.16~7.0.16"
+        ],
+        "other": [
+            "7.0.4~7.0.4",
+            "7.0.5~7.0.5",
+            "7.0.6~7.0.6",
+            "7.0.7~7.0.7",
+            "7.0.8~7.0.8",
+            "7.0.9~7.0.11",
+            "7.0.12~7.0.12",
+            "7.0.13~7.0.13",
+            "7.0.14~7.0.14",
+            "7.0.15~7.0.18"
+        ]
+    }
 }

@@ -52,7 +52,7 @@
     }
 
     function synchronizeFriends() {
-        let friend_remark_nodes = id(ids["friend_remark"]).find();
+        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
             if (!db_util.isExistFriendRemark(friend_remark) && !db_util.addFriend({friend_remark: friend_remark, enabled: false})) {
@@ -103,14 +103,14 @@
             db_util = require("utils/db_util.js");
             let app_util = require("utils/app_util.js");
             
-            ids = app_util.weChatIds();
+            ids = app_util.getWeChatIds();
             texts = JSON.parse(files.read("config/text_id/text.json"));
             
             step = 0, run = true;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言
-            language = app_util.language();
+            language = app_util.getLanguage();
 
             window = floaty.window(
                 <vertical padding="8" bg="#000000">

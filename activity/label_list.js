@@ -25,7 +25,7 @@
     function init() {
         db_util = require("utils/db_util.js");
         app_util = require("utils/app_util.js");
-        language = app_util.language();
+        language = app_util.getLanguage();
 
         ui.clear_labels_button.setText(language["clear_label"]);
         ui.import_labels_button.setText(language["import_label"]);
@@ -90,17 +90,28 @@
     });
     
     ui.import_labels_button.on("click", () => {
-        if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-            dialogs.build({
+        if (app_util.checkInstalledWeChat()) {
+            let running_config = app_util.getRunningConfig();
+            let view = {
                 content: language["before_running_alert_dialog_message"],
                 positive: language["confirm"],
                 positiveColor: "#008274",
                 negative: language["cancel"],
                 negativeColor: "#008274",
                 cancelable: false
+            };
+            if (!app_util.isFromGooglePlayStoreByApplication()) {
+                view["checkBoxPrompt"] = language["is_from_google_play_store"];
+                view["checkBoxChecked"] = app_util.isFromGooglePlayStoreByLocation();
+            }
+            dialogs.build(view)
+            .on("check", checked => {
+                app_util.checkInstallSource(checked, running_config);
             }).on("positive", () => {
-                engines.execScriptFile("modules/import_labels.js", {delay: 500});
-                app_util.stopScript();
+                if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
+                    engines.execScriptFile("modules/import_labels.js", {delay: 500});
+                    app_util.stopScript();
+                }
             }).show();
         }
     });

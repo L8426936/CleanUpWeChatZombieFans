@@ -69,7 +69,7 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = id(ids["friend_remark"]).find();
+        let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
         if (last_index >= friend_remark_nodes.size()) {
             if (id(ids["contacts_count"]).findOnce() == null) {
                 scrollFriendList();
@@ -191,8 +191,8 @@
             node_util = require("utils/node_util.js");
             let app_util = require("utils/app_util.js");
 
-            ids = app_util.weChatIds();
-            language = app_util.language();
+            ids = app_util.getWeChatIds();
+            language = app_util.getLanguage();
             texts = JSON.parse(files.read("config/text_id/text.json"));
             
             last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;

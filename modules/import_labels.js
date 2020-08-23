@@ -52,6 +52,9 @@
         for (let i = 0; i < nodes.size(); i++) {
             let node = nodes.get(i);
             if (texts["label"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
+                if (id(ids["add_label"]).text(texts["add_label"]).findOne(1500) != null && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
+                    stopScript();
+                }
                 step = 2;
                 break;
             }
@@ -59,11 +62,8 @@
     }
 
     function synchronizeLabels() {
-        if (id(ids["add_label"]).text(texts["add_label"]).findOnce() != null && node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
-            stopScript();
-        }
-        let label_nodes = id(ids["label"]).find();
-        let count_nodes = id(ids["contacts_count_by_label"]).find();
+        let label_nodes = id(ids["label"]).untilFind();
+        let count_nodes = id(ids["contacts_count_by_label"]).untilFind();
         if ((label_nodes.size() | count_nodes.size()) > 0 && label_nodes.size() == count_nodes.size()) {
             if (last_index < label_nodes.size()) {
                 let label = label_nodes.get(last_index).text();
@@ -162,14 +162,14 @@
             db_util = require("utils/db_util.js");
             let app_util = require("utils/app_util.js");
 
-            ids = app_util.weChatIds();
+            ids = app_util.getWeChatIds();
             texts = JSON.parse(files.read("config/text_id/text.json"));
 
             last_label = "", step = 0, run = true, last_index = 0;
             keyDownListenerByVolumeDown();
             
             // 获取系统语言
-            language = app_util.language();
+            language = app_util.getLanguage();
 
             window = floaty.window(
                 <vertical padding="8" bg="#000000">

@@ -73,7 +73,7 @@
         db_util.updateDatabase();
         app_util = require("utils/app_util.js");
 
-        language = app_util.language();
+        language = app_util.getLanguage();
 
         ui.previous_page_button.setText(language["previous_page"]);
         ui.next_page_button.setText(language["next_page"]);
@@ -81,7 +81,7 @@
         ui.delete_friends_button.setText(language["delete_friend"]);
         ui.test_friends_button.setText(language["test_friend"]);
 
-        let running_config = app_util.runningConfig();
+        let running_config = app_util.getRunningConfig();
         if (app_util.checkSupportedLanguage()) {
             if (running_config["first_time_run"]) {
                 running_config["first_time_run"] = false;
@@ -419,8 +419,9 @@
     ui.delete_friends_button.on("click", () => {
         let count = db_util.countWaitDeleteFriend();
         if (count > 0) {
-            if (app_util.checkInstalledWeChat() && app_util.checkSupportedWeChatVersion() && app_util.checkFile() && app_util.checkService()) {
-                dialogs.build({
+            if (app_util.checkInstalledWeChat()) {
+                let running_config = app_util.getRunningConfig();
+                let view = {
                     title: language["warning"],
                     content: language["delete_friend_alert_dialog_message"],
                     positive: language["cancel"],
@@ -428,9 +429,19 @@
                     negative: language["confirm"],
                     negativeColor: "#CC0000",
                     cancelable: false
+                };
+                if (!app_util.isFromGooglePlayStoreByApplication()) {
+                    view["checkBoxPrompt"] = language["is_from_google_play_store"];
+                    view["checkBoxChecked"] = app_util.isFromGooglePlayStoreByLocation();
+                }
+                dialogs.build(view)
+                .on("check", checked => {
+                    app_util.checkInstallSource(checked, running_config);
                 }).on("negative", () => {
-                    engines.execScriptFile("modules/delete_friends.js", {delay: 500});
-                    app_util.stopScript();
+                    if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
+                        engines.execScriptFile("modules/delete_friends.js", {delay: 500});
+                        app_util.stopScript();
+                    }
                 }).show();
             }
         } else {
