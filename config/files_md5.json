@@ -1,11 +1,11 @@
 {
     "main.js": "01ac6e4d8185eee004ce4f06ad646d43",
-    "project.json": "2db1e143a785c0bb45131e789f5d53ad",
+    "project.json": "d7cbbdc070e549008de7ce171125ac23",
     "activity/friend_list.js": "e6a4411819ddec5deefa3515cf4f8b8a",
     "activity/label_friend_list.js": "954a0902facdaf73d6b3f23e709de11b",
     "activity/label_list.js": "9af5679a6caeaa7e565e3256560585b6",
     "config/config.json": "e072890fb235c7b1a300b9ece82189a4",
-    "config/files_md5.json" : "aaf2fb9bb1da01952103fc38d569982e",
+    "config/files_md5.json" : "a422fbcbef258ad31f30e8685c2f9233",
     "config/running_config.json": "3e8a2c33fda67b9e16512e919727d422",
     "config/languages/zh-CN.json": "ca122e684dcec313490531a7f8c57889",
     "config/text_id/google_play_store/7.0.16~7.0.16.json": "5738cf09d10cdc661816fb4933deee16",
@@ -23,9 +23,9 @@
     "modules/delete_friends.js": "9713e3ea9e1cd09e52daf8c3ed3242b4",
     "modules/import_friends.js": "fa0cf0e6b041e634c1e2e957f6511080",
     "modules/import_labels.js": "3860811af9083ae365f639c08185ebb9",
-    "modules/test_friends.js": "bc11449bc9c27772b7c546eb1c4f39a7",
+    "modules/test_friends.js": "9b5464daa033d97a38e519e5d40d7a35",
     "utils/app_util.js": "1c745e543d763de4e2af69ce44987c87",
-    "utils/db_util.js": "b90efee1b4ce2bc4b348428644d25c10",
+    "utils/db_util.js": "d511af7b1c0a668f9e5db2111ee3b617",
     "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
     "utils/update_util.js": "4ab943cc2a3a89ec175ab9c439a5a4be"
 }

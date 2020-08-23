@@ -213,7 +213,6 @@
                 break;
             }
         }
-        db_util.deleteIgnoredTestFriendByFriendRemark(last_friend_remark);
     }
 
     /**
@@ -254,6 +253,7 @@
      */
     function stopScript() {
         run = false;
+        db_util.deleteIgnoredTestFriend();
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         toast(language["script_stopped"]);
