@@ -16,7 +16,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function isFromGooglePlayStoreByLocation() {
-        return isFromGooglePlayStoreByApplication() || !!(getRunningConfig()["is_from_google_play_store"]);
+        return isFromGooglePlayStoreByApplication() || getRunningConfig()["is_from_google_play_store"];
     }
 
     /**

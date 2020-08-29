@@ -253,7 +253,7 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function deleteIgnoredTestFriend() {
-        return deleteRows("tested_friend_list", "we_chat_id IN (SELECT friend_remark FROM tested_friend_list WHERE friend_type != ?) AND friend_type = ?", [IGNORED_FRIEND_TYPE, IGNORED_FRIEND_TYPE]);
+        return deleteRows("tested_friend_list", "we_chat_id IN (SELECT friend_remark FROM tested_friend_list WHERE friend_type != ? GROUP BY friend_remark) AND friend_type = ?", [IGNORED_FRIEND_TYPE, IGNORED_FRIEND_TYPE]);
     }
 
     /**

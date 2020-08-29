@@ -4,7 +4,7 @@
     "supported_we_chat_versions": {
         "google_play_store": {
             "min_supported_versions": "7.0.16",
-            "max_supported_versions": "7.0.16"
+            "max_supported_versions": "7.0.17"
         },
         "other": {
             "min_supported_versions": "7.0.4",
@@ -13,7 +13,8 @@
     },
     "ids_versions": {
         "google_play_store": [
-            "7.0.16~7.0.16"
+            "7.0.16~7.0.16",
+            "7.0.17~7.0.17"
         ],
         "other": [
             "7.0.4~7.0.4",
