@@ -30,8 +30,8 @@
     function init() {
         db_util = require("utils/db_util.js");
         app_util = require("utils/app_util.js");
-        language = app_util.language();
-        let running_config = app_util.runningConfig();
+        language = app_util.getLanguage();
+        let running_config = app_util.getRunningConfig();
         label = running_config["label"];
 
         ui.previous_page_button.setText(language["previous_page"]);

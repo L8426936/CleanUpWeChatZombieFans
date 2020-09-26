@@ -53,7 +53,7 @@
     });
 
     function showFriendList(label) {
-        let running_config = app_util.runningConfig();
+        let running_config = app_util.getRunningConfig();
         running_config["label"] = label;
         files.write("config/running_config.json", JSON.stringify(running_config));
         engines.execScriptFile("activity/label_friend_list.js");
