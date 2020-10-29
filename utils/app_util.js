@@ -1,4 +1,5 @@
 module.exports = (() => {
+    importClass(android.provider.Settings);
     let config = JSON.parse(files.read("config/config.json"));
     let local_language = context.resources.configuration.locale.language + "-" + context.resources.configuration.locale.country;
     let default_language = getLanguage();
@@ -158,10 +159,10 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkService() {
-        let enabled = auto.service != null;
+        let enabled = auto.service != null || Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).indexOf(context.getPackageName() + "/com.stardust.autojs.core.accessibility.AccessibilityService") >= 0;
         if (!enabled) {
             dialogs.build({
-                content: default_language["jump_to_settings_alert_dialog_message"],
+                content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name", getAppName(context.getPackageName())),
                 positive: default_language["confirm"],
                 positiveColor: "#008274",
                 negative: default_language["cancel"],
@@ -197,7 +198,12 @@ module.exports = (() => {
         running_config["is_from_google_play_store"] = checked;
         files.write("config/running_config.json", JSON.stringify(running_config));
         if (checkSupportedWeChatVersions() && (checked != isFromGooglePlayStoreByApplication())) {
-            toast(default_language["install_source_different_warning"]);
+            dialogs.build({
+                content: default_language["install_source_different_warning"],
+                positive: default_language["confirm"],
+                positiveColor: "#008274",
+                cancelable: false
+            }).show();
         }
     }
 
