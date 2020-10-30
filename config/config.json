@@ -1,6 +1,10 @@
 {
     "we_chat_package_name": "com.tencent.mm",
     "supported_languages": "zh-CN",
+    "we_chat_release_source": {
+        "other": "com.tencent.android.qqdownloader|com.oppo.market|com.huawei.appmarket|com.qihoo.appstore|com.xiaomi.market|com.baidu.appsearch|com.meizu.mstore|com.bbk.appstore|com.pp.assistant|com.hiapk.marketpho|com.sogou.androidtool|com.wandoujia.phoenix2|com.yulong.android.coolmart|com.coolapk.market",
+        "google_play_store": "com.android.vending"
+    },
     "supported_we_chat_versions": {
         "google_play_store": {
             "min_supported_versions": "7.0.16",

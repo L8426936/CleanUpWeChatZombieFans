@@ -1,7 +1,7 @@
 {
     "first_time_run": true,
     "test_friend_mode": 0,
-    "is_from_google_play_store": false,
+    "we_chat_release_source": "other",
     "include_friend": false,
     "import_friend_mode": 0
 }

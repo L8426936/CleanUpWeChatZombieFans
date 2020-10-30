@@ -430,9 +430,9 @@
                     negativeColor: "#CC0000",
                     cancelable: false
                 };
-                if (!app_util.isFromGooglePlayStoreByApplication()) {
+                if (!app_util.getWeChatReleaseSourceByApplication()) {
                     view["checkBoxPrompt"] = language["is_from_google_play_store"];
-                    view["checkBoxChecked"] = app_util.isFromGooglePlayStoreByLocation();
+                    view["checkBoxChecked"] = app_util.getWeChatReleaseSourceByLocation() == "google_play_store";
                 }
                 dialogs.build(view)
                 .on("check", checked => {

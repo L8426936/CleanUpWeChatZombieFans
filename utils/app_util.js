@@ -5,19 +5,25 @@ module.exports = (() => {
     let default_language = getLanguage();
 
     /**
-     * 从Google Play Store安装
-     * @returns {boolean}
+     * 获取微信安装源
+     * @returns {String}
      */
-    function isFromGooglePlayStoreByApplication() {
-        return context.getPackageManager().getInstallerPackageName(config["we_chat_package_name"]) == "com.android.vending";
+    function getWeChatReleaseSourceByApplication() {
+        let package_name = context.getPackageManager().getInstallerPackageName(config["we_chat_package_name"]);
+        let we_chat_release_source = config["we_chat_release_source"];
+        for (let key in we_chat_release_source) {
+            if (we_chat_release_source[key].indexOf(package_name) >= 0) {
+                return key;
+            }
+        }
     }
 
     /**
-     * 从Google Play Store安装
-     * @returns {boolean}
+     * 获取微信安装源
+     * @returns {String}
      */
-    function isFromGooglePlayStoreByLocation() {
-        return isFromGooglePlayStoreByApplication() || getRunningConfig()["is_from_google_play_store"];
+    function getWeChatReleaseSourceByLocation() {
+        return getWeChatReleaseSourceByApplication() || getRunningConfig()["we_chat_release_source"];
     }
 
     /**
@@ -70,12 +76,13 @@ module.exports = (() => {
     }
 
     function getWeChatIds() {
-        let ids_versions = isFromGooglePlayStoreByLocation() ? config["ids_versions"]["google_play_store"] : config["ids_versions"]["other"];
+        let we_chat_release_source = getWeChatReleaseSourceByLocation();
+        let ids_versions = config["ids_versions"][we_chat_release_source];
         let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
         for (let i = 0; i < ids_versions.length; i++) {
             let supported_versions = ids_versions[i].split("~");
             if (supportedApplicationVersions(we_chat_versions, supported_versions[0], supported_versions[1])) {
-                return JSON.parse(files.read("config/text_id/" + (isFromGooglePlayStoreByLocation() ? "google_play_store" : "other") + "/" + ids_versions[i] + ".json"));
+                return JSON.parse(files.read("config/text_id/" + we_chat_release_source + "/" + ids_versions[i] + ".json"));
             }
         }
     }
@@ -110,7 +117,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkSupportedWeChatVersions() {
-        let supported_we_chat_versions = isFromGooglePlayStoreByLocation() ? config["supported_we_chat_versions"]["google_play_store"] : config["supported_we_chat_versions"]["other"];
+        let supported_we_chat_versions = config["supported_we_chat_versions"][getWeChatReleaseSourceByLocation()];
         let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
         let min_supported_versions = supported_we_chat_versions["min_supported_versions"];
         let max_supported_versions = supported_we_chat_versions["max_supported_versions"];
@@ -132,13 +139,13 @@ module.exports = (() => {
      */
     function checkFile() {
         let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
-        let dir = isFromGooglePlayStoreByLocation() ? "google_play_store/" : "other/";
-        let ids_versions = isFromGooglePlayStoreByLocation() ? config["ids_versions"]["google_play_store"] : config["ids_versions"]["other"];
+        let we_chat_release_source = getWeChatReleaseSourceByLocation();
+        let ids_versions = config["ids_versions"][we_chat_release_source];
         let exists = false, file_path;
         for (let i = 0; !exists && i < ids_versions.length; i++) {
             let supported_versions = ids_versions[i].split("~");
             if (supportedApplicationVersions(we_chat_versions, supported_versions[0], supported_versions[1])) {
-                file_path = "config/text_id/" + dir + ids_versions[i] + ".json";
+                file_path = "config/text_id/" + we_chat_release_source + "/" + ids_versions[i] + ".json";
                 exists = files.exists(file_path);
                 break;
             }
@@ -195,9 +202,9 @@ module.exports = (() => {
      * @param {Ojbect} running_config 
      */
     function checkInstallSource(checked, running_config) {
-        running_config["is_from_google_play_store"] = checked;
+        running_config["we_chat_release_source"] = checked ? "google_play_store" : "other";
         files.write("config/running_config.json", JSON.stringify(running_config));
-        if (checkSupportedWeChatVersions() && (checked != isFromGooglePlayStoreByApplication())) {
+        if (checked && checkSupportedWeChatVersions()) {
             dialogs.build({
                 content: default_language["install_source_different_warning"],
                 positive: default_language["confirm"],
@@ -221,9 +228,9 @@ module.exports = (() => {
                 negativeColor: "#008274",
                 cancelable: false
             };
-            if (!isFromGooglePlayStoreByApplication()) {
+            if (!getWeChatReleaseSourceByApplication()) {
                 view["checkBoxPrompt"] = default_language["is_from_google_play_store"];
-                view["checkBoxChecked"] = isFromGooglePlayStoreByLocation();
+                view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }
             dialogs.build(view)
             .on("single_choice", (index, item) => {
@@ -254,9 +261,9 @@ module.exports = (() => {
                 negativeColor: "#008274",
                 cancelable: false
             };
-            if (!isFromGooglePlayStoreByApplication()) {
+            if (!getWeChatReleaseSourceByApplication()) {
                 view["checkBoxPrompt"] = default_language["is_from_google_play_store"];
-                view["checkBoxChecked"] = isFromGooglePlayStoreByLocation();
+                view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }
             dialogs.build(view)
             .on("single_choice", (index, item) => {
@@ -287,8 +294,8 @@ module.exports = (() => {
         checkSupportedWeChatVersions: checkSupportedWeChatVersions,
         checkFile: checkFile,
         checkService: checkService,
-        isFromGooglePlayStoreByApplication: isFromGooglePlayStoreByApplication,
-        isFromGooglePlayStoreByLocation: isFromGooglePlayStoreByLocation,
+        getWeChatReleaseSourceByApplication: getWeChatReleaseSourceByApplication,
+        getWeChatReleaseSourceByLocation: getWeChatReleaseSourceByLocation,
         stopScript: stopScript,
         checkInstallSource: checkInstallSource,
         testFriends: testFriends,
