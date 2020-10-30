@@ -55,7 +55,7 @@
         let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
-            if (!db_util.isExistFriendRemark(friend_remark) && !db_util.addFriend({friend_remark: friend_remark, enabled: false})) {
+            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({friend_remark: friend_remark, label: "", enabled: false}))) {
                 ui.run(() => {
                     window.import_friends_fail_text.setText(window.import_friends_fail_text.text() + friend_remark + "\n");
                     window.import_friends_fail_text_scroll.scrollTo(0, window.import_friends_fail_text.getHeight());

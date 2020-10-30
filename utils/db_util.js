@@ -22,26 +22,6 @@ module.exports = (() => {
         "friend_type": "int"
     };
     /**
-     * @typedef Label
-     * @property {String} label
-     * @property {String} count
-     * @property {boolean} enabled
-     */
-    const PROPERTY_MAPPING_TYPE_FOR_LABEL = {
-        "label": "String",
-        "count": "String",
-        "enabled": "boolean"
-    };
-    /**
-     * @typedef Friend
-     * @property {String} friend_remark
-     * @property {boolean} enabled
-     */
-    const PROPERTY_MAPPING_TYPE_FOR_FRIEND = {
-        "friend_remark": "String",
-        "enabled": "boolean"
-    };
-    /**
      * @typedef LabelFriend
      * @property {String} label 
      * @property {String} friend_remark 
@@ -140,7 +120,7 @@ module.exports = (() => {
             }
             values.put(key, String(object[key]));
         }
-        let result = db.update(table_name, values, where_key + " = ?", [object[where_key]]);
+        let result = where_key != null ? db.update(table_name, values, where_key + " = ?", [object[where_key]]) : db.update(table_name, values, null, null);
         close(db);
         return result > 0;
     }
@@ -214,25 +194,7 @@ module.exports = (() => {
     }
 
     /**
-     * 新增标签
-     * @param {Label} label 
-     * @returns {boolean} 
-     */
-    function addLabel(label) {
-        return addRow("label_list", label);
-    }
-
-    /**
      * 新增好友
-     * @param {Friend} friend 
-     * @returns {boolean} 
-     */
-    function addFriend(friend) {
-        return addRow("friend_list", friend);
-    }
-
-    /**
-     * 新增标签，好友联动
      * @param {LabelFriend} label_friend
      * @returns {boolean} 
      */
@@ -261,16 +223,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function deleteAllLabel() {
-        return deleteRows("label_list", null, null);
-    }
-    
-    /**
-     * 删除标签
-     * @param {String} label
-     * @returns {boolean}
-     */
-    function deleteLabelByLabel(label) {
-        return deleteRows("label_list", "label = ?", [label]);
+        return modifyRow("label_friend_list", {label: ""}, null);
     }
 
     /**
@@ -278,23 +231,6 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function deleteAllFriend() {
-        return deleteRows("friend_list", null, null);
-    }
-
-    /**
-     * 删除好友
-     * @param {String} friend_remark 
-     * @returns {boolean} 
-     */
-    function deleteFriendByFriendRemark(friend_remark) {
-        return deleteRows("friend_list", "friend_remark = ?", [friend_remark]);
-    }
-
-    /**
-     * 所有删除标签、好友联动
-     * @returns {boolean} 
-     */
-    function deleteAllLabelFriend() {
         return deleteRows("label_friend_list", null, null);
     }
 
@@ -326,21 +262,12 @@ module.exports = (() => {
     }
 
     /**
-     * 修改标签
-     * @param {Label} label 
-     * @returns {boolean} 
-     */
-    function modifyLabel(label) {
-        return modifyRow("label_list", label, "label");
-    }
-
-    /**
      * 修改好友
      * @param {Friend} friend 
      * @returns {boolean} 
      */
     function modifyFriend(friend) {
-        return modifyRow("friend_list", friend, "friend_remark");
+        return modifyRow("label_friend_list", friend, "friend_remark");
     }
 
     /**
@@ -359,15 +286,6 @@ module.exports = (() => {
      */
     function modifyLabelFriend(label_friend) {
         return modifyRow("label_friend_list", label_friend, "friend_remark");
-    }
-
-    /**
-     * 联动标签
-     * @param {String} label 
-     */
-    function labelFriendLinkageLabel(label) {
-        let enabled = countRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND label = ?", [label], PROPERTY_MAPPING_TYPE_FOR_LABEL) > 0;
-        return modifyLabel({label: label, enabled: enabled});
     }
 
     /**
@@ -409,7 +327,22 @@ module.exports = (() => {
      * @returns {Array<Label>}
      */
     function findAllLabel() {
-        return findRows("SELECT label_list.label,COUNT(*) AS count,label_list.enabled FROM label_list JOIN label_friend_list ON label_list.label = label_friend_list.label GROUP BY label_list.label", null, PROPERTY_MAPPING_TYPE_FOR_LABEL);
+        let labels = [], label_map = {};
+        let label_friend_list = findLabelFriendList();
+        for (let i = 0; i < label_friend_list.length; i++) {
+            let label_name = label_friend_list[i]["label"];
+            if (label_name) {
+                label = label_map[label_name];
+                if (!label) {
+                    label = {label: label_name, enabled: false, count: 0};
+                    label_map[label_name] = label;
+                    labels.push(label);
+                }
+                label["count"] = label["count"] + 1;
+                label["enabled"] = label_friend_list[i]["enabled"] || label["enabled"];
+            }
+        }
+        return labels;
     }
 
     /**
@@ -424,11 +357,20 @@ module.exports = (() => {
 
     /**
      * 查找好友
+     * @param {String} friend_remark 
+     * @returns {Array<Friend>}
+     */
+    function findLabelFriendByFriendRemark(friend_remark) {
+        return findRows("SELECT * FROM label_friend_list WHERE friend_remark = ?", [friend_remark], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND).shift();
+    }
+
+    /**
+     * 查找好友
      * @param {int} page 
      * @returns {Array<Friend>}
      */
-    function findFriendList(page) {
-        return findRows("SELECT * FROM friend_list LIMIT ? OFFSET ?", [PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_FRIEND);
+    function findLabelFriendList(page) {
+        return findRows("SELECT * FROM label_friend_list LIMIT ? OFFSET ?", [PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
     }
 
     /**
@@ -448,15 +390,6 @@ module.exports = (() => {
     function isTestedFriendForWeChatID(we_chat_id) {
         return isExistRow("SELECT * FROM tested_friend_list WHERE we_chat_id = ? AND friend_type != ?", [we_chat_id, IGNORED_FRIEND_TYPE]);
     }
-    
-    /**
-     * 标签已存在
-     * @param {String} label 标签
-     * @returns {boolean} 
-     */
-    function isExistLabel(label) {
-        return isExistRow("SELECT * FROM label_list WHERE label = ?", [label]);
-    }
 
     /**
      * 好友备注已存在
@@ -464,11 +397,11 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function isExistFriendRemark(friend_remark) {
-        return isExistRow("SELECT * FROM friend_list WHERE friend_remark = ?", [friend_remark]);
+        return isExistRow("SELECT * FROM label_friend_list WHERE friend_remark = ?", [friend_remark]);
     }
 
     /**
-     * 标签、好友备注已联动
+     * 好友备注已存在
      * @param {String} friend_remark 
      * @returns {boolean}
      */
@@ -483,15 +416,6 @@ module.exports = (() => {
      */
     function isEnabledForLabelFriendByFriendRemark(friend_remark) {
         return isExistRow("SELECT * FROM label_friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
-    }
-
-    /**
-     * 忽略该备注的好友
-     * @param {String} friend_remark 
-     * @returns {boolean} 
-     */
-    function isEnabledForFriendByFriendRemark(friend_remark) {
-        return isExistRow("SELECT * FROM friend_list WHERE enabled = 'true' AND friend_remark = ?", [friend_remark]);
     }
 
     /**
@@ -533,8 +457,8 @@ module.exports = (() => {
      * 获取好友页数
      * @returns {int}
      */
-    function getFriendTotalPage() {
-        return getTotalPage("SELECT * FROM friend_list", null);
+    function getLabelFriendTotalPage() {
+        return getTotalPage("SELECT * FROM label_friend_list", null);
     }
 
     /**
@@ -583,17 +507,6 @@ module.exports = (() => {
         + "friend_type TINYINT"
         + ")");
 
-        db.execSQL("CREATE TABLE IF NOT EXISTS friend_list("
-        + "friend_remark VARCHAR(128) PRIMARY KEY,"
-        + "enabled BOOLEAN"
-        + ")");
-
-        db.execSQL("CREATE TABLE IF NOT EXISTS label_list("
-        + "label VARCHAR(64) PRIMARY KEY,"
-        + "count INT,"
-        + "enabled BOOLEAN"
-        + ")");
-
         db.execSQL("CREATE TABLE IF NOT EXISTS label_friend_list("
         + "friend_remark VARCHAR(128) PRIMARY KEY,"
         + "label VARCHAR(64),"
@@ -605,41 +518,33 @@ module.exports = (() => {
 
     return {
         addTestedFriend: addTestedFriend,
-        addLabel: addLabel,
-        addFriend: addFriend,
         addLabelFriend: addLabelFriend,
         deleteAllTestedFriend: deleteAllTestedFriend,
         deleteIgnoredTestFriend: deleteIgnoredTestFriend,
         deleteAllLabel: deleteAllLabel,
-        deleteLabelByLabel: deleteLabelByLabel,
         deleteAllFriend: deleteAllFriend,
-        deleteFriendByFriendRemark: deleteFriendByFriendRemark,
-        deleteAllLabelFriend: deleteAllLabelFriend,
         deleteLabelFriendByLabel: deleteLabelFriendByLabel,
         deleteLabelFriendByFriendRemark: deleteLabelFriendByFriendRemark,
         modifyTestedFriend: modifyTestedFriend,
-        modifyLabel: modifyLabel,
         modifyLabelFriendByLabel: modifyLabelFriendByLabel,
         modifyLabelFriend: modifyLabelFriend,
-        labelFriendLinkageLabel: labelFriendLinkageLabel,
         modifyFriend: modifyFriend,
         findAbnormalFriendList: findAbnormalFriendList,
         findNormalFriendList: findNormalFriendList,
         findIgnoredTestFriendList: findIgnoredTestFriendList,
         findAllLabel: findAllLabel,
         findLabelFriendListByLabel: findLabelFriendListByLabel,
-        findFriendList: findFriendList,
+        findLabelFriendByFriendRemark: findLabelFriendByFriendRemark,
+        findLabelFriendList: findLabelFriendList,
         isTestedFriendForFriendRemark: isTestedFriendForFriendRemark,
         isTestedFriendForWeChatID: isTestedFriendForWeChatID,
-        isExistLabel: isExistLabel,
         isExistFriendRemark: isExistFriendRemark,
         isExistLabelFriend: isExistLabelFriend,
         isEnabledForLabelFriendByFriendRemark: isEnabledForLabelFriendByFriendRemark,
-        isEnabledForFriendByFriendRemark: isEnabledForFriendByFriendRemark,
         isSelectedFriendForDeleteByFriendRemark: isSelectedFriendForDeleteByFriendRemark,
         isSelectedFriendForDeleteByWeChatID: isSelectedFriendForDeleteByWeChatID,
         countWaitDeleteFriend: countWaitDeleteFriend,
-        getFriendTotalPage: getFriendTotalPage,
+        getLabelFriendTotalPage: getLabelFriendTotalPage,
         getLabelFriendTotalPageByLabel: getLabelFriendTotalPageByLabel,
         getAbnormalFriendTotalPage: getAbnormalFriendTotalPage,
         getNormalFriendTotalPage: getNormalFriendTotalPage,

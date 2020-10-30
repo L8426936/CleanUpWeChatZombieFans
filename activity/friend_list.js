@@ -52,8 +52,8 @@
      * 初始化UI
      */
     function initUI() {
-        ui.friend_list.setDataSource(db_util.findFriendList());
-        let total_page = db_util.getFriendTotalPage();
+        ui.friend_list.setDataSource(db_util.findLabelFriendList());
+        let total_page = db_util.getLabelFriendTotalPage();
         ui.total_page_text.setText(total_page > 0 ? String(total_page) : "-");
         ui.current_page_text.setText(total_page > 0 ? String(1) : "-");
         modifyPageInfoShow(total_page > 0 ? 1 : "-");
@@ -63,7 +63,7 @@
     function modifyPageInfoShow(current_page) {
         if (Number.isInteger(current_page)) {
             ui.current_page_text.setText(String(current_page));
-            ui.friend_list.setDataSource(db_util.findFriendList(current_page));
+            ui.friend_list.setDataSource(db_util.findLabelFriendList(current_page));
             ui.friend_list.scrollToPosition(0);
         }
         ui.previous_page_button.enabled = current_page != 1 && current_page != '-';
@@ -102,30 +102,7 @@
     });
     
     ui.import_friends_button.on("click", () => {
-        if (app_util.checkInstalledWeChat()) {
-            let running_config = app_util.getRunningConfig();
-            let view = {
-                content: language["before_running_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                negative: language["cancel"],
-                negativeColor: "#008274",
-                cancelable: false
-            };
-            if (!app_util.isFromGooglePlayStoreByApplication()) {
-                view["checkBoxPrompt"] = language["is_from_google_play_store"];
-                view["checkBoxChecked"] = app_util.isFromGooglePlayStoreByLocation();
-            }
-            dialogs.build(view)
-            .on("check", checked => {
-                app_util.checkInstallSource(checked, running_config);
-            }).on("positive", () => {
-                if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
-                    engines.execScriptFile("modules/import_friends.js", {delay: 500});
-                    app_util.stopScript();
-                }
-            }).show();
-        }
+        app_util.importFriends();
     });
 
     ui.test_friends_button.on("click", () => {

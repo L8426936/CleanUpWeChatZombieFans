@@ -10,8 +10,7 @@
 * 仅支持简体中文
 * 检测僵尸粉
 * 删除好友
-* 支持标签黑、白名单模式
-* 支持好友备注黑、白名单模式
+* 支持黑、白名单模式
 
 
 ## 优势
@@ -23,7 +22,7 @@
 ## 使用教程
 ### 运行方式一
 1. 安装[Auto.js](https://github.com/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk?raw=true)
-2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)到Auto.js的脚本文件路径
+2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 ### 运行方式二（已知安卓10闪退）
 * 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFans/releases/latest)，安装apk

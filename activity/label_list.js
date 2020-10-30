@@ -11,7 +11,7 @@
             </list>
             <horizontal bg="#EBEBEB">
                 <button id="clear_labels_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <button id="import_labels_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
                 <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
             </horizontal>
         </vertical>
@@ -28,13 +28,13 @@
         language = app_util.getLanguage();
 
         ui.clear_labels_button.setText(language["clear_label"]);
-        ui.import_labels_button.setText(language["import_label"]);
+        ui.import_friends_button.setText(language["import_friend"]);
         ui.test_friends_button.setText(language["test_friend"]);
 
         if (!app_util.checkSupportedLanguage()) {
-            ui.import_labels_button.enabled = false;
+            ui.import_friends_button.enabled = false;
             ui.test_friends_button.enabled = false;
-            ui.import_labels_button.textColor = colors.parseColor("#B2B2B2");
+            ui.import_friends_button.textColor = colors.parseColor("#B2B2B2");
             ui.test_friends_button.textColor = colors.parseColor("#B2B2B2");
         }
     }
@@ -44,9 +44,13 @@
      * 初始化UI
      */
     function initUI() {
-        ui.label_list.setDataSource(db_util.findAllLabel());
+        let label_list = db_util.findAllLabel();
+        ui.label_list.setDataSource(label_list);
+        ui.clear_labels_button.enabled = label_list.length > 0;
+        ui.clear_labels_button.textColor = label_list.length > 0 ? colors.parseColor("#CC0000") : colors.parseColor("#B2B2B2");
     }
     initUI();
+
     // 当用户回到本界面时，resume事件会被触发
     ui.emitter.on("resume", function() {
         initUI();
@@ -69,51 +73,36 @@
         itemView.enabled_switch.on("click", () => {
             let label = itemHolder.item;
             label["enabled"] = itemView.enabled_switch.checked;
-            db_util.modifyLabel(label);
             db_util.modifyLabelFriendByLabel(label);
         });
     });
 
     ui.clear_labels_button.on("click", () => {
+        let running_config = app_util.getRunningConfig();
         dialogs.build({
             content: language["clear_alert_dialog_message"],
+            checkBoxPrompt: language["include_friend"],
+            checkBoxChecked: running_config["include_friend"],
             positive: language["cancel"],
             positiveColor: "#008274",
             negative: language["confirm"],
             negativeColor: "#008274",
             cancelable: false
+        }).on("check", checked => {
+            running_config["include_friend"] = checked;
+            files.write("config/running_config.json", JSON.stringify(running_config));
         }).on("negative", () => {
-            db_util.deleteAllLabel();
-            db_util.deleteAllLabelFriend();
+            if (running_config["include_friend"]) {
+                db_util.deleteAllFriend();
+            } else {
+                db_util.deleteAllLabel();
+            }
             initUI();
         }).show();
     });
     
-    ui.import_labels_button.on("click", () => {
-        if (app_util.checkInstalledWeChat()) {
-            let running_config = app_util.getRunningConfig();
-            let view = {
-                content: language["before_running_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                negative: language["cancel"],
-                negativeColor: "#008274",
-                cancelable: false
-            };
-            if (!app_util.isFromGooglePlayStoreByApplication()) {
-                view["checkBoxPrompt"] = language["is_from_google_play_store"];
-                view["checkBoxChecked"] = app_util.isFromGooglePlayStoreByLocation();
-            }
-            dialogs.build(view)
-            .on("check", checked => {
-                app_util.checkInstallSource(checked, running_config);
-            }).on("positive", () => {
-                if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
-                    engines.execScriptFile("modules/import_labels.js", {delay: 500});
-                    app_util.stopScript();
-                }
-            }).show();
-        }
+    ui.import_friends_button.on("click", () => {
+        app_util.importFriends();
     });
 
     ui.test_friends_button.on("click", () => {

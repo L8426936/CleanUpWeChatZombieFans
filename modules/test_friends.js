@@ -84,21 +84,13 @@
             if (repeat_friend_remark || !db_util.isTestedFriendForFriendRemark(last_friend_remark)) {
                 let enabled = true;
                 switch (running_config["test_friend_mode"]) {
-                    // 标签白名单
+                    // 白名单模式
                     case 0:
                         enabled = !db_util.isEnabledForLabelFriendByFriendRemark(last_friend_remark);
                         break;
-                    // 标签黑名单
+                    // 黑名单模式
                     case 1:
                         enabled = db_util.isEnabledForLabelFriendByFriendRemark(last_friend_remark);
-                        break;
-                    // 好友白名单
-                    case 2:
-                        enabled = !db_util.isEnabledForFriendByFriendRemark(last_friend_remark);
-                        break;
-                    // 好友黑名单
-                    case 3:
-                        enabled = db_util.isEnabledForFriendByFriendRemark(last_friend_remark);
                         break;
                 }
                 if (enabled && node_util.backtrackClickNode(friend_remark_node)) {

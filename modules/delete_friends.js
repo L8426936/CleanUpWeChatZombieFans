@@ -146,7 +146,6 @@
     function clickConfirmDelete() {
         if (node_util.backtrackClickNode(id(ids["confirm_delete"]).findOne())) {
             db_util.modifyTestedFriend({we_chat_id: last_we_chat_id, deleted: true});
-            db_util.deleteFriendByFriendRemark(last_friend_remark);
             db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
             step = 5;
             last_index--;

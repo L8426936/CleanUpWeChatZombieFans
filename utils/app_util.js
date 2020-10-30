@@ -212,7 +212,7 @@ module.exports = (() => {
             let running_config = getRunningConfig();
             let view = {
                 content: default_language["before_running_alert_dialog_message"],
-                items: [default_language["label_whitelist_mode"], default_language["label_blacklist_mode"], default_language["friend_whitelist_mode"], default_language["friend_blacklist_mode"]],
+                items: [default_language["whitelist_mode"], default_language["blacklist_mode"]],
                 itemsSelectMode: "single",
                 itemsSelectedIndex: running_config["test_friend_mode"],
                 positive: default_language["confirm"],
@@ -240,6 +240,44 @@ module.exports = (() => {
         }
     }
 
+    function importFriends() {
+        if (checkInstalledWeChat()) {
+            let running_config = getRunningConfig();
+            let view = {
+                content: default_language["before_running_alert_dialog_message"],
+                items: [default_language["import_friends_by_label_list"], default_language["import_friends_by_friend_list"]],
+                itemsSelectMode: "single",
+                itemsSelectedIndex: running_config["import_friend_mode"],
+                positive: default_language["confirm"],
+                positiveColor: "#008274",
+                negative: default_language["cancel"],
+                negativeColor: "#008274",
+                cancelable: false
+            };
+            if (!isFromGooglePlayStoreByApplication()) {
+                view["checkBoxPrompt"] = default_language["is_from_google_play_store"];
+                view["checkBoxChecked"] = isFromGooglePlayStoreByLocation();
+            }
+            dialogs.build(view)
+            .on("single_choice", (index, item) => {
+                running_config["import_friend_mode"] = index;
+                files.write("config/running_config.json", JSON.stringify(running_config));
+            })
+            .on("check", checked => {
+                checkInstallSource(checked, running_config);
+            }).on("positive", () => {
+                if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
+                    if (running_config["import_friend_mode"] == 0) {
+                        engines.execScriptFile("modules/import_friends_by_label_list.js", {delay: 500});
+                    } else {
+                        engines.execScriptFile("modules/import_friends_by_friend_list.js", {delay: 500});
+                    }
+                    stopScript();
+                }
+            }).show();
+        }
+    }
+
     return {
         getLanguage: getLanguage,
         getRunningConfig: getRunningConfig,
@@ -253,6 +291,7 @@ module.exports = (() => {
         isFromGooglePlayStoreByLocation: isFromGooglePlayStoreByLocation,
         stopScript: stopScript,
         checkInstallSource: checkInstallSource,
-        testFriends: testFriends
+        testFriends: testFriends,
+        importFriends: importFriends
     };
 })();

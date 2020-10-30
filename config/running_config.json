@@ -1,5 +1,7 @@
 {
     "first_time_run": true,
     "test_friend_mode": 0,
-    "is_from_google_play_store": false
+    "is_from_google_play_store": false,
+    "include_friend": false,
+    "import_friend_mode": 0
 }
