@@ -101,30 +101,7 @@
             }).show();
         }
 
-        threads.start(function () {
-            let update_util = require("utils/update_util.js");
-            if (update_util.checkUpdate()) {
-                let keep = true, yes = false;
-                dialogs.build({
-                    content: language["update_alert_dialog_message"],
-                    positive: language["confirm"],
-                    positiveColor: "#008274",
-                    negative: language["cancel"],
-                    negativeColor: "#008274",
-                    cancelable: false
-                }).on("positive", () => {
-                    yes = true;
-                    keep = false;
-                }).on("negative", () => {
-                    keep = false;
-                }).show();
-                while(keep) {
-                }
-                if (yes) {
-                    update(update_util);
-                }
-            }
-        });
+        update(false);
     }
     init();
 
@@ -150,22 +127,70 @@
 
     /**
      * 更新
-     * @param {*} update_util 
+     * @param {boolean} show_update_info
      */
-    function update(update_util) {
-        let updated = update_util.update();
-        if (updated) {
-            toast(language["update_success"]);
-            engines.myEngine().forceStop();
-            engines.execScriptFile("main.js");
-        } else {
-            dialogs.build({
-                content: language["update_fail_alert_dialog_message"],
-                negative: language["confirm"],
-                negativeColor: "#008274",
-                cancelable: false
-            }).show();
-        }
+    function update(show_update_info) {
+        threads.start(function() {
+            let update_util = require("utils/update_util.js");
+            let remote_config = update_util.remoteConfig();
+            if (!remote_config && show_update_info) {
+                dialogs.build({
+                    content: language["get_update_info_fail_alert_dialog_message"],
+                    positive: language["confirm"],
+                    positiveColor: "#008274",
+                    cancelable: false
+                }).show();
+            } else {
+                let local_config = JSON.parse(files.read("project.json"));
+                if (remote_config["versionCode"] > local_config["versionCode"]) {
+                    let keep = true, yes = false;
+                    let dialog = dialogs.build({
+                        content: language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]),
+                        positive: language["update"],
+                        positiveColor: "#008274",
+                        negative: language["cancel"],
+                        negativeColor: "#008274",
+                        neutral: language["show_history_update_info"],
+                        cancelable: false
+                    }).on("positive", () => {
+                        yes = true;
+                        keep = false;
+                    }).on("negative", () => {
+                        keep = false;
+                    }).on("neutral", () => {
+                        dialog.show();
+                        showHistoryUpdateInfo();
+                    }).show();
+                    while(keep) {
+                    }
+                    if (yes && update_util.update()) {
+                        toast(language["update_success"]);
+                        engines.myEngine().forceStop();
+                        engines.execScriptFile("main.js");
+                    }
+                } else if (show_update_info) {
+                    dialogs.build({
+                        content: language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]),
+                        positive: language["confirm"],
+                        positiveColor: "#008274",
+                        neutral: language["show_history_update_info"],
+                        cancelable: false
+                    }).on("neutral", () => {
+                        showHistoryUpdateInfo();
+                    }).show();
+                }
+            }
+        });
+    }
+
+    function showHistoryUpdateInfo() {
+        let update_util = require("utils/update_util.js");
+        dialogs.build({
+            content: update_util.historyUpdateInfo() || language["get_history_update_info_fail_alert_dialog_message"],
+            negative: language["confirm"],
+            negativeColor: "#008274",
+            cancelable: false
+        }).show();
     }
 
     function showInstructionsForUse() {
@@ -188,27 +213,7 @@
     ui.emitter.on("options_item_selected", (e, item) => {
         switch (item.getTitle()) {
             case language["update"]:
-                threads.start(function () {
-                    let update_util = require("utils/update_util.js");
-                    let result = update_util.checkUpdate();
-                    if (result == undefined) {
-                        dialogs.build({
-                            content: language["get_update_info_fail_alert_dialog_message"],
-                            positive: language["confirm"],
-                            positiveColor: "#008274",
-                            cancelable: false
-                        }).show();
-                    } else if (result) {
-                        update(update_util);
-                    } else {
-                        dialogs.build({
-                            content: language["no_need_update_alert_dialog_message"],
-                            positive: language["confirm"],
-                            positiveColor: "#008274",
-                            cancelable: false
-                        }).show();
-                    }
-                });
+                update(true);
                 break;
             case language["instructions_for_use_title"]:
                 showInstructionsForUse();

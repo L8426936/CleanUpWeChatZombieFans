@@ -35,12 +35,12 @@
     "about": "关于",
     "about_alert_dialog_message": "源码链接：https://github.com/L8426936/CleanUpWeChatZombieFans",
     "open_in_browser": "在浏览器打开",
-    "update_alert_dialog_message": "发现新版本，是否更新",
     "update_fail_alert_dialog_message": "部分文件更新失败，使用右上角菜单手动更新",
     "update_success": "更新成功",
     "update": "更新",
-    "get_update_info_fail_alert_dialog_message": "更新信息获取失败，请重试",
-    "no_need_update_alert_dialog_message": "已是最新版，无需更新",
+    "get_update_info_fail_alert_dialog_message": "获取更新信息失败，请重试",
+    "get_history_update_info_fail_alert_dialog_message": "获取历史更新信息失败，请重试",
+    "versions_info": "当前版本：v%current_versions_name_c%current_versions_code\n最新版本：v%last_versions_name_c%last_versions_code",
     "previous_page": "上一页",
     "next_page": "下一页",
     "label_list": "标签列表",
@@ -50,5 +50,6 @@
     "include_friend": "包括标签下的好友",
     "import_friends_by_label_list": "通过微信标签列表",
     "import_friends_by_friend_list": "通过微信好友列表",
-    "import_friends_fail_title": "以下好友导入失败"
+    "import_friends_fail_title": "以下好友导入失败",
+    "show_history_update_info": "查看历史更新"
 }

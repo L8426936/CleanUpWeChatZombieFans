@@ -1,13 +1,13 @@
 {
-    "main.js": "0af9c755394dc94587588726a93bf5de",
-    "project.json": "106efcf8dc90fe44e3ee8b52650c00bc",
+    "main.js": "20f9703156c3f51f049b675715ea42db",
+    "project.json": "b21f935e6a0de4b21799be0223c4354c",
     "activity/friend_list.js": "dae1001e761627b0bc81c1b0a7f7bca8",
     "activity/label_friend_list.js": "f4cf1aeb66f1e0fd2882f54eaf2ee97f",
     "activity/label_list.js": "e641d09ff237b8f8a230c660a9bf42c6",
     "config/config.json": "13ce67265aecde15d39e8760c28580e6",
-    "config/files_md5.json" : "0b6bcb0ca2a13714c4c6255840a5743d",
+    "config/files_md5.json" : "f6b637298a28eb3954f7f156b10a2a98",
     "config/running_config.json": "88a0449c56fa464e872b871d6163e47f",
-    "config/languages/zh-CN.json": "27d16bbec8ac9acaeb64fb58e0aaa4d7",
+    "config/languages/zh-CN.json": "bf783e43bc053472395ca8818bd9db95",
     "config/text_id/google_play_store/7.0.16~7.0.16.json": "ddb73a8a86baab71de2784aee666af73",
     "config/text_id/google_play_store/7.0.17~7.0.17.json": "33d33c0b906ae60e030020065838570d",
     "config/text_id/other/7.0.4~7.0.4.json": "0898ccb57fe916b2fee854ea5b8197c0",
@@ -28,5 +28,5 @@
     "utils/app_util.js": "82d4961492df971c2eff89ffa4433956",
     "utils/db_util.js": "a8efca526c31486a5215e8a60b45089f",
     "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
-    "utils/update_util.js": "4ab943cc2a3a89ec175ab9c439a5a4be"
+    "utils/update_util.js": "fa84a07d57387dddf33f6bd2d1e664af"
 }

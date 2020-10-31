@@ -8,14 +8,14 @@ module.exports = (() => {
      * 校验是否有更新
      * @returns
      */
-    function checkUpdate() {
+    function remoteConfig() {
         let project_result = download(base_url + "project.json");
-        if (project_result["success"] && files.exists("project.json")) {
-            let remote_project = JSON.parse(project_result["content"]);
-            let local_project = JSON.parse(files.read("project.json"));
-            return local_project["versionCode"] < remote_project["versionCode"];
-        }
-        return undefined;
+        return project_result["success"] ? JSON.parse(project_result["content"]) : null;
+    }
+
+    function historyUpdateInfo() {
+        let result = download(base_url + "history_update_info.txt");
+        return result["success"] ? result["content"] : null;
     }
 
     /**
@@ -91,5 +91,5 @@ module.exports = (() => {
         return {content: content, success: success};
     }
 
-    return {checkUpdate: checkUpdate, update: update};
+    return {remoteConfig: remoteConfig, historyUpdateInfo: historyUpdateInfo, update: update};
 })();
