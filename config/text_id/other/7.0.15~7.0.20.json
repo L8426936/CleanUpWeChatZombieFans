@@ -21,7 +21,6 @@
     "payee": "ez7",
     "transfer_amount": "gwo",
     "confirm_transfer": "cxi",
-    "close_transfer": "#",
     "abnormal_message": "dos",
     "confirm_abnormal_message": "doz",
     "back_to_chat": "dn",

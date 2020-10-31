@@ -191,7 +191,7 @@
      */
     function assertionFriend() {
         while (true) {
-            if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce()) || node_util.backtrackClickNode(id(ids["close_transfer"]).findOnce())) {
+            if (node_util.backtrackClickNode(descMatches(texts["close"]).findOnce()) || node_util.backtrackClickNode(descMatches(texts["return"]).findOnce())) {
                 db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 8;
                 break;

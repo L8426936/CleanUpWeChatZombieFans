@@ -21,7 +21,6 @@
     "payee": "foj",
     "transfer_amount": "hsq",
     "confirm_transfer": "d9n",
-    "close_transfer": "#",
     "abnormal_message": "eb1",
     "confirm_abnormal_message": "eb8",
     "back_to_chat": "dw",

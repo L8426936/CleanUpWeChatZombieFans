@@ -21,7 +21,6 @@
     "payee": "erc",
     "transfer_amount": "glb",
     "confirm_transfer": "csd",
-    "close_transfer": "#",
     "abnormal_message": "diz",
     "confirm_abnormal_message": "dj6",
     "back_to_chat": "dn",

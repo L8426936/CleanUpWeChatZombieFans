@@ -5,7 +5,7 @@
 
 
 ## 功能简介
-* 适用中国区微信7.0.4~7.0.20版本
+* 适用中国区微信7.0.12~7.0.20版本
 * 适用Google Play Store版微信7.0.16~7.0.17版本
 * 仅支持简体中文
 * 检测僵尸粉
@@ -22,7 +22,7 @@
 ## 使用教程
 ### 运行方式一
 1. 安装[Auto.js](https://github.com/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk?raw=true)
-2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
+2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)解压到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 ### 运行方式二（已知安卓10闪退）
 * 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFans/releases/latest)，安装apk
