@@ -23,7 +23,8 @@ module.exports = (() => {
      * @returns {String}
      */
     function getWeChatReleaseSourceByLocation() {
-        return getWeChatReleaseSourceByApplication() || getRunningConfig()["we_chat_release_source"];
+        let running_config = getRunningConfig();
+        return running_config["manual_control_we_chat_release_source"] ? running_config["we_chat_release_source"] : getWeChatReleaseSourceByApplication() || running_config["we_chat_release_source"];
     }
 
     /**
@@ -204,13 +205,16 @@ module.exports = (() => {
     function checkInstallSource(checked, running_config) {
         running_config["we_chat_release_source"] = checked ? "google_play_store" : "other";
         files.write("config/running_config.json", JSON.stringify(running_config));
-        if (checked && checkSupportedWeChatVersions()) {
-            dialogs.build({
-                content: default_language["install_source_different_warning"],
-                positive: default_language["confirm"],
-                positiveColor: "#008274",
-                cancelable: false
-            }).show();
+        if (checkSupportedWeChatVersions()) {
+            let we_chat_release_source = getWeChatReleaseSourceByApplication();
+            if (we_chat_release_source && running_config["we_chat_release_source"] != we_chat_release_source) {
+                dialogs.build({
+                    content: default_language["install_source_different_warning"],
+                    positive: default_language["confirm"],
+                    positiveColor: "#008274",
+                    cancelable: false
+                }).show();
+            }
         }
     }
 
@@ -228,7 +232,7 @@ module.exports = (() => {
                 negativeColor: "#008274",
                 cancelable: false
             };
-            if (!getWeChatReleaseSourceByApplication()) {
+            if (running_config["manual_control_we_chat_release_source"]) {
                 view["checkBoxPrompt"] = default_language["is_from_google_play_store"];
                 view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }
@@ -261,7 +265,7 @@ module.exports = (() => {
                 negativeColor: "#008274",
                 cancelable: false
             };
-            if (!getWeChatReleaseSourceByApplication()) {
+            if (running_config["manual_control_we_chat_release_source"]) {
                 view["checkBoxPrompt"] = default_language["is_from_google_play_store"];
                 view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }

@@ -3,5 +3,6 @@
     "test_friend_mode": 0,
     "we_chat_release_source": "other",
     "include_friend": false,
-    "import_friend_mode": 0
+    "import_friend_mode": 0,
+    "manual_control_we_chat_release_source": false
 }

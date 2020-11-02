@@ -51,5 +51,7 @@
     "import_friends_by_label_list": "通过微信标签列表",
     "import_friends_by_friend_list": "通过微信好友列表",
     "import_friends_fail_title": "以下好友导入失败",
-    "show_history_update_info": "查看历史更新"
+    "show_history_update_info": "查看历史更新",
+    "setting": "设置",
+    "manual_control_we_chat_release_source": "手动选择[Google Play Store]"
 }

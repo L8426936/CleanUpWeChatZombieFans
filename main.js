@@ -85,6 +85,9 @@
         if (app_util.checkSupportedLanguage()) {
             if (running_config["first_time_run"]) {
                 running_config["first_time_run"] = false;
+                let we_chat_release_source = app_util.getWeChatReleaseSourceByApplication();
+                running_config["manual_control_we_chat_release_source"] = !(we_chat_release_source);
+                running_config["we_chat_release_source"] = we_chat_release_source || "other";
                 files.write("config/running_config.json", JSON.stringify(running_config));
                 showInstructionsForUse();
             }
@@ -208,6 +211,7 @@
         menu.add(language["update"]);
         menu.add(language["instructions_for_use_title"]);
         menu.add(language["about"]);
+        menu.add(language["setting"]);
     });
     // 监听选项菜单点击
     ui.emitter.on("options_item_selected", (e, item) => {
@@ -229,7 +233,10 @@
                 }).on("positive", () => {
                     app.openUrl("https://github.com/L8426936/CleanUpWeChatZombieFans");
                 }).show();
-                break
+                break;
+            case language["setting"]:
+                engines.execScriptFile("activity/setting.js");
+                break;
         }
         e.consumed = true;
     });
@@ -435,7 +442,7 @@
                     negativeColor: "#CC0000",
                     cancelable: false
                 };
-                if (!app_util.getWeChatReleaseSourceByApplication()) {
+                if (running_config["manual_control_we_chat_release_source"]) {
                     view["checkBoxPrompt"] = language["is_from_google_play_store"];
                     view["checkBoxChecked"] = app_util.getWeChatReleaseSourceByLocation() == "google_play_store";
                 }

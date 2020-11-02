@@ -88,7 +88,6 @@
 
     ui.clear_friends_button.on("click", () => {
         dialogs.build({
-            title: language["clear_friend_dialog_title"],
             content: language["clear_alert_dialog_message"],
             positive: language["cancel"],
             positiveColor: "#008274",
