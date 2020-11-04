@@ -1,7 +1,7 @@
 "ui";
 (() => {
     ui.layout(
-        <vertical>
+        <vertical padding="8">
             <checkbox id="manual_control_we_chat_release_source" />
         </vertical>
     );

@@ -89,10 +89,7 @@
             title: language["clear_friend_dialog_title"],
             content: language["clear_alert_dialog_message"],
             positive: language["cancel"],
-            positiveColor: "#008274",
-            negative: language["confirm"],
-            negativeColor: "#008274",
-            cancelable: false
+            negative: language["confirm"]
         }).on("negative", () => {
             if (db_util.deleteLabelFriendByLabel(label)) {
                 initUI();

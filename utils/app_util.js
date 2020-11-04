@@ -105,9 +105,7 @@ module.exports = (() => {
         if (!installed_we_chat) {
             dialogs.build({
                 content: default_language["uninstalled_we_chat_alert_dialog_message"],
-                positive: default_language["confirm"],
-                positiveColor: "#008274",
-                cancelable: false
+                positive: default_language["confirm"]
             }).show();
         }
         return installed_we_chat;
@@ -126,9 +124,7 @@ module.exports = (() => {
         if (!supported) {
             dialogs.build({
                 content: default_language["unsupported_we_chat_versions_alert_dialog_message"].replace("%min_supported_versions", min_supported_versions).replace("%max_supported_versions", max_supported_versions).replace("%we_chat_versions", we_chat_versions),
-                positive: default_language["confirm"],
-                positiveColor: "#008274",
-                cancelable: false
+                positive: default_language["confirm"]
             }).show();
         }
         return supported;
@@ -154,9 +150,7 @@ module.exports = (() => {
         if (!exists) {
             dialogs.build({
                 content: default_language["file_lost_alert_dialog_message"].replace("%file_path", file_path),
-                positive: default_language["confirm"],
-                negativeColor: "#008274",
-                cancelable: false
+                positive: default_language["confirm"]
             }).show();
         }
         return exists;
@@ -172,9 +166,7 @@ module.exports = (() => {
             dialogs.build({
                 content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name", getAppName(context.getPackageName())),
                 positive: default_language["confirm"],
-                positiveColor: "#008274",
                 negative: default_language["cancel"],
-                negativeColor: "#008274",
                 cancelable: false
             }).on("positive", () => {
                 app.startActivity({
@@ -211,7 +203,6 @@ module.exports = (() => {
                 dialogs.build({
                     content: default_language["install_source_different_warning"],
                     positive: default_language["confirm"],
-                    positiveColor: "#008274",
                     cancelable: false
                 }).show();
             }
@@ -227,9 +218,7 @@ module.exports = (() => {
                 itemsSelectMode: "single",
                 itemsSelectedIndex: running_config["test_friend_mode"],
                 positive: default_language["confirm"],
-                positiveColor: "#008274",
                 negative: default_language["cancel"],
-                negativeColor: "#008274",
                 cancelable: false
             };
             if (running_config["manual_control_we_chat_release_source"]) {
@@ -260,9 +249,7 @@ module.exports = (() => {
                 itemsSelectMode: "single",
                 itemsSelectedIndex: running_config["import_friend_mode"],
                 positive: default_language["confirm"],
-                positiveColor: "#008274",
                 negative: default_language["cancel"],
-                negativeColor: "#008274",
                 cancelable: false
             };
             if (running_config["manual_control_we_chat_release_source"]) {

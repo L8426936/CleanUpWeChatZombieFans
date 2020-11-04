@@ -84,10 +84,7 @@
             checkBoxPrompt: language["include_friend"],
             checkBoxChecked: running_config["include_friend"],
             positive: language["cancel"],
-            positiveColor: "#008274",
-            negative: language["confirm"],
-            negativeColor: "#008274",
-            cancelable: false
+            negative: language["confirm"]
         }).on("check", checked => {
             running_config["include_friend"] = checked;
             files.write("config/running_config.json", JSON.stringify(running_config));

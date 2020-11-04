@@ -90,10 +90,7 @@
         dialogs.build({
             content: language["clear_alert_dialog_message"],
             positive: language["cancel"],
-            positiveColor: "#008274",
-            negative: language["confirm"],
-            negativeColor: "#008274",
-            cancelable: false
+            negative: language["confirm"]
         }).on("negative", () => {
             db_util.deleteAllFriend();
             initUI();

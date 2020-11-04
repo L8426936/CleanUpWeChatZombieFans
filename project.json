@@ -14,6 +14,6 @@
   "name": "清理微信僵尸粉",
   "packageName": "com.niming.cleanupwechatzombiefans",
   "scripts": {},
-  "versionCode": 43,
-  "versionName": "3.7.0"
+  "versionCode": 44,
+  "versionName": "3.8.0"
 }

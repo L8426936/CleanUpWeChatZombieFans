@@ -99,8 +99,7 @@
             dialogs.build({
                 content: "Does not support system language",
                 positive: "Confirm",
-                positiveColor: "#008274",
-                cancelable: false
+                positiveColor: "#008274"
             }).show();
         }
 
@@ -130,79 +129,91 @@
 
     /**
      * 更新
-     * @param {boolean} show_update_info
+     * @param {boolean} show_update_dialog
      */
-    function update(show_update_info) {
+    function update(show_update_dialog) {
+        let cancel = false;
+        let dialog = dialogs.build({
+            content: language["wait_get_update_info"],
+            positive: language["cancel"]
+        }).on("positive", () => {
+            cancel = true;
+        });
+        if (show_update_dialog) {
+            dialog.show();
+        }
         threads.start(function() {
             let update_util = require("utils/update_util.js");
             let remote_config = update_util.remoteConfig();
-            if (!remote_config && show_update_info) {
-                dialogs.build({
-                    content: language["get_update_info_fail_alert_dialog_message"],
-                    positive: language["confirm"],
-                    positiveColor: "#008274",
-                    cancelable: false
-                }).show();
-            } else {
-                let local_config = JSON.parse(files.read("project.json"));
-                if (remote_config["versionCode"] > local_config["versionCode"]) {
-                    let keep = true, yes = false;
-                    let dialog = dialogs.build({
-                        content: language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]),
-                        positive: language["update"],
-                        positiveColor: "#008274",
-                        negative: language["cancel"],
-                        negativeColor: "#008274",
-                        neutral: language["show_history_update_info"],
-                        cancelable: false
-                    }).on("positive", () => {
-                        yes = true;
-                        keep = false;
-                    }).on("negative", () => {
-                        keep = false;
-                    }).on("neutral", () => {
-                        dialog.show();
-                        showHistoryUpdateInfo();
-                    }).show();
-                    while(keep) {
+            if (!cancel) {
+                if (!remote_config) {
+                    if (show_update_dialog) {
+                        dialog.setContent(language["update_info_get_fail_alert_dialog_message"]);
+                        dialog.setActionButton("positive", language["confirm"]);
                     }
-                    if (yes && update_util.update()) {
-                        toast(language["update_success"]);
-                        engines.myEngine().forceStop();
-                        engines.execScriptFile("main.js");
-                    }
-                } else if (show_update_info) {
-                    dialogs.build({
-                        content: language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]),
-                        positive: language["confirm"],
-                        positiveColor: "#008274",
-                        neutral: language["show_history_update_info"],
-                        cancelable: false
-                    }).on("neutral", () => {
+                } else {
+                    let local_config = JSON.parse(files.read("project.json"));
+                    dialog.setContent(language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]));
+                    dialog.setActionButton("neutral", language["show_history_update_info"]);
+                    dialog.on("neutral", () => {
+                        if (!show_update_dialog) {
+                            dialog.show();
+                        }
                         showHistoryUpdateInfo();
-                    }).show();
+                    });
+                    if (remote_config["versionCode"] > local_config["versionCode"]) {
+                        let keep = true, yes = false;
+                        dialog.setActionButton("positive", language["update"]);
+                        dialog.setActionButton("negative", language["cancel"]);
+                        dialog.on("positive", () => {
+                            yes = true;
+                            keep = false;
+                        });
+                        dialog.on("negative", () => {
+                            keep = false;
+                        });
+                        if (!show_update_dialog) {
+                            dialog.show();
+                        }
+                        while(keep) {
+                        }
+                        if (yes &&　update_util.update()) {
+                            engines.myEngine().forceStop();
+                            engines.execScriptFile("main.js");
+                        }
+                    } else if (show_update_dialog) {
+                        dialog.setActionButton("positive", language["confirm"]);
+                    }
                 }
             }
         });
     }
 
     function showHistoryUpdateInfo() {
-        let update_util = require("utils/update_util.js");
-        dialogs.build({
-            content: update_util.historyUpdateInfo() || language["get_history_update_info_fail_alert_dialog_message"],
-            negative: language["confirm"],
-            negativeColor: "#008274",
-            cancelable: false
+        let cancel = false;
+        let dialog = dialogs.build({
+            content: language["wait_get_history_update_info"],
+            positive: language["cancel"],
+        }).on("positive", () => {
+            cancel = true;
         }).show();
+        dialog.setCancelable(false);
+        threads.start(function() {
+            let update_util = require("utils/update_util.js");
+            let history_update_info = update_util.historyUpdateInfo();
+            if (!cancel) {
+                dialog.setContent(history_update_info || language["history_update_info_get_fail_alert_dialog_message"]);
+                dialog.setActionButton("positive", language["confirm"]);
+                dialog.setCancelable(true);
+            }
+        });
     }
 
     function showInstructionsForUse() {
         dialogs.build({
             title: language["instructions_for_use_title"],
             content: language["instructions_for_use_content"],
-            positive: language["confirm"],
-            positiveColor: "#008274",
-            cancelable: false
+            positive: language["confirm"]
         }).show();
     }
 
@@ -210,7 +221,7 @@
     ui.emitter.on("create_options_menu", menu => {
         menu.add(language["update"]);
         menu.add(language["instructions_for_use_title"]);
-        menu.add(language["about"]);
+        menu.add(language["feedback_suggestions"]);
         menu.add(language["setting"]);
     });
     // 监听选项菜单点击
@@ -222,16 +233,46 @@
             case language["instructions_for_use_title"]:
                 showInstructionsForUse();
                 break;
-            case language["about"]:
+            case language["feedback_suggestions"]:
                 dialogs.build({
-                    content: language["about_alert_dialog_message"],
-                    positive: language["open_in_browser"],
-                    positiveColor: "#008274",
-                    negative: language["confirm"],
-                    negativeColor: "#008274",
-                    cancelable: false
-                }).on("positive", () => {
+                    content: language["feedback_suggestions_alert_dialog_message"],
+                    positive: language["cancel"],
+                    negative: language["open_source_code_url"],
+                    neutral: language["add_developer_qq"]
+                }).on("negative", () => {
                     app.openUrl("https://github.com/L8426936/CleanUpWeChatZombieFans");
+                }).on("neutral", () => {
+                    let cancel = false;
+                    let dialog = dialogs.build({
+                        content: language["wait_get_developer_qq"],
+                        positive: language["cancel"]
+                    }).on("positive", () => {
+                        cancel = true;
+                    }).show();
+                    dialog.setCancelable(false);
+                    threads.start(function() {
+                        let update_util = require("utils/update_util.js");
+                        let developer_qq = update_util.developerQQ();
+                        if (!cancel) {
+                            dialog.setCancelable(true);
+                            if (developer_qq) {
+                                try {
+                                    app.startActivity({
+                                        action: "android.intent.action.VIEW",
+                                        data: "mqqapi://card/show_pslcard?&uin=" + developer_qq
+                                    });
+                                    dialog.dismiss();
+                                } catch (e) {
+                                    log(e);
+                                    dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", developer_qq));
+                                    dialog.setActionButton("positive", language["confirm"]);
+                                }
+                            } else {
+                                dialog.setContent(language["developer_qq_get_fail"]);
+                                dialog.setActionButton("positive", language["confirm"]);
+                            }
+                        }
+                    });
                 }).show();
                 break;
             case language["setting"]:
@@ -358,7 +399,6 @@
                     content: language["selected_warining_alert_dialog_message"],
                     checkBoxPrompt: language["no_more_warning"],
                     positive: language["cancel"],
-                    positiveColor: "#008274",
                     negative: language["confirm"],
                     negativeColor: "#CC0000",
                     cancelable: false
@@ -393,7 +433,6 @@
                     content: language["selected_warining_alert_dialog_message"],
                     checkBoxPrompt: language["no_more_warning"],
                     positive: language["cancel"],
-                    positiveColor: "#008274",
                     negative: language["confirm"],
                     negativeColor: "#CC0000",
                     cancelable: false
@@ -418,10 +457,7 @@
             title: language["clear_friend_dialog_title"],
             content: language["clear_alert_dialog_message"],
             positive: language["cancel"],
-            positiveColor: "#008274",
-            negative: language["confirm"],
-            negativeColor: "#008274",
-            cancelable: false
+            negative: language["confirm"]
         }).on("negative", () => {
             db_util.deleteAllTestedFriend();
             initUI();
@@ -437,7 +473,6 @@
                     title: language["warning"],
                     content: language["delete_friend_alert_dialog_message"],
                     positive: language["cancel"],
-                    positiveColor: "#008274",
                     negative: language["confirm"],
                     negativeColor: "#CC0000",
                     cancelable: false
@@ -459,9 +494,7 @@
         } else {
             dialogs.build({
                 content: language["not_select_friend_alert_dialog_message"],
-                positive: language["confirm"],
-                positiveColor: "#008274",
-                cancelable: false
+                positive: language["confirm"]
             }).show();
         }
     });

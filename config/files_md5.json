@@ -1,14 +1,14 @@
 {
-    "main.js": "75948fefe8e376e56fe02d9354f15a74",
-    "project.json": "cbbe50c837a5360d38827cbbd5b7de46",
-    "activity/friend_list.js": "7e7dc397bc93d0d2d8d54968df1c0163",
-    "activity/label_friend_list.js": "f4cf1aeb66f1e0fd2882f54eaf2ee97f",
-    "activity/label_list.js": "e641d09ff237b8f8a230c660a9bf42c6",
-    "activity/setting.js": "dc5375cf0fb18f6bfa2253e37c0f5c40",
+    "main.js": "e04fc8329ecd92f15d3e1a9e3d248bad",
+    "project.json": "d229a70fe7d778b835f84ac8f1421ba9",
+    "activity/friend_list.js": "01643a70483b11b860d5c959e4154283",
+    "activity/label_friend_list.js": "46a0352a53de2546488a71cd654a91ed",
+    "activity/label_list.js": "e9304193be328b6f666cf1f98f990966",
+    "activity/setting.js": "9ea3ab63dda9029872ce1ce4355a7aa8",
     "config/config.json": "1619725d3d0479e5e57a808c58c8a8e7",
-    "config/files_md5.json" : "2eb4b3c8e7681f461a1a67bff0d8f9f9",
+    "config/files_md5.json" : "315ae2757ee1d62407be475e805f0318",
     "config/running_config.json": "6888e9e10ae18181bafc1212e9811ac3",
-    "config/languages/zh-CN.json": "624686d28b608dca05a3ad88517e8e88",
+    "config/languages/zh-CN.json": "85fb9b14ea420a2115e8d44f30435c15",
     "config/text_id/google_play_store/7.0.16~7.0.16.json": "4946c4ae7943c2bd39bc93f3ba36d171",
     "config/text_id/google_play_store/7.0.17~7.0.17.json": "10b5cd617fd08bddbd5a7e3d20b0b42d",
     "config/text_id/other/7.0.12~7.0.12.json": "7d6a3e7beed7cb2b650231fb920312e0",
@@ -20,8 +20,8 @@
     "modules/import_friends_by_friend_list.js": "fdfac3fb7d611013ae018c327ddb41a6",
     "modules/import_friends_by_label_list.js": "981a086c6ba11484f93637af30854766",
     "modules/test_friends.js": "151d3030e1eddbe5565d9834ef50348a",
-    "utils/app_util.js": "eb30050bc61c2314b8b770d2cf70adaf",
+    "utils/app_util.js": "30ff35b73a5669b4a07e4d1938a93642",
     "utils/db_util.js": "a8efca526c31486a5215e8a60b45089f",
     "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
-    "utils/update_util.js": "fa84a07d57387dddf33f6bd2d1e664af"
+    "utils/update_util.js": "8ab1f9928b03a60018e05448fb04a076"
 }
