@@ -85,21 +85,25 @@
         if (app_util.checkSupportedLanguage()) {
             if (running_config["first_time_run"]) {
                 running_config["first_time_run"] = false;
+                showInstructionsForUse();
+            }
+            let we_chat_last_update_time = app_util.getWeChatLastUpdateTime();
+            if (running_config["we_chat_last_update_time"] != we_chat_last_update_time) {
                 let we_chat_release_source = app_util.getWeChatReleaseSourceByApplication();
                 running_config["manual_control_we_chat_release_source"] = !(we_chat_release_source);
                 running_config["we_chat_release_source"] = we_chat_release_source || "other";
-                files.write("config/running_config.json", JSON.stringify(running_config));
-                showInstructionsForUse();
+                running_config["we_chat_last_update_time"] = we_chat_last_update_time;
             }
+            files.write("config/running_config.json", JSON.stringify(running_config));
         } else {
             ui.delete_friends_button.enabled = false;
             ui.test_friends_button.enabled = false;
             ui.delete_friends_button.textColor = colors.parseColor("#B2B2B2");
             ui.test_friends_button.textColor = colors.parseColor("#B2B2B2");
             dialogs.build({
-                content: "Does not support system language",
+                content: "Does not support system language or country",
                 positive: "Confirm",
-                positiveColor: "#008274"
+                cancelable: false
             }).show();
         }
 

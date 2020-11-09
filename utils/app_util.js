@@ -5,35 +5,52 @@ module.exports = (() => {
     let default_language = getLanguage();
 
     /**
-     * 获取微信安装源
+     * 获取微信发布源
      * @returns {String}
      */
     function getWeChatReleaseSourceByApplication() {
-        let package_name = context.getPackageManager().getInstallerPackageName(config["we_chat_package_name"]);
-        let we_chat_release_source = config["we_chat_release_source"];
-        for (let key in we_chat_release_source) {
-            if (we_chat_release_source[key].indexOf(package_name) >= 0) {
-                return key;
+        try {
+            let package_name = context.getPackageManager().getInstallerPackageName(config["we_chat_package_name"]);
+            let we_chat_release_source = config["we_chat_release_source"];
+            for (let key in we_chat_release_source) {
+                if (we_chat_release_source[key].indexOf(package_name) >= 0) {
+                    return key;
+                }
             }
+        } catch (e) {
+            log(e);
         }
+        return null;
     }
 
     /**
-     * 获取微信安装源
+     * 获取微信发布源
      * @returns {String}
      */
     function getWeChatReleaseSourceByLocation() {
         let running_config = getRunningConfig();
-        return running_config["manual_control_we_chat_release_source"] ? running_config["we_chat_release_source"] : getWeChatReleaseSourceByApplication() || running_config["we_chat_release_source"];
+        return running_config["manual_control_we_chat_release_source"] ? running_config["we_chat_release_source"] : getWeChatReleaseSourceByApplication();
     }
 
     /**
-     * 获取app版本号
-     * @param {string} package_name app包名
-     * @returns {string} app包名不存在，返回null
+     * 获取微信版本号
+     * @returns {string}
      */
-    function getAppVersions(package_name) {
-        return context.getPackageManager().getPackageInfo(package_name, 0).versionName;
+    function getWeChatVersionsName() {
+        return context.getPackageManager().getPackageInfo(config["we_chat_package_name"], 0).versionName;
+    }
+
+    /**
+     * 获取微信最后一次更新时间
+     * @returns {string}
+     */
+    function getWeChatLastUpdateTime() {
+        try {
+            return context.getPackageManager().getPackageInfo(config["we_chat_package_name"], 0).lastUpdateTime;
+        } catch (e) {
+            log(e);
+        }
+        return null;
     }
 
     /**
@@ -79,7 +96,7 @@ module.exports = (() => {
     function getWeChatIds() {
         let we_chat_release_source = getWeChatReleaseSourceByLocation();
         let ids_versions = config["ids_versions"][we_chat_release_source];
-        let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
+        let we_chat_versions = getWeChatVersionsName();
         for (let i = 0; i < ids_versions.length; i++) {
             let supported_versions = ids_versions[i].split("~");
             if (supportedApplicationVersions(we_chat_versions, supported_versions[0], supported_versions[1])) {
@@ -101,14 +118,16 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkInstalledWeChat() {
-        let installed_we_chat = context.getPackageManager().getPackageInfo(config["we_chat_package_name"], 0) != null;
-        if (!installed_we_chat) {
+        try {
+            return context.getPackageManager().getPackageInfo(config["we_chat_package_name"], 0) != null;
+        } catch (e) {
+            log(e);
             dialogs.build({
                 content: default_language["uninstalled_we_chat_alert_dialog_message"],
                 positive: default_language["confirm"]
             }).show();
         }
-        return installed_we_chat;
+        return false;
     }
 
     /**
@@ -117,7 +136,7 @@ module.exports = (() => {
      */
     function checkSupportedWeChatVersions() {
         let supported_we_chat_versions = config["supported_we_chat_versions"][getWeChatReleaseSourceByLocation()];
-        let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
+        let we_chat_versions = getWeChatVersionsName();
         let min_supported_versions = supported_we_chat_versions["min_supported_versions"];
         let max_supported_versions = supported_we_chat_versions["max_supported_versions"];
         let supported = supportedApplicationVersions(we_chat_versions, min_supported_versions, max_supported_versions);
@@ -135,7 +154,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkFile() {
-        let we_chat_versions = getAppVersions(config["we_chat_package_name"]);
+        let we_chat_versions = getWeChatVersionsName();
         let we_chat_release_source = getWeChatReleaseSourceByLocation();
         let ids_versions = config["ids_versions"][we_chat_release_source];
         let exists = false, file_path;
@@ -287,6 +306,7 @@ module.exports = (() => {
         checkService: checkService,
         getWeChatReleaseSourceByApplication: getWeChatReleaseSourceByApplication,
         getWeChatReleaseSourceByLocation: getWeChatReleaseSourceByLocation,
+        getWeChatLastUpdateTime: getWeChatLastUpdateTime,
         stopScript: stopScript,
         checkInstallSource: checkInstallSource,
         testFriends: testFriends,

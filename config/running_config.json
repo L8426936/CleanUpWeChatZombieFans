@@ -1,8 +1,9 @@
 {
     "first_time_run": true,
     "test_friend_mode": 0,
-    "we_chat_release_source": "other",
+    "we_chat_release_source": null,
     "include_friend": false,
     "import_friend_mode": 0,
-    "manual_control_we_chat_release_source": false
+    "manual_control_we_chat_release_source": false,
+    "we_chat_last_update_time": null
 }
