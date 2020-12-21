@@ -63,7 +63,10 @@
         </drawer>
     );
 
-    let language, db_util, app_util, page_infos, current_page_index = 0, no_more_warning = false;
+    let base_url = "https://gitee.com/L8426936/CleanUpWeChatZombieFans/raw/master/";
+    // 本地测试使用
+    // let base_url = "http://192.168.123.105/auto.js-script/CleanUpWeChatZombieFans/";
+    let language, db_util, app_util, page_infos, current_page_index = 0;
 
     /**
      * 初始化配置
@@ -143,72 +146,146 @@
         }).on("positive", () => {
             cancel = true;
         });
+        dialog.setCancelable(false);
         if (show_update_dialog) {
             dialog.show();
         }
-        threads.start(function() {
-            let update_util = require("utils/update_util.js");
-            let remote_config = update_util.remoteConfig();
+        http.get(base_url + "last_version_info.json", {}, (res, err) => {
             if (!cancel) {
-                if (!remote_config) {
-                    if (show_update_dialog) {
-                        dialog.setContent(language["update_info_get_fail_alert_dialog_message"]);
-                        dialog.setActionButton("positive", language["confirm"]);
-                    }
-                } else {
+                if (res["statusCode"] == 200) {
                     let local_config = JSON.parse(files.read("project.json"));
-                    dialog.setContent(language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", remote_config["versionName"]).replace("%last_versions_code", remote_config["versionCode"]));
+                    let last_version_info = res.body.json();
+                    dialog.setContent(language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", last_version_info["version_name"]).replace("%last_versions_code", last_version_info["version_code"]).replace("%update_content", last_version_info["update_content"]));
                     dialog.setActionButton("neutral", language["show_history_update_info"]);
                     dialog.on("neutral", () => {
-                        if (!show_update_dialog) {
-                            dialog.show();
-                        }
-                        showHistoryUpdateInfo();
+                        showHistoryUpdateInfo(last_version_info["version_code"] > local_config["versionCode"]);
                     });
-                    if (remote_config["versionCode"] > local_config["versionCode"]) {
-                        let keep = true, yes = false;
+                    if (last_version_info["version_code"] > local_config["versionCode"]) {
                         dialog.setActionButton("positive", language["update"]);
                         dialog.setActionButton("negative", language["cancel"]);
                         dialog.on("positive", () => {
-                            yes = true;
-                            keep = false;
-                        });
-                        dialog.on("negative", () => {
-                            keep = false;
+                            downloadFile();
                         });
                         if (!show_update_dialog) {
                             dialog.show();
                         }
-                        while(keep) {
-                        }
-                        if (yes &&　update_util.update()) {
-                            engines.myEngine().forceStop();
-                            engines.execScriptFile("main.js");
-                        }
                     } else if (show_update_dialog) {
                         dialog.setActionButton("positive", language["confirm"]);
+                        dialog.setCancelable(true);
                     }
+                } else if (show_update_dialog) {
+                    dialog.setContent(language["update_info_get_fail_alert_dialog_message"]);
+                    dialog.setActionButton("positive", language["confirm"]);
+                    dialog.setCancelable(true);
                 }
             }
         });
     }
 
-    function showHistoryUpdateInfo() {
+    /**
+     * 历史更新
+     * @param {boolean} show_update_button
+     */
+    function showHistoryUpdateInfo(show_update_button) {
         let cancel = false;
         let dialog = dialogs.build({
             content: language["wait_get_history_update_info"],
+            positive: language["cancel"]
+        }).on("positive", () => {
+            cancel = true;
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+        http.get(base_url + "history_update_info.txt", {}, (res, err) => {
+            if (!cancel) {
+                if (res["statusCode"] == 200) {
+                    dialog.setContent(res.body.string());
+                    if (show_update_button) {
+                        dialog.setActionButton("neutral", language["cancel"]);
+                        dialog.setActionButton("positive", language["update"]);
+                        dialog.on("positive", () => {
+                            downloadFile();
+                        });
+                    } else {
+                        dialog.setActionButton("positive", language["confirm"]);
+                        dialog.setCancelable(true);
+                    }
+                } else {
+                    dialog.setContent(language["history_update_info_get_fail_alert_dialog_message"]);
+                    dialog.setCancelable(true);
+                }
+            }
+        });
+    }
+
+    function downloadFile() {
+        let cancel = false;
+        let dialog = dialogs.build({
+            progress: {
+                max: 100,
+                showMinMax: true
+            },
             positive: language["cancel"],
+            cancelable: false
         }).on("positive", () => {
             cancel = true;
         }).show();
-        dialog.setCancelable(false);
-        threads.start(function() {
-            let update_util = require("utils/update_util.js");
-            let history_update_info = update_util.historyUpdateInfo();
+        http.get(base_url + "config/files_md5.json", {}, (res, err) => {
             if (!cancel) {
-                dialog.setContent(history_update_info || language["history_update_info_get_fail_alert_dialog_message"]);
-                dialog.setActionButton("positive", language["confirm"]);
-                dialog.setCancelable(true);
+                if (res["statusCode"] == 200) {
+                    let remote_files_md5 = res.body.json();
+                    let local_files_md5 = files.exists("config/files_md5.json") ? JSON.parse(files.read("config/files_md5.json")) : {};
+                    let completed_all_file = true, max_progress = 0, current_progress = 0;
+                    for (let key in remote_files_md5) {
+                        if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
+                            max_progress += remote_files_md5[key]["size"];
+                        }
+                    }
+                    for (let key in remote_files_md5) {
+                        if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
+                            let response = http.get(base_url + key);
+                            if (!cancel && response["statusCode"] == 200) {
+                                current_progress += remote_files_md5[key]["size"];
+                                dialog.progress = current_progress * 100 / max_progress;
+                                files.ensureDir(".download_files/" + key);
+                                files.write(".download_files/" + key, response.body.string());
+                            } else {
+                                completed_all_file = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!cancel) {
+                        if (completed_all_file) {
+                            for (let key in remote_files_md5) {
+                                if (completed_all_file && (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"])) {
+                                    completed_all_file = files.copy(".download_files/" + key, key);
+                                }
+                            }
+                            if (completed_all_file) {
+                                for (let key in local_files_md5) {
+                                    if (!remote_files_md5[key]) {
+                                        files.remove(key);
+                                    }
+                                }
+                                dialog.dismiss();
+                                toast(language["update_success"]);
+                                engines.execScriptFile("main.js");
+                                engines.myEngine().forceStop();
+                            } else {
+                                dialog.dismiss();
+                                toast(language["update_fail"]);
+                            }
+                        } else {
+                            dialog.dismiss();
+                            toast(language["update_fail"]);
+                        }
+                    }
+                    files.removeDir(".download_files");
+                } else {
+                    dialog.dismiss();
+                    toast(language["update_fail"]);
+                }
             }
         });
     }
@@ -219,6 +296,38 @@
             content: language["instructions_for_use_content"],
             positive: language["confirm"]
         }).show();
+    }
+
+    function developerQQ() {
+        let cancel = false;
+        let dialog = dialogs.build({
+            content: language["wait_get_developer_qq"],
+            positive: language["cancel"]
+        }).on("positive", () => {
+            cancel = true;
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+        http.get(base_url + "developer_qq.txt", {}, (res, err) => {
+            if (!cancel) {
+                dialog.setCancelable(true);
+                if (res["statusCode"] == 200) {
+                    try {
+                        app.startActivity({
+                            action: "android.intent.action.VIEW",
+                            data: "mqqapi://card/show_pslcard?&uin=" + res.body.string()
+                        });
+                        dialog.dismiss();
+                    } catch (e) {
+                        dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", res.body.string()));
+                        dialog.setActionButton("positive", language["confirm"]);
+                    }
+                } else {
+                    dialog.setContent(language["developer_qq_get_fail"]);
+                    dialog.setActionButton("positive", language["confirm"]);
+                }
+            }
+        });
     }
 
     // 创建选项菜单(右上角)
@@ -246,37 +355,7 @@
                 }).on("negative", () => {
                     app.openUrl("https://github.com/L8426936/CleanUpWeChatZombieFans");
                 }).on("neutral", () => {
-                    let cancel = false;
-                    let dialog = dialogs.build({
-                        content: language["wait_get_developer_qq"],
-                        positive: language["cancel"]
-                    }).on("positive", () => {
-                        cancel = true;
-                    }).show();
-                    dialog.setCancelable(false);
-                    threads.start(function() {
-                        let update_util = require("utils/update_util.js");
-                        let developer_qq = update_util.developerQQ();
-                        if (!cancel) {
-                            dialog.setCancelable(true);
-                            if (developer_qq) {
-                                try {
-                                    app.startActivity({
-                                        action: "android.intent.action.VIEW",
-                                        data: "mqqapi://card/show_pslcard?&uin=" + developer_qq
-                                    });
-                                    dialog.dismiss();
-                                } catch (e) {
-                                    log(e);
-                                    dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", developer_qq));
-                                    dialog.setActionButton("positive", language["confirm"]);
-                                }
-                            } else {
-                                dialog.setContent(language["developer_qq_get_fail"]);
-                                dialog.setActionButton("positive", language["confirm"]);
-                            }
-                        }
-                    });
+                    developerQQ();
                 }).show();
                 break;
             case language["setting"]:
@@ -396,8 +475,8 @@
         itemView.selected_checkbox.on("click", () => {
             let abnormal_friend = itemHolder.item;
             let abnormal_message = abnormal_friend.abnormal_message;
-            if (!no_more_warning && itemView.selected_checkbox.checked && language["blacklisted_message"].match(abnormal_message) == null && language["deleted_message"].match(abnormal_message) == null) {
-                let selected_no_more_warning = false;
+            let running_config = app_util.getRunningConfig();
+            if (!running_config["no_more_warning"] && itemView.selected_checkbox.checked && !(language["blacklisted_message"].match(abnormal_message) || language["deleted_message"].match(abnormal_message) || language["account_deleted"].match(abnormal_message))) {
                 dialogs.build({
                     title: language["warning"],
                     content: language["selected_warining_alert_dialog_message"],
@@ -407,11 +486,12 @@
                     negativeColor: "#CC0000",
                     cancelable: false
                 }).on("check", checked => {
-                    selected_no_more_warning = checked;
+                    running_config["no_more_warning"] = checked;
                 }).on("positive", () => {
+                    running_config["no_more_warning"] = false;
                     itemView.selected_checkbox.checked = false;
                 }).on("negative", () => {
-                    no_more_warning = selected_no_more_warning;
+                    files.write("config/running_config.json", JSON.stringify(running_config));
                     abnormal_friend["selected"] = true;
                     db_util.modifyTestedFriend(abnormal_friend);
                 }).show();
@@ -430,8 +510,8 @@
         });
         itemView.selected_checkbox.on("click", () => {
             let normal_friend = itemHolder.item;
-            if (!no_more_warning && itemView.selected_checkbox.checked) {
-                let selected_no_more_warning = false;
+            let running_config = app_util.getRunningConfig();
+            if (!running_config["no_more_warning"] && itemView.selected_checkbox.checked) {
                 dialogs.build({
                     title: language["warning"],
                     content: language["selected_warining_alert_dialog_message"],
@@ -441,11 +521,12 @@
                     negativeColor: "#CC0000",
                     cancelable: false
                 }).on("check", checked => {
-                    selected_no_more_warning = checked;
+                    running_config["no_more_warning"] = checked;
                 }).on("positive", () => {
+                    running_config["no_more_warning"] = false;
                     itemView.selected_checkbox.checked = false;
                 }).on("negative", () => {
-                    no_more_warning = selected_no_more_warning;
+                    files.write("config/running_config.json", JSON.stringify(running_config));
                     normal_friend["selected"] = true;
                     db_util.modifyTestedFriend(normal_friend);
                 }).show();
@@ -490,8 +571,9 @@
                     app_util.checkInstallSource(checked, running_config);
                 }).on("negative", () => {
                     if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
-                        engines.execScriptFile("modules/delete_friends.js", {delay: 500});
-                        app_util.stopScript();
+                        app_util.stopModulesScript();
+                        engines.execScriptFile("modules/delete_friends.js");
+                        app_util.stopUIScript();
                     }
                 }).show();
             }

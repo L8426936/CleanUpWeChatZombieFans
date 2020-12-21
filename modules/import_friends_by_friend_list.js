@@ -31,13 +31,8 @@
      * 点击通讯录
      */
     function clickContacts() {
-        let nodes = id(ids["contacts"]).untilFind();
-        for (let i = 0; i < nodes.size(); i++) {
-            let node = nodes.get(i);
-            if (texts["contacts"].match(node.text()) != null && node_util.backtrackClickNode(node)) {
-                step = 1;
-                break;
-            }
+        if (node_util.backtrackClickNode(id(ids["contacts"]).textMatches(texts["contacts"]).findOne())) {
+            step = 1;
         }
     }
 
@@ -45,9 +40,9 @@
      * 滚动好友列表
      */
     function scrollFriendList() {
-        if (id(ids["friend_list"]).findOne().scrollForward()) {
-            sleep(500);
+        if (node_util.scrollForward(id(ids["friend_list"]).findOne())) {
             step = 1;
+            sleep(500);
         }
     }
 
@@ -63,7 +58,7 @@
             }
         }
         step = 2;
-        if (id(ids["contacts_count"]).findOnce() != null) {
+        if (id(ids["contacts_count"]).findOnce()) {
             stopScript();
         }
     }
@@ -90,54 +85,55 @@
         run = false;
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
+        ui.run(() => window.close());
         toast(language["script_stopped"]);
-        window.close();
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
 
     function main() {
-        let config = JSON.parse(files.read("config/config.json"));
-        if (launch(config["we_chat_package_name"])) {
-            node_util = require("utils/node_util.js");
-            db_util = require("utils/db_util.js");
-            let app_util = require("utils/app_util.js");
-            
-            ids = app_util.getWeChatIds();
-            texts = JSON.parse(files.read("config/text_id/text.json"));
-            
-            step = 0, run = true;
-            keyDownListenerByVolumeDown();
-            
-            // 获取系统语言
-            language = app_util.getLanguage();
+        node_util = require("utils/node_util.js");
+        db_util = require("utils/db_util.js");
+        let app_util = require("utils/app_util.js");
+        
+        ids = app_util.getWeChatIds();
+        texts = JSON.parse(files.read("config/text_id/text.json"));
+        
+        step = 0, run = true;
+        keyDownListenerByVolumeDown();
+        
+        // 获取系统语言
+        language = app_util.getLanguage();
 
-            window = floaty.window(
-                <vertical padding="8" bg="#000000">
-                    <text textColor="red" id="import_friends_fail_title"/>
-                    <scroll h="100" layout_weight="1" id="import_friends_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_friends_fail_text"/></scroll>
-                    <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
-                </vertical>
-            );
+        window = floaty.window(
+            <vertical padding="8" bg="#000000">
+                <text textColor="red" id="import_friends_fail_title"/>
+                <scroll h="100" layout_weight="1" id="import_friends_fail_text_scroll"><text textColor="red" layout_gravity="top" id="import_friends_fail_text"/></scroll>
+                <button id="stop_button" textColor="green" style="Widget.AppCompat.Button.Colored" textStyle="bold"/>
+            </vertical>
+        );
+        ui.run(() => {
             window.import_friends_fail_title.setText(language["import_friends_fail_title"]);
             window.stop_button.setText(language["stop"]);
             window.setAdjustEnabled(true);
-            window.stop_button.on("click", () => {
+            window.stop_button.on("click", (view) => {
+                view.setEnabled(false);
                 stopScript();
             });
-    
-            while (run) {
-                switch (step) {
-                    case 0:
-                        clickContacts();
-                        break;
-                    case 1:
-                        synchronizeFriends();
-                        break;
-                    case 2:
-                        scrollFriendList();
-                        break;
-                }
+        });
+        
+        launch(app_util.getConfig()["we_chat_package_name"]);
+        while (run) {
+            switch (step) {
+                case 0:
+                    clickContacts();
+                    break;
+                case 1:
+                    synchronizeFriends();
+                    break;
+                case 2:
+                    scrollFriendList();
+                    break;
             }
         }
     }

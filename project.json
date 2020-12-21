@@ -12,8 +12,8 @@
   },
   "main": "main.js",
   "name": "清理微信僵尸粉",
-  "packageName": "com.niming.cleanupwechatzombiefans",
+  "packageName": "com.l8426936.cleanupwechatzombiefans",
   "scripts": {},
-  "versionCode": 45,
-  "versionName": "3.8.0"
+  "versionCode": 46,
+  "versionName": "3.9.0"
 }

@@ -44,7 +44,7 @@ module.exports = (() => {
      * 关闭数据库连接
      */
     function close(db) {
-        if (db != null && db.isOpen()) {
+        if (db && db.isOpen()) {
             db.close();
         }
     }
@@ -295,7 +295,7 @@ module.exports = (() => {
      * @returns {Array<TestedFriend>}
      */
     function findTestedFriendListByFriendType(friend_type, page) {
-        return findRows("SELECT * FROM tested_friend_list WHERE friend_type = ? LIMIT ? OFFSET ?", [friend_type, PAGE_SIZE, (page - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_TESTED_FRIEND);
+        return findRows("SELECT * FROM tested_friend_list WHERE friend_type = ? ORDER BY deleted, selected DESC, abnormal_message LIMIT ? OFFSET ?", [friend_type, PAGE_SIZE, (page - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_TESTED_FRIEND);
     }
 
     /**
@@ -352,7 +352,7 @@ module.exports = (() => {
      * @returns {Array<Friend>}
      */
     function findLabelFriendListByLabel(label, page) {
-        return findRows("SELECT * FROM label_friend_list WHERE label = ? LIMIT ? OFFSET ?", [label, PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
+        return findRows("SELECT * FROM label_friend_list WHERE label = ? ORDER BY enabled DESC LIMIT ? OFFSET ?", [label, PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
     }
 
     /**
@@ -370,7 +370,7 @@ module.exports = (() => {
      * @returns {Array<Friend>}
      */
     function findLabelFriendList(page) {
-        return findRows("SELECT * FROM label_friend_list LIMIT ? OFFSET ?", [PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
+        return findRows("SELECT * FROM label_friend_list ORDER BY enabled DESC LIMIT ? OFFSET ?", [PAGE_SIZE, ((page || 1) - 1) * PAGE_SIZE], PROPERTY_MAPPING_TYPE_FOR_LABEL_FRIEND);
     }
 
     /**

@@ -86,7 +86,11 @@ module.exports = (() => {
     }
 
     function getLanguage() {
-        return JSON.parse(files.read("config/languages/" + (config["supported_languages"].match(local_language) != null ? local_language : "zh-CN") + ".json"));
+        return JSON.parse(files.read("config/languages/" + (config["supported_languages"].match(local_language) ? local_language : "zh-CN") + ".json"));
+    }
+
+    function getConfig() {
+        return config;
     }
 
     function getRunningConfig() {
@@ -180,7 +184,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkService() {
-        let enabled = auto.service != null || Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).indexOf(context.getPackageName() + "/com.stardust.autojs.core.accessibility.AccessibilityService") >= 0;
+        let enabled = auto.service || Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).indexOf(context.getPackageName() + "/com.stardust.autojs.core.accessibility.AccessibilityService") >= 0;
         if (!enabled) {
             dialogs.build({
                 content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name", getAppName(context.getPackageName())),
@@ -199,10 +203,19 @@ module.exports = (() => {
     /**
      * 停止已在运行的脚本，确保单脚本运行
      */
-    function stopScript() {
+    function stopModulesScript() {
         let scripts = engines.all();
         for (let i = 0; i < scripts.length; i++) {
-            if (/.+(main|(activity|modules).+)\.js/.test(scripts[i].getSource().toString())) {
+            if (/.+modules.+/.test(scripts[i].getSource().toString())) {
+                scripts[i].forceStop();
+            }
+        }
+    }
+
+    function stopUIScript() {
+        let scripts = engines.all();
+        for (let i = 0; i < scripts.length; i++) {
+            if (/.+(main|activity).+/.test(scripts[i].getSource().toString())) {
                 scripts[i].forceStop();
             }
         }
@@ -252,8 +265,9 @@ module.exports = (() => {
                 checkInstallSource(checked, running_config);
             }).on("positive", () => {
                 if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
-                    engines.execScriptFile("modules/test_friends.js", {delay: 500});
-                    stopScript();
+                    stopModulesScript();
+                    engines.execScriptFile("modules/test_friends.js");
+                    stopUIScript();
                 }
             }).show();
         }
@@ -284,12 +298,13 @@ module.exports = (() => {
                 checkInstallSource(checked, running_config);
             }).on("positive", () => {
                 if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
+                    stopModulesScript();
                     if (running_config["import_friend_mode"] == 0) {
-                        engines.execScriptFile("modules/import_friends_by_label_list.js", {delay: 500});
+                        engines.execScriptFile("modules/import_friends_by_label_list.js");
                     } else {
-                        engines.execScriptFile("modules/import_friends_by_friend_list.js", {delay: 500});
+                        engines.execScriptFile("modules/import_friends_by_friend_list.js");
                     }
-                    stopScript();
+                    stopUIScript();
                 }
             }).show();
         }
@@ -297,6 +312,7 @@ module.exports = (() => {
 
     return {
         getLanguage: getLanguage,
+        getConfig: getConfig,
         getRunningConfig: getRunningConfig,
         getWeChatIds: getWeChatIds,
         checkSupportedLanguage: checkSupportedLanguage,
@@ -307,7 +323,8 @@ module.exports = (() => {
         getWeChatReleaseSourceByApplication: getWeChatReleaseSourceByApplication,
         getWeChatReleaseSourceByLocation: getWeChatReleaseSourceByLocation,
         getWeChatLastUpdateTime: getWeChatLastUpdateTime,
-        stopScript: stopScript,
+        stopModulesScript: stopModulesScript,
+        stopUIScript: stopUIScript,
         checkInstallSource: checkInstallSource,
         testFriends: testFriends,
         importFriends: importFriends

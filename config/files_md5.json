@@ -1,27 +1,86 @@
 {
-    "main.js": "a30857ca59dd5fcc685ad6eec38372b4",
-    "project.json": "aeb7623d3f5543bc5f422333c6700f6c",
-    "activity/friend_list.js": "01643a70483b11b860d5c959e4154283",
-    "activity/label_friend_list.js": "46a0352a53de2546488a71cd654a91ed",
-    "activity/label_list.js": "e9304193be328b6f666cf1f98f990966",
-    "activity/setting.js": "9ea3ab63dda9029872ce1ce4355a7aa8",
-    "config/config.json": "1619725d3d0479e5e57a808c58c8a8e7",
-    "config/files_md5.json" : "5e0209825b9cc492f3d9f910d2359834",
-    "config/running_config.json": "be24b7f4bc5c56ae97a9a10b43cbe820",
-    "config/languages/zh-CN.json": "56dbeb359de9f636b94d41157e22b5fa",
-    "config/text_id/google_play_store/7.0.16~7.0.16.json": "4946c4ae7943c2bd39bc93f3ba36d171",
-    "config/text_id/google_play_store/7.0.17~7.0.17.json": "10b5cd617fd08bddbd5a7e3d20b0b42d",
-    "config/text_id/other/7.0.12~7.0.12.json": "7d6a3e7beed7cb2b650231fb920312e0",
-    "config/text_id/other/7.0.13~7.0.13.json": "ccbb9e7b5d87e3aeeb2a891596054bd8",
-    "config/text_id/other/7.0.14~7.0.14.json": "66b629367cfbec2edd9070082ece8bdd",
-    "config/text_id/other/7.0.15~7.0.20.json": "4b7d1fe2cd37bee065577b73a870d812",
-    "config/text_id/text.json": "2efb36a2d37c3bbf615b59751a4d3848",
-    "modules/delete_friends.js": "2497caa0c4aa19a459de0ed98aa64e3e",
-    "modules/import_friends_by_friend_list.js": "fdfac3fb7d611013ae018c327ddb41a6",
-    "modules/import_friends_by_label_list.js": "981a086c6ba11484f93637af30854766",
-    "modules/test_friends.js": "151d3030e1eddbe5565d9834ef50348a",
-    "utils/app_util.js": "dfae7f187deec85fa17bcf21f50f1836",
-    "utils/db_util.js": "a8efca526c31486a5215e8a60b45089f",
-    "utils/node_util.js": "ea954077103cd845c49173a83c08e7ea",
-    "utils/update_util.js": "8ab1f9928b03a60018e05448fb04a076"
+    "main.js": {
+        "md5": "89b7b72fd24fcdbe327935758b36cdf1",
+        "size": 28952
+    },
+    "project.json": {
+        "md5": "f0b2aa97733ea8e93eb4b87ea5ecbd81",
+        "size": 387
+    },
+    "activity/friend_list.js": {
+        "md5": "01643a70483b11b860d5c959e4154283",
+        "size": 4395
+    },
+    "activity/label_friend_list.js": {
+        "md5": "46a0352a53de2546488a71cd654a91ed",
+        "size": 4239
+    },
+    "activity/label_list.js": {
+        "md5": "e9304193be328b6f666cf1f98f990966",
+        "size": 4309
+    },
+    "activity/setting.js": {
+        "md5": "a6dafa6273ee87550eecba767da39a39",
+        "size": 1422
+    },
+    "config/config.json": {
+        "md5": "edf7d0b0fb45892b7054ff917603c125",
+        "size": 999
+    },
+    "config/files_md5.json" : {
+        "md5": "64ac2e2a55f0c404fd91455d97e4e401",
+        "size": 2503
+    },
+    "config/running_config.json": {
+        "md5": "850763423115ec1aa69c49ce2e72bf4c",
+        "size": 280
+    },
+    "config/languages/zh-CN.json": {
+        "md5": "8d12bf54eae895875c19bcdaea1e80da",
+        "size": 5068
+    },
+    "config/text_id/google_play_store/7.0.16~7.0.16.json": {
+        "md5": "b5b82a06a78db5de98a0e050049af5bb",
+        "size": 1040
+    },
+    "config/text_id/google_play_store/7.0.17~7.0.17.json": {
+        "md5": "57ade286ab5663088f15ab2f0b9ff14b",
+        "size": 1040
+    },
+    "config/text_id/other/7.0.15~7.0.21.json": {
+        "md5": "6139b2e741010120c2221a8f0a19a1d1",
+        "size": 1040
+    },
+    "config/text_id/text.json": {
+        "md5": "bdb027e6ad000cb60d01065b0e3ff510",
+        "size": 684
+    },
+    "modules/delete_friends.js": {
+        "md5": "55517527041a0b13784e07ca163cab4d",
+        "size": 7081
+    },
+    "modules/import_friends_by_friend_list.js": {
+        "md5": "79ddc738f55322664c6ab9c7336c1489",
+        "size": 4286
+    },
+    "modules/import_friends_by_label_list.js": {
+        "md5": "7b39327872e778c2189dbf43e67b5755",
+        "size": 7227
+    },
+    "modules/test_friends.js": {
+        "md5": "ce2cbe79714b9813cd036a23e20acf7f",
+        "size": 12453
+    },
+    "utils/app_util.js": {
+        "md5": "d6f31b7f04f37db47f77c51a9814464d",
+        "size": 14002
+    },
+    "utils/db_util.js": {
+        "md5": "09782e32ce68bf4ab432391d62429a69",
+        "size": 18268
+    },
+    "utils/node_util.js": {
+        "md5": "b977e2cfb642791579272114f954d227",
+        "size": 565
+    }
 }

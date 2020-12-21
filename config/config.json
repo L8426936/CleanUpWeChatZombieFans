@@ -11,8 +11,8 @@
             "max_supported_versions": "7.0.17"
         },
         "other": {
-            "min_supported_versions": "7.0.12",
-            "max_supported_versions": "7.0.20"
+            "min_supported_versions": "7.0.15",
+            "max_supported_versions": "7.0.21"
         }
     },
     "ids_versions": {
@@ -21,10 +21,7 @@
             "7.0.17~7.0.17"
         ],
         "other": [
-            "7.0.12~7.0.12",
-            "7.0.13~7.0.13",
-            "7.0.14~7.0.14",
-            "7.0.15~7.0.20"
+            "7.0.15~7.0.21"
         ]
     }
 }

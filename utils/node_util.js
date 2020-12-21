@@ -4,8 +4,8 @@ module.exports = {
      * @param {*} node
      * @return 没有找到可点击的节点返回false，否则返回点击结果
      */
-    backtrackClickNode: (node) => {
-        while (node != null) {
+    backtrackClickNode: node => {
+        while (node) {
             if (node.clickable()) {
                 return node.click();
             } else {
@@ -14,4 +14,7 @@ module.exports = {
         }
         return false;
     },
+    scrollForward: node => {
+        return node ? node.scrollForward() : false;
+    }
 }
