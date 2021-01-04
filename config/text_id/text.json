@@ -3,6 +3,7 @@
     "deleted_message": "你不是收款方好友，对方添加你为好友后才能发起转账",
     "network_error": "网络通信出现问题，请稍后再试",
     "system_error": "系统繁忙，请稍后再试。",
+    "cancel_transfer": "取消支付",
     "account_deleted": "对方已经删除帐号",
     "contacts": "通讯录",
     "delete": "删除",

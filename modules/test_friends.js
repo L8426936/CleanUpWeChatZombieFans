@@ -192,28 +192,37 @@
      */
     function assertionFriend() {
         while (true) {
-            let node = descMatches(texts["close"]).findOnce() || descMatches(texts["return"]).findOnce();
-            if (node && !node.getViewIdResourceName() && node_util.backtrackClickNode(node)) {
+            let close_transfer_password_node = descMatches(texts["close"]).findOnce() || descMatches(texts["return"]).findOnce();
+            if (close_transfer_password_node && !close_transfer_password_node.getViewIdResourceName() && node_util.backtrackClickNode(close_transfer_password_node)) {
                 db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
                 step = 9;
                 break;
-            } else {
-                let abnormal_message_node = id(ids["abnormal_message"]).findOnce();
-                let abnormal_message = abnormal_message_node && abnormal_message_node.text();
-                if (abnormal_message && node_util.backtrackClickNode(id(ids["confirm_abnormal_message"]).findOne())) {
-                    if (texts["network_error"].match(abnormal_message) || texts["system_error"].match(abnormal_message)) {
-                        db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
-                        ui.run(() => {
-                            window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
-                            window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
-                        });
-                    } else {
-                        let selected = !!(texts["blacklisted_message"].match(abnormal_message) || texts["deleted_message"].match(abnormal_message));
-                        db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
-                    }
-                    step = 9;
-                    break;
+            }
+            let cancel_transfer_node = descMatches(texts["cancel_transfer"]).findOnce();
+            if (cancel_transfer_node && !cancel_transfer_node.getViewIdResourceName() && node_util.backtrackClickNode(cancel_transfer_node)) {
+                db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+                ui.run(() => {
+                    window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
+                    window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
+                });
+                step = 9;
+                break;
+            }
+            let abnormal_message_node = id(ids["abnormal_message"]).findOnce();
+            let abnormal_message = abnormal_message_node && abnormal_message_node.text();
+            if (abnormal_message && node_util.backtrackClickNode(id(ids["confirm_abnormal_message"]).findOne())) {
+                if (texts["network_error"].match(abnormal_message) || texts["system_error"].match(abnormal_message)) {
+                    db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+                    ui.run(() => {
+                        window.ignored_friends_text.setText(window.ignored_friends_text.text() + last_friend_remark + "\n");
+                        window.ignored_friends_text_scroll.scrollTo(0, window.ignored_friends_text.getHeight());
+                    });
+                } else {
+                    let selected = !!(texts["blacklisted_message"].match(abnormal_message) || texts["deleted_message"].match(abnormal_message));
+                    db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
                 }
+                step = 9;
+                break;
             }
         }
     }
