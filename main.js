@@ -152,7 +152,13 @@
         }
         http.get(base_url + "last_version_info.json", {}, (res, err) => {
             if (!cancel) {
-                if (res["statusCode"] == 200) {
+                if (err || res["statusCode"] != 200) {
+                    if (show_update_dialog) {
+                        dialog.setContent(language["update_info_get_fail_alert_dialog_message"]);
+                        dialog.setActionButton("positive", language["confirm"]);
+                        dialog.setCancelable(true);
+                    }
+                } else {
                     let local_config = JSON.parse(files.read("project.json"));
                     let last_version_info = res.body.json();
                     dialog.setContent(language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", last_version_info["version_name"]).replace("%last_versions_code", last_version_info["version_code"]).replace("%update_content", last_version_info["update_content"]));
@@ -173,10 +179,6 @@
                         dialog.setActionButton("positive", language["confirm"]);
                         dialog.setCancelable(true);
                     }
-                } else if (show_update_dialog) {
-                    dialog.setContent(language["update_info_get_fail_alert_dialog_message"]);
-                    dialog.setActionButton("positive", language["confirm"]);
-                    dialog.setCancelable(true);
                 }
             }
         });
@@ -198,7 +200,10 @@
         dialog.show();
         http.get(base_url + "history_update_info.txt", {}, (res, err) => {
             if (!cancel) {
-                if (res["statusCode"] == 200) {
+                if (err || res["statusCode"] != 200) {
+                    dialog.setContent(language["history_update_info_get_fail_alert_dialog_message"]);
+                    dialog.setCancelable(true);
+                } else {
                     dialog.setContent(res.body.string());
                     if (show_update_button) {
                         dialog.setActionButton("neutral", language["cancel"]);
@@ -210,9 +215,6 @@
                         dialog.setActionButton("positive", language["confirm"]);
                         dialog.setCancelable(true);
                     }
-                } else {
-                    dialog.setContent(language["history_update_info_get_fail_alert_dialog_message"]);
-                    dialog.setCancelable(true);
                 }
             }
         });
@@ -232,7 +234,10 @@
         }).show();
         http.get(base_url + "config/files_md5.json", {}, (res, err) => {
             if (!cancel) {
-                if (res["statusCode"] == 200) {
+                if (err || res["statusCode"] != 200) {
+                    dialog.dismiss();
+                    toast(language["update_fail"]);
+                } else {
                     let remote_files_md5 = res.body.json();
                     let local_files_md5 = files.exists("config/files_md5.json") ? JSON.parse(files.read("config/files_md5.json")) : {};
                     let completed_all_file = true, max_progress = 0, current_progress = 0;
@@ -282,9 +287,6 @@
                         }
                     }
                     files.removeDir(".download_files");
-                } else {
-                    dialog.dismiss();
-                    toast(language["update_fail"]);
                 }
             }
         });
@@ -310,21 +312,21 @@
         dialog.show();
         http.get(base_url + "developer_qq.txt", {}, (res, err) => {
             if (!cancel) {
+                dialog.setActionButton("positive", language["confirm"]);
                 dialog.setCancelable(true);
-                if (res["statusCode"] == 200) {
+                if (err || res["statusCode"] != 200) {
+                    dialog.setContent(language["developer_qq_get_fail"]);
+                } else {
+                    let developer_qq = res.body.string();
                     try {
                         app.startActivity({
                             action: "android.intent.action.VIEW",
-                            data: "mqqapi://card/show_pslcard?&uin=" + res.body.string()
+                            data: "mqqapi://card/show_pslcard?&uin=" + developer_qq
                         });
                         dialog.dismiss();
                     } catch (e) {
-                        dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", res.body.string()));
-                        dialog.setActionButton("positive", language["confirm"]);
+                        dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", developer_qq));
                     }
-                } else {
-                    dialog.setContent(language["developer_qq_get_fail"]);
-                    dialog.setActionButton("positive", language["confirm"]);
                 }
             }
         });
