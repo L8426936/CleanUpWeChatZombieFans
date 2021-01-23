@@ -1,5 +1,5 @@
 {
-  "version_code": 48,
+  "version_code": 49,
   "version_name": "3.9.0",
-  "update_content": "* 支持中国版微信7.0.22\n* 修复不显示脚本网络请求错误"
+  "update_content": "* 支持Google Play Store版微信7.0.21"
 }
