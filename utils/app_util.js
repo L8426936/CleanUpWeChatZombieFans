@@ -184,7 +184,12 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkService() {
-        let enabled = auto.service || Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).indexOf(context.getPackageName() + "/com.stardust.autojs.core.accessibility.AccessibilityService") >= 0;
+        let enabled = false;
+        try {
+            enabled = auto.service || Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).indexOf(context.getPackageName() + "/com.stardust.autojs.core.accessibility.AccessibilityService") >= 0;
+        } catch (e) {
+            log(e);
+        }
         if (!enabled) {
             dialogs.build({
                 content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name", getAppName(context.getPackageName())),

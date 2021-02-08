@@ -1,5 +1,5 @@
 {
-  "version_code": 51,
+  "version_code": 52,
   "version_name": "3.9.0",
-  "update_content": "* 支持中国版微信8.0.1"
+  "update_content": "* 修复检查无障碍权限脚本崩溃"
 }
