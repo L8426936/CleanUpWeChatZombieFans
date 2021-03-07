@@ -1,3 +1,9 @@
+2021-03-07 v3.9.0_c53
+* 紧急更新，请阅读以下内容
+* 开发者发现有人将脚本马甲后发布。在此声明：一切后果，自行承担，与本人无关。脚本开源免费，只在以下链接发布
+* https://github.com/L8426936/CleanUpWeChatZombieFans
+* https://gitee.com/L8426936/CleanUpWeChatZombieFans
+
 2021-02-08 v3.9.0_c52
 * 修复检查无障碍权限脚本崩溃
 
