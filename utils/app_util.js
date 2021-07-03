@@ -97,16 +97,20 @@ module.exports = (() => {
         return JSON.parse(files.read("config/running_config.json"));
     }
 
-    function getWeChatIds() {
+    function getWeChatIdFilePath() {
         let we_chat_release_source = getWeChatReleaseSourceByLocation();
         let ids_versions = config["ids_versions"][we_chat_release_source];
         let we_chat_versions = getWeChatVersionsName();
-        for (let i = 0; i < ids_versions.length; i++) {
-            let supported_versions = ids_versions[i].split("~");
+        for (let key in ids_versions) {
+            let supported_versions = key.split("-");
             if (supportedApplicationVersions(we_chat_versions, supported_versions[0], supported_versions[1])) {
-                return JSON.parse(files.read("config/text_id/" + we_chat_release_source + "/" + ids_versions[i] + ".json"));
+                return "config/text_id/" + we_chat_release_source + "/" + ids_versions[key];
             }
         }
+    }
+
+    function getWeChatIds() {
+        return JSON.parse(files.read(getWeChatIdFilePath()));
     }
 
     /**
@@ -158,25 +162,15 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function checkFile() {
-        let we_chat_versions = getWeChatVersionsName();
-        let we_chat_release_source = getWeChatReleaseSourceByLocation();
-        let ids_versions = config["ids_versions"][we_chat_release_source];
-        let exists = false, file_path;
-        for (let i = 0; !exists && i < ids_versions.length; i++) {
-            let supported_versions = ids_versions[i].split("~");
-            if (supportedApplicationVersions(we_chat_versions, supported_versions[0], supported_versions[1])) {
-                file_path = "config/text_id/" + we_chat_release_source + "/" + ids_versions[i] + ".json";
-                exists = files.exists(file_path);
-                break;
-            }
-        }
-        if (!exists) {
+        let file_path = getWeChatIdFilePath();
+        if (!files.exists(file_path)) {
             dialogs.build({
                 content: default_language["file_lost_alert_dialog_message"].replace("%file_path", file_path),
                 positive: default_language["confirm"]
             }).show();
+            return false;
         }
-        return exists;
+        return true;
     }
 
     /**

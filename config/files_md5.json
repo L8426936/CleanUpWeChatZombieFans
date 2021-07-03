@@ -4,7 +4,7 @@
         "size": 29001
     },
     "project.json": {
-        "md5": "7b015085dae6f58b2f3cd244354a9d81",
+        "md5": "4367364e610db6108c57b27bb4105883",
         "size": 387
     },
     "activity/friend_list.js": {
@@ -24,38 +24,38 @@
         "size": 1422
     },
     "config/config.json": {
-        "md5": "7de618cd67511054c5c8a635db5c9f9e",
-        "size": 1056
+        "md5": "1dbae964350cea860a46fa4f191f2aa3",
+        "size": 1330
     },
     "config/files_md5.json" : {
-        "md5": "3fd8c29f5ca53080c3ab3796713739bc",
-        "size": 2778
+        "md5": "9dd288e06761729da3217f5d63b2a78a",
+        "size": 2875
     },
     "config/running_config.json": {
         "md5": "0a4078749473be1d4ad50aee67e86634",
         "size": 280
     },
     "config/languages/zh-CN.json": {
-        "md5": "8f7043e74ccee3299d1a3be858657401",
-        "size": 5299
+        "md5": "7146606a2c68533ff5fc474dcb1804f4",
+        "size": 5378
     },
-    "config/text_id/google_play_store/7.0.16~7.0.16.json": {
+    "config/text_id/google_play_store/b5b82a06a78db5de98a0e050049af5bb.json": {
         "md5": "b5b82a06a78db5de98a0e050049af5bb",
         "size": 1040
     },
-    "config/text_id/google_play_store/7.0.17~7.0.17.json": {
+    "config/text_id/google_play_store/57ade286ab5663088f15ab2f0b9ff14b.json": {
         "md5": "57ade286ab5663088f15ab2f0b9ff14b",
         "size": 1040
     },
-    "config/text_id/google_play_store/7.0.21~7.0.21.json": {
+    "config/text_id/google_play_store/ac0741a4e5f57b2f88610ebb148948cd.json": {
         "md5": "ac0741a4e5f57b2f88610ebb148948cd",
         "size": 1040
     },
-    "config/text_id/other/7.0.15~7.0.22.json": {
+    "config/text_id/other/6139b2e741010120c2221a8f0a19a1d1.json": {
         "md5": "6139b2e741010120c2221a8f0a19a1d1",
         "size": 1040
     },
-    "config/text_id/other/8.0.0~8.0.3.json": {
+    "config/text_id/other/e2df1dfcee6a5dd7f84280cedf2e88fc.json": {
         "md5": "e2df1dfcee6a5dd7f84280cedf2e88fc",
         "size": 1040
     },
@@ -80,8 +80,8 @@
         "size": 13256
     },
     "utils/app_util.js": {
-        "md5": "565c04013a3b8be79594a9bc5eb77164",
-        "size": 14102
+        "md5": "5e60f3911af2e2eb1cca61791805ed45",
+        "size": 13540
     },
     "utils/db_util.js": {
         "md5": "09782e32ce68bf4ab432391d62429a69",

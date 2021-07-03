@@ -12,18 +12,19 @@
         },
         "other": {
             "min_supported_versions": "7.0.15",
-            "max_supported_versions": "8.0.3"
+            "max_supported_versions": "8.0.7"
         }
     },
     "ids_versions": {
-        "google_play_store": [
-            "7.0.16~7.0.16",
-            "7.0.17~7.0.17",
-            "7.0.21~7.0.21"
-        ],
-        "other": [
-            "7.0.15~7.0.22",
-            "8.0.0~8.0.3"
-        ]
+        "google_play_store": {
+            "7.0.16-7.0.16": "b5b82a06a78db5de98a0e050049af5bb.json",
+            "7.0.17-7.0.17": "57ade286ab5663088f15ab2f0b9ff14b.json",
+            "7.0.21-7.0.21": "ac0741a4e5f57b2f88610ebb148948cd.json"
+        },
+        "other": {
+            "7.0.15-7.0.22": "6139b2e741010120c2221a8f0a19a1d1.json",
+            "8.0.0-8.0.3": "e2df1dfcee6a5dd7f84280cedf2e88fc.json",
+            "8.0.6-8.0.7": "e2df1dfcee6a5dd7f84280cedf2e88fc.json"
+        }
     }
 }
