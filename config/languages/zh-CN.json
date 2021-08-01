@@ -33,6 +33,7 @@
     "stop": "停止",
     "deleted_friends_title": "以下好友已删除",
     "script_stopped": "已停止运行！！！",
+    "script_running": "已开始运行！！！",
     "feedback_suggestions": "反馈建议",
     "feedback_suggestions_alert_dialog_message": "1. 不接受清粉以外的功能（比如批量发信息、批量备注等等）\n2. 源码链接：https://github.com/L8426936/CleanUpWeChatZombieFans",
     "add_developer_qq": "加开发者QQ",
@@ -60,5 +61,6 @@
     "import_friends_by_friend_list": "通过微信好友列表",
     "import_friends_fail_title": "以下好友导入失败",
     "setting": "设置",
-    "manual_control_we_chat_release_source": "手动选择[Google Play Store]"
+    "manual_control_we_chat_release_source": "手动选择[Google Play Store]",
+    "debug": "打印日志"
 }

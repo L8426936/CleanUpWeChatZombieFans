@@ -1,4 +1,5 @@
 {
+    "version": "7.0.17-7.0.17",
     "contacts": "cz6",
     "labels": "g6",
     "add_label": "d_g",
@@ -6,7 +7,6 @@
     "contacts_count_by_label": "d_b",
     "friend_remark_by_label": "fu9",
     "friend_list_by_label": "android:id/list",
-    "delete_label": "android:id/title",
     "back_to_label_list": "dw",
     "label_list": "d_e",
     "friend_list": "fc",

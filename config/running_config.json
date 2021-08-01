@@ -6,5 +6,6 @@
     "import_friend_mode": 0,
     "manual_control_we_chat_release_source": false,
     "we_chat_last_update_time": null,
-    "no_more_warning": false
+    "no_more_warning": false,
+    "debug": false
 }

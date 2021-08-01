@@ -1,4 +1,5 @@
 {
+    "version": "7.0.16-7.0.16",
     "contacts": "cva",
     "labels": "g4",
     "add_label": "d6c",
@@ -6,7 +7,6 @@
     "contacts_count_by_label": "d68",
     "friend_remark_by_label": "foi",
     "friend_list_by_label": "android:id/list",
-    "delete_label": "android:id/title",
     "back_to_label_list": "du",
     "label_list": "d6a",
     "friend_list": "fa",

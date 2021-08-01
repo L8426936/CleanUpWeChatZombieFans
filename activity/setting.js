@@ -4,6 +4,7 @@
         <vertical padding="8">
             <checkbox id="manual_control_we_chat_release_source" />
             <checkbox id="no_more_warning" />
+            <checkbox id="debug" />
         </vertical>
     );
 
@@ -23,6 +24,9 @@
         
         ui.no_more_warning.setText(language["no_more_warning"]);
         ui.no_more_warning.checked = running_config["no_more_warning"];
+
+        ui.debug.setText(language["debug"]);
+        ui.debug.checked = running_config["debug"];
     }
     init();
 
@@ -33,6 +37,11 @@
 
     ui.no_more_warning.on("check", checked => {
         running_config["no_more_warning"] = checked;
+        files.write("config/running_config.json", JSON.stringify(running_config));
+    });
+    
+    ui.debug.on("check", checked => {
+        running_config["debug"] = checked;
         files.write("config/running_config.json", JSON.stringify(running_config));
     });
 })();

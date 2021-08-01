@@ -38,6 +38,7 @@
      */
     let window;
     let language;
+    let log_util;
 
     /**
      * 点击通讯录
@@ -45,6 +46,9 @@
     function clickContacts() {
         if (node_util.backtrackClickNode(id(ids["contacts"]).textMatches(texts["contacts"]).findOne())) {
             step = 1;
+            log_util.info("点击通讯录成功");
+        } else {
+            log_util.warn("点击通讯录失败");
         }
     }
 
@@ -52,11 +56,41 @@
      * 滚动好友列表
      */
     function scrollFriendList() {
-        if (node_util.scrollForward(id(ids["friend_list"]).findOne())) {
+        let scrollResult = false;
+        log_util.log("滚动ListView控件策略1");
+        let node = id(ids["friend_list"]).findOnce();
+        if (node) {
+            if (node.bounds().right - node.bounds().left > 0) {
+                scrollResult = node_util.scrollForward(node);
+            } else {
+                log_util.warn("ListView控件宽度为0");
+            }
+        } else {
+            log_util.error("未找到ListView控件，控件id可能不一致");
+        }
+        if (!scrollResult) {
+            log_util.log("滚动ListView控件策略2");
+            let friend_remark_nodes = id(ids["friend_remark"]).untilFind();
+            if (friend_remark_nodes.size() > 0) {
+                let firstBounds = friend_remark_nodes.get(0).bounds();
+                let lastBounds = friend_remark_nodes.get(friend_remark_nodes.size() - 1).bounds();
+                scrollResult = swipe(lastBounds.centerX(), lastBounds.centerY(), firstBounds.centerX(), firstBounds.top, 500);
+            }
+        }
+        // 最糟糕的情况，按1080x1920比例滑动屏幕
+        if (!scrollResult) {
+            log_util.log("滚动ListView控件策略3");
+            setScreenMetrics(1080, 1920);
+            scrollResult = swipe(540, 1658, 540, 428, 500);
+        }
+        if (scrollResult) {
             last_we_chat_id = "";
             last_friend_remark = "";
             last_index = 0;
             sleep(500);
+            log_util.info("滚动ListView控件成功");
+        } else {
+            log_util.warn("滚动ListView控件失败");
         }
     }
 
@@ -80,7 +114,10 @@
                         last_friend_remark = friend_remark;
                         step = 2;
                         last_index++;
+                        log_util.info("点击联系人成功");
                         break;
+                    } else {
+                        log_util.warn("点击联系人失败");
                     }
                 } else {
                     last_index++;
@@ -108,6 +145,9 @@
     function clickMoreFunction() {
         if (node_util.backtrackClickNode(id(ids["more_function_by_delete"]).findOne())) {
             step = 4;
+            log_util.info("点击更多功能成功");
+        } else {
+            log_util.warn("点击更多功能失败");
         }
     }
 
@@ -117,8 +157,14 @@
     function clickDeleteFunction() {
         if (node_util.backtrackClickNode(id(ids["delete"]).textMatches(texts["delete"]).findOne(200))) {
             step = 5;
+            log_util.info("点击删除功能成功");
         } else {
-            node_util.scrollForward(id(ids["more_function_by_delete_list"]).findOnce());
+            log_util.verbose("未找到删除按钮，滚动更多功能页面");
+            if (node_util.scrollForward(id(ids["more_function_by_delete_list"]).findOnce())) {
+                log_util.info("滚动更多功能页面成功");
+            } else {
+                log_util.warn("滚动更多功能页面失败");
+            }
         }
     }
 
@@ -135,8 +181,12 @@
                 window.deleted_friends_text.setText(window.deleted_friends_text.text() + last_friend_remark + " " + last_we_chat_id + "\n");
                 window.deleted_friends_text_scroll.scrollTo(0, window.deleted_friends_text.getHeight());
             });
+            log_util.info("点击删除成功");
+            log_util.log("----------------------------------------");
             return true;
         }
+        log_util.warn("点击删除失败");
+        log_util.log("----------------------------------------");
         return false;
     }
 
@@ -163,7 +213,7 @@
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         ui.run(() => window.close());
-        toast(language["script_stopped"]);
+        toastLog(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -171,6 +221,7 @@
     function main() {
         node_util = require("utils/node_util.js");
         db_util = require("utils/db_util.js");
+        log_util = require("utils/log_util.js");
         let app_util = require("utils/app_util.js");
 
         ids = app_util.getWeChatIds();
@@ -179,6 +230,8 @@
         
         last_we_chat_id = "", last_friend_remark = "", last_index = 0, step = 0, run = true;
         keyDownListenerByVolumeDown();
+        
+        toastLog(language["script_running"]);
         
         window = floaty.window(
             <vertical padding="8" bg="#000000">

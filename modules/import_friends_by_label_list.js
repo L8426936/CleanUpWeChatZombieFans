@@ -29,6 +29,7 @@
     let last_label;
     let last_index;
     let labels_map;
+    let log_util;
 
     /**
      * 点击通讯录
@@ -36,6 +37,9 @@
     function clickContacts() {
         if (node_util.backtrackClickNode(id(ids["contacts"]).textMatches(texts["contacts"]).findOne())) {
             step = 1;
+            log_util.info("点击通讯录成功");
+        } else {
+            log_util.warn("点击通讯录失败");
         }
     }
 
@@ -100,11 +104,7 @@
                 });
             }
         }
-        if (id(ids["delete_label"]).text(texts["delete_label"]).findOnce() && node_util.backtrackClickNode(id(ids["back_to_label_list"]).findOne())) {
-            step = 2;
-        } else {
-            step = 4;
-        }
+        step = 4;
     }
 
     /**
@@ -114,6 +114,8 @@
         if (node_util.scrollForward(id(ids["friend_list_by_label"]).findOne())) {
             step = 3;
             sleep(500);
+        } else if (node_util.backtrackClickNode(id(ids["back_to_label_list"]).findOne())) {
+            step = 2;
         }
     }
 
@@ -125,6 +127,7 @@
             step = 2;
             last_index = 0;
             sleep(500);
+            log_util.log("----------------------------------------");
         } else if (node_util.backtrackClickNode(id(ids["back_to_friend_list"]).findOne())) {
             stopScript();
         }
@@ -153,7 +156,7 @@
         events.setKeyInterceptionEnabled("volume_down", false);
         events.removeAllKeyDownListeners("volume_down");
         ui.run(() => window.close());
-        toast(language["script_stopped"]);
+        toastLog(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -161,6 +164,7 @@
     function main() {
         node_util = require("utils/node_util.js");
         db_util = require("utils/db_util.js");
+        log_util = require("utils/log_util.js");
         let app_util = require("utils/app_util.js");
 
         ids = app_util.getWeChatIds();
@@ -176,6 +180,8 @@
         // 获取系统语言
         language = app_util.getLanguage();
 
+        toastLog(language["script_running"]);
+        
         window = floaty.window(
             <vertical padding="8" bg="#000000">
                 <text textColor="red" id="import_friends_fail_title"/>

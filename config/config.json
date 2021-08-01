@@ -8,23 +8,25 @@
     "supported_we_chat_versions": {
         "google_play_store": {
             "min_supported_versions": "7.0.16",
-            "max_supported_versions": "7.0.21"
+            "max_supported_versions": "8.0.2"
         },
         "other": {
             "min_supported_versions": "7.0.15",
-            "max_supported_versions": "8.0.7"
+            "max_supported_versions": "8.0.9"
         }
     },
     "ids_versions": {
         "google_play_store": {
-            "7.0.16-7.0.16": "b5b82a06a78db5de98a0e050049af5bb.json",
-            "7.0.17-7.0.17": "57ade286ab5663088f15ab2f0b9ff14b.json",
-            "7.0.21-7.0.21": "ac0741a4e5f57b2f88610ebb148948cd.json"
+            "7.0.16-7.0.16": "de421e52bcf0138d873b91514b1c28aa.json",
+            "7.0.17-7.0.17": "fe7c2dfde666fc0e47422edf92e4de50.json",
+            "7.0.21-7.0.21": "c81f3ea73a50bb3419a80ae3c23a32d8.json",
+            "8.0.2-8.0.2": "2f0d9b1d85d39dcddb53746dddc469b5.json"
         },
         "other": {
-            "7.0.15-7.0.22": "6139b2e741010120c2221a8f0a19a1d1.json",
-            "8.0.0-8.0.3": "e2df1dfcee6a5dd7f84280cedf2e88fc.json",
-            "8.0.6-8.0.7": "e2df1dfcee6a5dd7f84280cedf2e88fc.json"
+            "7.0.15-7.0.22": "72f48db715df7e003bbd7a4c5b2b7ce7.json",
+            "8.0.0-8.0.3": "0015926376caaa7fed0f6d280edae953.json",
+            "8.0.6-8.0.7": "0015926376caaa7fed0f6d280edae953.json",
+            "8.0.9-8.0.9": "dc654efffaee80b79714d81429f8b3cf.json"
         }
     }
 }

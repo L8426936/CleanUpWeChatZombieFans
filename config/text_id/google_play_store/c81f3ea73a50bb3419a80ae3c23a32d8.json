@@ -1,4 +1,5 @@
 {
+    "version": "7.0.21-7.0.21",
     "contacts": "dbk",
     "labels": "h0",
     "add_label": "dnl",
@@ -6,7 +7,6 @@
     "contacts_count_by_label": "dng",
     "friend_remark_by_label": "gdx",
     "friend_list_by_label": "android:id/list",
-    "delete_label": "android:id/title",
     "back_to_label_list": "e5",
     "label_list": "dnj",
     "friend_list": "g7",
