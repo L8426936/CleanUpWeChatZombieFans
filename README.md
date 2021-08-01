@@ -22,14 +22,14 @@
 
 
 ## 使用教程（镜像地址可能会有风险网址提醒）
-### 运行方式一
+### 运行方式一（操作较繁琐）
 1. 安装[Auto.js](https://github.com/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk)
 2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)解压到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 * Github镜像地址：[Auto.js](https://hub.fastgit.org/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk)&emsp;[CleanUpWeChatZombieFans](https://hub.fastgit.org/L8426936/CleanUpWeChatZombieFans/archive/master.zip)
-### 运行方式二（已知安卓10闪退）
-* 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFans/releases/latest)，安装apk&emsp;[GitHub镜像地址](https://hub.fastgit.org/L8426936/CleanUpWeChatZombieFans/releases/latest)
-* 下载[最新发布版（Gitee）](https://gitee.com/L8426936/CleanUpWeChatZombieFans/releases)，安装apk
+### 运行方式二（操作简单）
+* 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)，安装apk&emsp;[GitHub镜像地址](https://hub.fastgit.org/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)
+* 下载[最新发布版（Gitee）](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/releases)，安装apk
 
 
 ## 非好友转账微信提示信息
