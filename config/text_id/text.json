@@ -7,7 +7,7 @@
     "account_deleted": "对方已经删除帐号",
     "contacts": "通讯录",
     "delete": "删除",
-    "close": "关闭",
+    "close": "关闭(,按钮)?",
     "return": "返回",
     "transfer": "转账",
     "send_message": "发消息",

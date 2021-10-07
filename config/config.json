@@ -12,7 +12,7 @@
         },
         "other": {
             "min_supported_versions": "7.0.15",
-            "max_supported_versions": "8.0.9"
+            "max_supported_versions": "8.0.11"
         }
     },
     "ids_versions": {
@@ -26,7 +26,8 @@
             "7.0.15-7.0.22": "72f48db715df7e003bbd7a4c5b2b7ce7.json",
             "8.0.0-8.0.3": "0015926376caaa7fed0f6d280edae953.json",
             "8.0.6-8.0.7": "0015926376caaa7fed0f6d280edae953.json",
-            "8.0.9-8.0.9": "dc654efffaee80b79714d81429f8b3cf.json"
+            "8.0.9-8.0.9": "dc654efffaee80b79714d81429f8b3cf.json",
+            "8.0.11-8.0.11": "83cc67a1393c6c88b0613b08a6a91cc4.json"
         }
     }
 }

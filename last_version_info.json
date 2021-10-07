@@ -1,5 +1,5 @@
 {
-  "version_code": 57,
+  "version_code": 58,
   "version_name": "3.10.0",
-  "update_content": "* 修复Redmi k40无法滚动联系人列表\n* 支持Google Play Store版微信8.0.2\n* 支持中国版微信8.0.9\n* 新增打印日志功能"
+  "update_content": "* 支持中国版微信8.0.11"
 }
