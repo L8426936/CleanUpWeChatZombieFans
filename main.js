@@ -110,7 +110,9 @@
             }).show();
         }
 
-        update(false);
+        if (running_config["auto_update"]) {
+            update(false);
+        }
     }
     init();
 
@@ -540,13 +542,32 @@
     });
 
     ui.clear_friends_button.on("click", () => {
+        let running_config = app_util.getRunningConfig();
         dialogs.build({
-            title: language["clear_friend_dialog_title"],
             content: language["clear_alert_dialog_message"],
+            checkBoxPrompt: language["clear_friend_current_page_work"],
+            checkBoxChecked: running_config["clear_friend_current_page_work"],
             positive: language["cancel"],
             negative: language["confirm"]
+        }).on("check", checked => {
+            running_config["clear_friend_current_page_work"] = checked;
+            files.write("config/running_config.json", JSON.stringify(running_config));
         }).on("negative", () => {
-            db_util.deleteAllTestedFriend();
+            if (running_config["clear_friend_current_page_work"]) {
+                switch (current_page_index) {
+                    case 0:
+                        db_util.deleteTestedFriend(db_util.ABNORMAL_FRIEND_TYPE);
+                        break;
+                    case 1:
+                        db_util.deleteTestedFriend(db_util.NORMAL_FRIEND_TYPE);
+                        break;
+                    case 2:
+                        db_util.deleteTestedFriend(db_util.IGNORED_FRIEND_TYPE);
+                        break;
+                }
+            } else {
+                db_util.deleteTestedFriend();
+            }
             initUI();
         }).show();
     });

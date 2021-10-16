@@ -1,5 +1,5 @@
 {
-  "version_code": 58,
-  "version_name": "3.10.0",
-  "update_content": "* 支持中国版微信8.0.11"
+  "version_code": 59,
+  "version_name": "4.0.0",
+  "update_content": "* 支持中国版微信8.0.14~8.0.15\n* 新增自动定位微信首页\n* 新增基于坐标操作微信\n* 设置页面新增可选脚本更新\n* 设置页面新增脚本运行控制"
 }

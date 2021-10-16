@@ -12,22 +12,23 @@
         },
         "other": {
             "min_supported_versions": "7.0.15",
-            "max_supported_versions": "8.0.11"
+            "max_supported_versions": "8.0.15"
         }
     },
     "ids_versions": {
         "google_play_store": {
-            "7.0.16-7.0.16": "de421e52bcf0138d873b91514b1c28aa.json",
-            "7.0.17-7.0.17": "fe7c2dfde666fc0e47422edf92e4de50.json",
-            "7.0.21-7.0.21": "c81f3ea73a50bb3419a80ae3c23a32d8.json",
-            "8.0.2-8.0.2": "2f0d9b1d85d39dcddb53746dddc469b5.json"
+            "7.0.16-7.0.16": "151f4782f0f0e5e6890f4a3cbb870602.json",
+            "7.0.17-7.0.17": "89d754d8e76738a63a09aaf3d39c237b.json",
+            "7.0.21-7.0.21": "3c02c7c6796f00dea15e9d68d1ebd61b.json",
+            "8.0.2-8.0.2": "f64edc04ce0d5780e3ddda8f5e3fe0c3.json"
         },
         "other": {
-            "7.0.15-7.0.22": "72f48db715df7e003bbd7a4c5b2b7ce7.json",
-            "8.0.0-8.0.3": "0015926376caaa7fed0f6d280edae953.json",
-            "8.0.6-8.0.7": "0015926376caaa7fed0f6d280edae953.json",
-            "8.0.9-8.0.9": "dc654efffaee80b79714d81429f8b3cf.json",
-            "8.0.11-8.0.11": "83cc67a1393c6c88b0613b08a6a91cc4.json"
+            "7.0.15-7.0.22": "319eaaa239383427859206703a80ea03.json",
+            "8.0.0-8.0.3": "c71af7ea5e0656b2cf0a30d75dce7c5f.json",
+            "8.0.6-8.0.7": "c71af7ea5e0656b2cf0a30d75dce7c5f.json",
+            "8.0.9-8.0.9": "c71af7ea5e0656b2cf0a30d75dce7c5f.json",
+            "8.0.11-8.0.11": "0e8a55a3becc24a4453380b91fd0a33c.json",
+            "8.0.14-8.0.15": "d31815c66b35b8c8990c8d154332c578.json"
         }
     }
 }

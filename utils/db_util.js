@@ -37,7 +37,9 @@ module.exports = (() => {
      * 打开数据库连接
      */
     function open() {
-        return SQLiteDatabase.openDatabase(files.cwd() + "/data/we_chat.db", null, SQLiteDatabase.OPEN_READWRITE);
+        let base_path = files.cwd();
+        files.ensureDir(base_path + "/data/");
+        return SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
     }
 
     /**
@@ -206,8 +208,8 @@ module.exports = (() => {
      * 删除所有已测试的好友
      * @returns {boolean} 
      */
-    function deleteAllTestedFriend() {
-        return deleteRows("tested_friend_list", null, null);
+    function deleteTestedFriend(friend_type) {
+        return friend_type ? deleteRows("tested_friend_list", "friend_type = ?", [friend_type]) : deleteRows("tested_friend_list", null, null);
     }
 
     /**
@@ -494,9 +496,7 @@ module.exports = (() => {
     }
 
     function updateDatabase() {
-        let base_path = files.cwd();
-        files.ensureDir(base_path + "/data/");
-        let db = SQLiteDatabase.openOrCreateDatabase(base_path + "/data/we_chat.db", null);
+        let db = open();
 
         db.execSQL("CREATE TABLE IF NOT EXISTS tested_friend_list("
         + "we_chat_id VARCHAR(64) PRIMARY KEY,"
@@ -519,7 +519,7 @@ module.exports = (() => {
     return {
         addTestedFriend: addTestedFriend,
         addLabelFriend: addLabelFriend,
-        deleteAllTestedFriend: deleteAllTestedFriend,
+        deleteTestedFriend: deleteTestedFriend,
         deleteIgnoredTestFriend: deleteIgnoredTestFriend,
         deleteAllLabel: deleteAllLabel,
         deleteAllFriend: deleteAllFriend,
