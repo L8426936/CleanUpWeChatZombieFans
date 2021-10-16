@@ -118,7 +118,7 @@
                 label_friend["label"] = last_label;
                 result = db_util.modifyLabelFriend(label_friend);
             } else {
-                label_friend = {label: last_label, friend_remark: friend_remark, enabled: false};
+                label_friend = { label: last_label, friend_remark: friend_remark, enabled: false };
                 result = db_util.addLabelFriend(label_friend);
             }
             if (!result) {
@@ -134,7 +134,7 @@
     /**
      * 返回标签列表
      */
-     function backToLabelList() {
+    function backToLabelList() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["back_to_label_list"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("控件点击返回标签列表成功");
@@ -222,7 +222,7 @@
      * 监听音量下键按下，停止脚本运行
      */
     function keyDownListenerByVolumeDown() {
-        threads.start(function() {
+        threads.start(function () {
             // 启用按键监听
             events.observeKey();
             events.setKeyInterceptionEnabled("volume_down", true);
@@ -237,7 +237,7 @@
      * 累计器监听器
      */
     function accumulatorListener() {
-        threads.start(function() {
+        threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
                 device.wakeUpIfNeeded();
@@ -271,7 +271,7 @@
         db_util = require("utils/db_util.js");
         log_util = require("utils/log_util.js");
         app_util = require("utils/app_util.js");
-        
+
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
@@ -284,7 +284,7 @@
         device.keepScreenDim();
 
         toastLog(language["script_running"]);
-        
+
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
         launch(we_chat_package_name);

@@ -2,7 +2,7 @@ module.exports = (() => {
     importClass(android.database.sqlite.SQLiteDatabase);
     importClass(android.content.ContentValues);
     importClass(android.database.Cursor);
-    
+
     const ABNORMAL_FRIEND_TYPE = 1, NORMAL_FRIEND_TYPE = 2, IGNORED_FRIEND_TYPE = 3, PAGE_SIZE = 200;
     /**
      * @typedef TestedFriend
@@ -225,7 +225,7 @@ module.exports = (() => {
      * @returns {boolean}
      */
     function deleteAllLabel() {
-        return modifyRow("label_friend_list", {label: ""}, null);
+        return modifyRow("label_friend_list", { label: "" }, null);
     }
 
     /**
@@ -278,7 +278,7 @@ module.exports = (() => {
      * @returns {boolean} 
      */
     function modifyLabelFriendByLabel(label) {
-        return modifyRow("label_friend_list", {enabled: label["enabled"], label: label["label"]}, "label");
+        return modifyRow("label_friend_list", { enabled: label["enabled"], label: label["label"] }, "label");
     }
 
     /**
@@ -336,7 +336,7 @@ module.exports = (() => {
             if (label_name) {
                 label = label_map[label_name];
                 if (!label) {
-                    label = {label: label_name, enabled: false, count: 0};
+                    label = { label: label_name, enabled: false, count: 0 };
                     label_map[label_name] = label;
                     labels.push(label);
                 }
@@ -428,7 +428,7 @@ module.exports = (() => {
     function isSelectedFriendForDeleteByFriendRemark(friend_remark) {
         return isExistRow("SELECT * FROM tested_friend_list WHERE deleted = 'false' AND selected = 'true' AND friend_remark = ? AND friend_type != ?", [friend_remark, IGNORED_FRIEND_TYPE]);
     }
-    
+
     /**
      * 是否有选中好友
      * @param {String} we_chat_id 微信号
@@ -499,19 +499,19 @@ module.exports = (() => {
         let db = open();
 
         db.execSQL("CREATE TABLE IF NOT EXISTS tested_friend_list("
-        + "we_chat_id VARCHAR(64) PRIMARY KEY,"
-        + "friend_remark VARCHAR(128),"
-        + "abnormal_message VARCHAR(255),"
-        + "selected BOOLEAN,"
-        + "deleted BOOLEAN,"
-        + "friend_type TINYINT"
-        + ")");
+            + "we_chat_id VARCHAR(64) PRIMARY KEY,"
+            + "friend_remark VARCHAR(128),"
+            + "abnormal_message VARCHAR(255),"
+            + "selected BOOLEAN,"
+            + "deleted BOOLEAN,"
+            + "friend_type TINYINT"
+            + ")");
 
         db.execSQL("CREATE TABLE IF NOT EXISTS label_friend_list("
-        + "friend_remark VARCHAR(128) PRIMARY KEY,"
-        + "label VARCHAR(64),"
-        + "enabled BOOLEAN"
-        + ")");
+            + "friend_remark VARCHAR(128) PRIMARY KEY,"
+            + "label VARCHAR(64),"
+            + "enabled BOOLEAN"
+            + ")");
 
         close(db);
     }

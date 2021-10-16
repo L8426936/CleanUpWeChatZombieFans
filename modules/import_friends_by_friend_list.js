@@ -50,7 +50,7 @@
         let friend_remark_nodes = idMatches(ids["friend_remark"]).untilFind();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
-            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({friend_remark: friend_remark, label: "", enabled: false}))) {
+            if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({ friend_remark: friend_remark, label: "", enabled: false }))) {
                 log_util.error("导入好友失败");
             }
         }
@@ -103,7 +103,7 @@
      * 监听音量下键按下，停止脚本运行
      */
     function keyDownListenerByVolumeDown() {
-        threads.start(function() {
+        threads.start(function () {
             // 启用按键监听
             events.observeKey();
             events.setKeyInterceptionEnabled("volume_down", true);
@@ -118,7 +118,7 @@
      * 累计器监听器
      */
     function accumulatorListener() {
-        threads.start(function() {
+        threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
                 device.wakeUpIfNeeded();
@@ -152,12 +152,12 @@
         db_util = require("utils/db_util.js");
         log_util = require("utils/log_util.js");
         app_util = require("utils/app_util.js");
-        
+
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
         texts = JSON.parse(files.read("config/text_id/text.json"));
-        
+
         run = true;
 
         keyDownListenerByVolumeDown();
@@ -175,7 +175,7 @@
                 accumulator++;
             }
         }
-        
+
         /**
          * 此方式流程控制较为灵活
          */

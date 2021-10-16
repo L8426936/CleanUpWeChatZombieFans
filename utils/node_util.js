@@ -19,7 +19,7 @@ module.exports = {
      * @param {*} node
      * @return 没有找到可点击的节点返回false，否则返回点击结果
      */
-     backtrackSimulationClickNode: node => {
+    backtrackSimulationClickNode: node => {
         while (node) {
             if (node.clickable()) {
                 return click(node.bounds().centerX(), node.bounds().centerY());

@@ -114,6 +114,24 @@ module.exports = (() => {
     }
 
     /**
+     * 不小于8.0.11中国版微信某些操作需要暂停
+     */
+    function operatePause() {
+        let min_supported_versions_arr = "8.0.11".match(/\d+/g);
+        let current_versions_arr = getWeChatVersionsName().match(/\d+/g);
+        for (let i = 0; i < min_supported_versions_arr.length || i < current_versions_arr.length; i++) {
+            let min = i < min_supported_versions_arr.length ? parseInt(min_supported_versions_arr[i]) : 0;
+            let middle = i < current_versions_arr.length ? parseInt(current_versions_arr[i]) : 0;
+            if (min < middle) {
+                break;
+            } else if (min > middle) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 检验语言
      * @returns {boolean}
      */
@@ -257,18 +275,18 @@ module.exports = (() => {
                 view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }
             dialogs.build(view)
-            .on("single_choice", (index, item) => {
-                running_config["test_friend_mode"] = index;
-                files.write("config/running_config.json", JSON.stringify(running_config));
-            }).on("check", checked => {
-                checkInstallSource(checked, running_config);
-            }).on("positive", () => {
-                if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
-                    stopModulesScript();
-                    engines.execScriptFile("modules/test_friends.js");
-                    stopUIScript();
-                }
-            }).show();
+                .on("single_choice", (index, item) => {
+                    running_config["test_friend_mode"] = index;
+                    files.write("config/running_config.json", JSON.stringify(running_config));
+                }).on("check", checked => {
+                    checkInstallSource(checked, running_config);
+                }).on("positive", () => {
+                    if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
+                        stopModulesScript();
+                        engines.execScriptFile("modules/test_friends.js");
+                        stopUIScript();
+                    }
+                }).show();
         }
     }
 
@@ -289,23 +307,23 @@ module.exports = (() => {
                 view["checkBoxChecked"] = getWeChatReleaseSourceByLocation() == "google_play_store";
             }
             dialogs.build(view)
-            .on("single_choice", (index, item) => {
-                running_config["import_friend_mode"] = index;
-                files.write("config/running_config.json", JSON.stringify(running_config));
-            })
-            .on("check", checked => {
-                checkInstallSource(checked, running_config);
-            }).on("positive", () => {
-                if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
-                    stopModulesScript();
-                    if (running_config["import_friend_mode"] == 0) {
-                        engines.execScriptFile("modules/import_friends_by_label_list.js");
-                    } else {
-                        engines.execScriptFile("modules/import_friends_by_friend_list.js");
+                .on("single_choice", (index, item) => {
+                    running_config["import_friend_mode"] = index;
+                    files.write("config/running_config.json", JSON.stringify(running_config));
+                })
+                .on("check", checked => {
+                    checkInstallSource(checked, running_config);
+                }).on("positive", () => {
+                    if (checkSupportedWeChatVersions() && checkFile() && checkService()) {
+                        stopModulesScript();
+                        if (running_config["import_friend_mode"] == 0) {
+                            engines.execScriptFile("modules/import_friends_by_label_list.js");
+                        } else {
+                            engines.execScriptFile("modules/import_friends_by_friend_list.js");
+                        }
+                        stopUIScript();
                     }
-                    stopUIScript();
-                }
-            }).show();
+                }).show();
         }
     }
 
@@ -314,6 +332,7 @@ module.exports = (() => {
         getConfig: getConfig,
         getRunningConfig: getRunningConfig,
         getWeChatIds: getWeChatIds,
+        operatePause: operatePause,
         checkSupportedLanguage: checkSupportedLanguage,
         checkInstalledWeChat: checkInstalledWeChat,
         checkSupportedWeChatVersions: checkSupportedWeChatVersions,

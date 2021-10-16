@@ -109,19 +109,19 @@
     /**
      * 跳过检测
      */
-     function checkContinueTest() {
+    function checkContinueTest() {
         if (idMatches(ids["more_function_by_delete"]).findOne(running_config["find_delay_duration"])) {
             let we_chat_id_node = idMatches(ids["we_chat_id"]).findOne(running_config["find_delay_duration"]);
             if (we_chat_id_node) {
                 let we_chat_id = we_chat_id_node.text();
                 let account_deleted_node = idMatches(ids["account_deleted"]).findOnce();
                 if (account_deleted_node) {
-                    db_util.addTestedFriend({we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
+                    db_util.addTestedFriend({ we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE });
                     log_util.info("微信号已注销");
                     return backToFriendList;
                 }
                 if (db_util.isTestedFriendForWeChatID(we_chat_id)) {
-                    db_util.modifyTestedFriend({we_chat_id: we_chat_id, friend_remark: last_friend_remark});
+                    db_util.modifyTestedFriend({ we_chat_id: we_chat_id, friend_remark: last_friend_remark });
                     log_util.verbose("联系人已检测");
                     return backToFriendList;
                 }
@@ -132,17 +132,17 @@
             return scrollFriendDetailsPage;
         }
         log_util.verbose("忽略检测联系人");
-        db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+        db_util.addTestedFriend({ we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE });
         return backToFriendList;
     }
 
     /**
      * 点击发送信息
      */
-     function clickSendMessage() {
+    function clickSendMessage() {
         let account_deleted_node = idMatches(ids["account_deleted"]).textMatches(texts["account_deleted"]).findOnce();
         if (account_deleted_node) {
-            db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
+            db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE });
             log_util.info("微信号已注销");
             return backToFriendList;
         }
@@ -163,7 +163,7 @@
     /**
      * 滚动联系人详情页
      */
-     function scrollFriendDetailsPage() {
+    function scrollFriendDetailsPage() {
         while (true) {
             let node = idMatches(ids["friend_details_page_list"]).findOne(running_config["find_delay_duration"]);
             // 策略1滚动联系人详情页
@@ -195,7 +195,7 @@
     /**
      * 切换到语音消息
      */
-     function switchToVoiceMessage() {
+    function switchToVoiceMessage() {
         while (true) {
             let node = idMatches(ids["switch_message_type"]).findOne(running_config["find_delay_duration"]);
             if (node && (!texts["switch_to_voice_message"].match(node.getContentDescription()) || node_util.backtrackClickNode(node))) {
@@ -217,7 +217,7 @@
     /**
      * 点击更多功能
      */
-     function clickMoreFunction() {
+    function clickMoreFunction() {
         while (true) {
             let node = idMatches(ids["more_function_by_transfer"]).findOne(running_config["find_delay_duration"]);
             if (node_util.backtrackClickNode(node)) {
@@ -238,7 +238,7 @@
     /**
      * 点击转账功能
      */
-     function clickTransferFunction() {
+    function clickTransferFunction() {
         while (true) {
             let node = idMatches(ids["transfer_function"]).textMatches(texts["transfer"]).findOne(running_config["find_delay_duration"]);
             if (node_util.backtrackClickNode(node)) {
@@ -259,12 +259,12 @@
     /**
      * 输入转账金额
      */
-     function setTransferAmount() {
+    function setTransferAmount() {
         while (true) {
             let payee_node = idMatches(ids["payee"]).findOnce();
             let payee = payee_node && payee_node.text();
             if (/.?\(.+\)/.test(payee) && payee != last_friend_remark) {
-                db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+                db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE });
                 log_util.verbose("正常联系人");
                 return backToChatPage;
             }
@@ -291,7 +291,6 @@
                 break;
             }
             log_util.warn("控件点击转账失败");
-            sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["confirm_transfer"]).enabled().findOne(running_config["find_delay_duration"]))) {
                 log_util.info("坐标点击转账成功");
                 break;
@@ -309,14 +308,14 @@
             // 正常支付
             let close_transfer_password_node = descMatches(texts["close"]).findOnce() || descMatches(texts["return"]).findOnce();
             if (close_transfer_password_node && !close_transfer_password_node.id()) {
-                db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE});
+                db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE });
                 log_util.info("正常支付");
                 return closeTransfer;
             }
             // 取消支付
             let cancel_transfer_node = descMatches(texts["cancel_transfer"]).findOnce();
             if (cancel_transfer_node && !cancel_transfer_node.id()) {
-                db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+                db_util.addTestedFriend({ we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE });
                 log_util.info("取消支付");
                 return cancelTransfer;
             }
@@ -325,11 +324,11 @@
             if (abnormal_message) {
                 if (texts["network_error"].match(abnormal_message) || texts["system_error"].match(abnormal_message)) {
                     // 其他异常
-                    db_util.addTestedFriend({we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE});
+                    db_util.addTestedFriend({ we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE });
                     log_util.info("其他异常，取消支付");
                 } else {
                     let selected = !!(texts["blacklisted_message"].match(abnormal_message) || texts["deleted_message"].match(abnormal_message));
-                    db_util.addTestedFriend({we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE});
+                    db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: abnormal_message, selected: selected, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE });
                     log_util.info("异常联系人");
                 }
                 return closeAbnormalMessage;
@@ -431,7 +430,6 @@
                 break;
             }
             log_util.warn("控件点击返回聊天列表失败");
-            sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["back_to_chats"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("坐标点击返回聊天列表成功");
                 break;
@@ -509,7 +507,7 @@
      * 监听音量下键按下，停止脚本运行
      */
     function keyDownListenerByVolumeDown() {
-        threads.start(function() {
+        threads.start(function () {
             // 启用按键监听
             events.observeKey();
             events.setKeyInterceptionEnabled("volume_down", true);
@@ -524,7 +522,7 @@
      * 累计器监听器
      */
     function accumulatorListener() {
-        threads.start(function() {
+        threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
                 device.wakeUpIfNeeded();
@@ -559,7 +557,7 @@
         db_util = require("utils/db_util.js");
         log_util = require("utils/log_util.js");
         app_util = require("utils/app_util.js");
-        
+
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
@@ -586,8 +584,12 @@
         /**
          * 此方式流程控制较为灵活
          */
+        let operate_pause = app_util.operatePause();
         for (let nextFunction = clickContacts(); run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
+            if (operate_pause && (nextFunction == clickTransferFunction || nextFunction == backToChatList)) {
+                sleep(running_config["click_delay_duration"]);
+            }
         }
     }
 

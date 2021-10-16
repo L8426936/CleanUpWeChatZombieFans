@@ -16,23 +16,23 @@ module.exports = (() => {
             }
         }
     }
-    
+
     function log(message) {
         debug("log", message);
     }
-    
+
     function verbose(message) {
         debug("verbose", message);
     }
-    
+
     function info(message) {
         debug("info", message);
     }
-    
+
     function warn(message) {
         debug("warn", message);
     }
-    
+
     function error(message) {
         debug("error", message);
     }

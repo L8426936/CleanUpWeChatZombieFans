@@ -64,8 +64,8 @@
     "manual_control_we_chat_release_source": "手动选择[Google Play Store]",
     "debug": "打印日志",
     "auto_update": "自动更新脚本",
-    "find_delay_duration": "%find_delay_duration%秒内基于控件操作微信，失败则等待%click_delay_duration%秒",
-    "click_delay_duration": "等待%click_delay_duration%秒后，%find_delay_duration%秒内基于坐标操作微信",
-    "accumulator_delay_duration": "%time%秒内微信无操作结束脚本",
-    "reboot_script": "%time%秒内微信无操作结束脚本后，重新运行脚本"
+    "click_delay_duration": "对控件操作无效的按钮起作用，操作前停顿%click_delay_duration%秒",
+    "find_delay_duration": "%find_delay_duration%秒内基于控件操作，无效则%find_delay_duration%秒内基于坐标操作",
+    "accumulator_delay_duration": "%time%秒内无操作结束脚本",
+    "reboot_script": "%time%秒内无操作结束脚本后，重新运行脚本"
 }

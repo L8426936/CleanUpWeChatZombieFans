@@ -4,15 +4,15 @@
         <vertical>
             <list id="label_list" layout_weight="1">
                 <horizontal w="*">
-                    <text paddingLeft="8" paddingTop="10" paddingBottom="10" id="label" text="{{label}}" maxLines="1" ellipsize="end"/>
-                    <text paddingTop="10" paddingBottom="10" id="count" text="({{count}})" layout_weight="1" maxLines="1" ellipsize="end"/>
-                    <Switch id="enabled_switch" checked="{{enabled}}" layout_gravity="center"/>
+                    <text paddingLeft="8" paddingTop="10" paddingBottom="10" id="label" text="{{label}}" maxLines="1" ellipsize="end" />
+                    <text paddingTop="10" paddingBottom="10" id="count" text="({{count}})" layout_weight="1" maxLines="1" ellipsize="end" />
+                    <Switch id="enabled_switch" checked="{{enabled}}" layout_gravity="center" />
                 </horizontal>
             </list>
             <horizontal bg="#EBEBEB">
-                <button id="clear_labels_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="clear_labels_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
             </horizontal>
         </vertical>
     );
@@ -39,7 +39,7 @@
         }
     }
     init();
-    
+
     /**
      * 初始化UI
      */
@@ -52,7 +52,7 @@
     initUI();
 
     // 当用户回到本界面时，resume事件会被触发
-    ui.emitter.on("resume", function() {
+    ui.emitter.on("resume", function () {
         initUI();
     });
 
@@ -97,7 +97,7 @@
             initUI();
         }).show();
     });
-    
+
     ui.import_friends_button.on("click", () => {
         app_util.importFriends();
     });

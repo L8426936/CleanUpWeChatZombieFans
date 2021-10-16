@@ -1,43 +1,43 @@
 {
     "main.js": {
-        "md5": "f91768af1c28d4fb8e29778a007a55ca",
-        "size": 30015
+        "md5": "19ea564b77ed5cd5c19cd4c0b1f22f8c",
+        "size": 30060
     },
     "project.json": {
-        "md5": "b985067e5693eceda84588dadd9b0a12",
+        "md5": "43a0f766ac3f9952b63c21d9bb9cb124",
         "size": 387
     },
     "activity/friend_list.js": {
-        "md5": "01643a70483b11b860d5c959e4154283",
-        "size": 4395
+        "md5": "5be846f10050711f23b0bf5b6e4e4686",
+        "size": 4388
     },
     "activity/label_friend_list.js": {
-        "md5": "7e92dece8ed11473e29b5266d2468279",
-        "size": 4180
+        "md5": "0eb054c6bf0ac5faaf5bbfb1a0c88d73",
+        "size": 4172
     },
     "activity/label_list.js": {
-        "md5": "e9304193be328b6f666cf1f98f990966",
-        "size": 4309
+        "md5": "8f033a1e3b0049434cb6fd83ce970f46",
+        "size": 4308
     },
     "activity/setting.js": {
-        "md5": "970f9aac72c1c9d3f9c8480c67a3509d",
-        "size": 6545
+        "md5": "2ccdab67753eebc6837e794b6f42a9bd",
+        "size": 6294
     },
     "config/config.json": {
         "md5": "f358b501493abb2c2bf8a37d1ee7ea9a",
         "size": 1610
     },
-    "config/files_md5.json" : {
-        "md5": "0cbb2383e9df31261ffa048d55192534",
-        "size": 3453
+    "config/files_md5.json": {
+        "md5": "e3eff18b4fa65d7960c965f8853f211d",
+        "size": 3452
     },
     "config/running_config.json": {
-        "md5": "795926173e74390ed3db01e3651a26dc",
+        "md5": "19e74e47f395bd1f61cdd2a526f49d28",
         "size": 511
     },
     "config/languages/zh-CN.json": {
-        "md5": "40bac1e0c35d07d2f5f1b7c566b2abf8",
-        "size": 5791
+        "md5": "d94da12178e8d1a5c383d91788e42719",
+        "size": 5781
     },
     "config/text_id/google_play_store/151f4782f0f0e5e6890f4a3cbb870602.json": {
         "md5": "151f4782f0f0e5e6890f4a3cbb870602",
@@ -76,35 +76,35 @@
         "size": 700
     },
     "modules/delete_friends.js": {
-        "md5": "96034316c6f6464ad091f9dc07d30529",
-        "size": 15042
+        "md5": "60eba3aace9a22ad8bd665ee3cdb7536",
+        "size": 15031
     },
     "modules/import_friends_by_friend_list.js": {
-        "md5": "123c71bbcc51fcddaeb4ba9d9bcc1903",
-        "size": 6761
+        "md5": "3a2fd063fe1945c3b38472f88ca9fcc9",
+        "size": 6741
     },
     "modules/import_friends_by_label_list.js": {
-        "md5": "64e99b5cd0bd0b65138dd8a8ca61349a",
-        "size": 11727
+        "md5": "8fd092f02826ae365562f49166687724",
+        "size": 11714
     },
     "modules/test_friends.js": {
-        "md5": "3144ea50a89eed6fe150dd32fa2b6705",
-        "size": 25909
+        "md5": "d4a00ab74b85f33ad98501dc2c70fd59",
+        "size": 26038
     },
     "utils/app_util.js": {
-        "md5": "5e60f3911af2e2eb1cca61791805ed45",
-        "size": 13540
+        "md5": "6f774fbcd1f6c39c5b6ebe6ff4ed8ba0",
+        "size": 14444
     },
     "utils/db_util.js": {
-        "md5": "f0373c540e9b6c4a3ba246c241c8f5bc",
-        "size": 18261
+        "md5": "a1260001278591c1a10b2b185048b691",
+        "size": 18303
     },
     "utils/log_util.js": {
-        "md5": "5b65a05f18f9d1d915216aa809228d8c",
-        "size": 1159
+        "md5": "ea1452ed9c5928bbce1ed9e95e17b754",
+        "size": 1139
     },
     "utils/node_util.js": {
-        "md5": "6e637a41010e31dac74ed9dad539eb19",
-        "size": 1079
+        "md5": "28ebc0eb003bbc4cfd6081f42893e1b2",
+        "size": 1078
     }
 }

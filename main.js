@@ -4,7 +4,7 @@
         <drawer id="drawer">
             <vertical>
                 <appbar>
-                    <toolbar id="toolbar"/>
+                    <toolbar id="toolbar" />
                     <tabs id="tabs" />
                 </appbar>
                 <vertical>
@@ -14,9 +14,9 @@
                                 <horizontal padding="0 8">
                                     <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
                                     <vertical>
-                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
-                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end"/>
-                                        <text id="abnormal_message_text" text="{{abnormal_message}}" maxLines="1" ellipsize="end"/>
+                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end" />
+                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end" />
+                                        <text id="abnormal_message_text" text="{{abnormal_message}}" maxLines="1" ellipsize="end" />
                                     </vertical>
                                 </horizontal>
                             </list>
@@ -26,29 +26,29 @@
                                 <horizontal padding="0 8">
                                     <checkbox id="selected_checkbox" layout_gravity="center" checked="{{selected}}" />
                                     <vertical>
-                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
-                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end"/>
+                                        <text id="friend_remark_text" text="{{friend_remark}}" maxLines="1" ellipsize="end" />
+                                        <text id="we_chat_id_text" text="{{we_chat_id}}" maxLines="1" ellipsize="end" />
                                     </vertical>
                                 </horizontal>
                             </list>
                         </frame>
                         <frame>
                             <list id="ignored_friend_list">
-                                <text padding="8" text="{{friend_remark}}" maxLines="1" ellipsize="end"/>
+                                <text padding="8" text="{{friend_remark}}" maxLines="1" ellipsize="end" />
                             </list>
                         </frame>
                     </viewpager>
                     <horizontal bg="#EBEBEB">
-                        <button id="previous_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                        <text id="current_page_text" textStyle="bold"/>
+                        <button id="previous_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                        <text id="current_page_text" textStyle="bold" />
                         <text textStyle="bold" text="  /  " />
-                        <text id="total_page_text" textStyle="bold"/>
-                        <button id="next_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                        <text id="total_page_text" textStyle="bold" />
+                        <button id="next_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
                     </horizontal>
                     <horizontal bg="#EBEBEB">
-                        <button id="clear_friends_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                        <button id="delete_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                        <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                        <button id="clear_friends_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                        <button id="delete_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                        <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
                     </horizontal>
                 </vertical>
             </vertical>
@@ -126,12 +126,12 @@
 
         page_infos = {};
         let abnormal_friends_total_page = db_util.getAbnormalFriendTotalPage();
-        page_infos["abnormal_friends_page_info"] = {current_page: abnormal_friends_total_page > 0 ? 1 : '-', total_page: abnormal_friends_total_page > 0 ? abnormal_friends_total_page : '-'};
+        page_infos["abnormal_friends_page_info"] = { current_page: abnormal_friends_total_page > 0 ? 1 : '-', total_page: abnormal_friends_total_page > 0 ? abnormal_friends_total_page : '-' };
         let normal_friends_total_page = db_util.getNormalFriendTotalPage();
-        page_infos["normal_friends_page_info"] = {current_page: normal_friends_total_page > 0 ? 1 : '-', total_page: normal_friends_total_page > 0 ? normal_friends_total_page : '-'};
+        page_infos["normal_friends_page_info"] = { current_page: normal_friends_total_page > 0 ? 1 : '-', total_page: normal_friends_total_page > 0 ? normal_friends_total_page : '-' };
         let ignored_friends_total_page = db_util.getIgnoredTestFriendTotalPage();
-        page_infos["ignored_friends_page_info"] = {current_page: ignored_friends_total_page > 0 ? 1 : '-', total_page: ignored_friends_total_page > 0 ? ignored_friends_total_page : '-'};
-        
+        page_infos["ignored_friends_page_info"] = { current_page: ignored_friends_total_page > 0 ? 1 : '-', total_page: ignored_friends_total_page > 0 ? ignored_friends_total_page : '-' };
+
         modifyPageInfoShow(page_infos["abnormal_friends_page_info"]);
     }
     initUI();
@@ -388,7 +388,7 @@
         }
     ]);
     ui.side_list.on("item_click", item => {
-        switch(item.title) {
+        switch (item.title) {
             case language["label_list"]:
                 engines.execScriptFile("activity/label_list.js");
                 break;
@@ -571,7 +571,7 @@
             initUI();
         }).show();
     });
-    
+
     ui.delete_friends_button.on("click", () => {
         let count = db_util.countWaitDeleteFriend();
         if (count > 0) {
@@ -590,15 +590,15 @@
                     view["checkBoxChecked"] = app_util.getWeChatReleaseSourceByLocation() == "google_play_store";
                 }
                 dialogs.build(view)
-                .on("check", checked => {
-                    app_util.checkInstallSource(checked, running_config);
-                }).on("negative", () => {
-                    if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
-                        app_util.stopModulesScript();
-                        engines.execScriptFile("modules/delete_friends.js");
-                        app_util.stopUIScript();
-                    }
-                }).show();
+                    .on("check", checked => {
+                        app_util.checkInstallSource(checked, running_config);
+                    }).on("negative", () => {
+                        if (app_util.checkSupportedWeChatVersions() && app_util.checkFile() && app_util.checkService()) {
+                            app_util.stopModulesScript();
+                            engines.execScriptFile("modules/delete_friends.js");
+                            app_util.stopUIScript();
+                        }
+                    }).show();
             }
         } else {
             dialogs.build({

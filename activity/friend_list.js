@@ -4,21 +4,21 @@
         <vertical>
             <list id="friend_list" layout_weight="1">
                 <horizontal padding="8" w="*">
-                    <text text="{{friend_remark}}" layout_weight="1" maxLines="1" ellipsize="end"/>
-                    <Switch id="enabled_switch" checked="{{enabled}}"/>
+                    <text text="{{friend_remark}}" layout_weight="1" maxLines="1" ellipsize="end" />
+                    <Switch id="enabled_switch" checked="{{enabled}}" />
                 </horizontal>
             </list>
             <horizontal bg="#EBEBEB">
-                <button id="previous_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <text id="current_page_text" textStyle="bold"/>
+                <button id="previous_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                <text id="current_page_text" textStyle="bold" />
                 <text textStyle="bold" text="  /  " />
-                <text id="total_page_text" textStyle="bold"/>
-                <button id="next_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <text id="total_page_text" textStyle="bold" />
+                <button id="next_page_button" layout_weight="1" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
             </horizontal>
             <horizontal bg="#EBEBEB">
-                <button id="clear_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
-                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold"/>
+                <button id="clear_friends_button" layout_weight="1" textColor="#CC0000" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                <button id="import_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
+                <button id="test_friends_button" layout_weight="1" textColor="#008274" style="Widget.AppCompat.Button.Borderless" textStyle="bold" />
             </horizontal>
         </vertical>
     );
@@ -38,7 +38,7 @@
         ui.clear_friends_button.setText(language["clear_friend"]);
         ui.import_friends_button.setText(language["import_friend"]);
         ui.test_friends_button.setText(language["test_friend"]);
-        
+
         if (!app_util.checkSupportedLanguage()) {
             ui.import_friends_button.enabled = false;
             ui.test_friends_button.enabled = false;
@@ -47,7 +47,7 @@
         }
     }
     init();
-    
+
     /**
      * 初始化UI
      */
@@ -96,7 +96,7 @@
             initUI();
         }).show();
     });
-    
+
     ui.import_friends_button.on("click", () => {
         app_util.importFriends();
     });

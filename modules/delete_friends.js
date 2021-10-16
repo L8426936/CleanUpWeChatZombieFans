@@ -92,7 +92,7 @@
     /**
     * 检查微信号是否相同
     */
-     function checkWeChatId() {
+    function checkWeChatId() {
         let we_chat_id_node = idMatches(ids["we_chat_id"]).findOne(running_config["find_delay_duration"]);
         if (we_chat_id_node) {
             let we_chat_id = we_chat_id_node.text();
@@ -109,7 +109,7 @@
     /**
      * 滚动联系人详情页
      */
-     function scrollFriendDetailsPage() {
+    function scrollFriendDetailsPage() {
         while (true) {
             let node = idMatches(ids["friend_details_page_list"]).findOne(running_config["find_delay_duration"]);
             // 策略1滚动联系人详情页
@@ -141,7 +141,7 @@
     /**
      * 点击更多功能
      */
-     function clickMoreFunction() {
+    function clickMoreFunction() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["more_function_by_delete"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("控件点击更多功能成功");
@@ -161,7 +161,7 @@
     /**
      * 点击删除功能
      */
-     function clickDeleteFunction() {
+    function clickDeleteFunction() {
         if (node_util.backtrackClickNode(idMatches(ids["delete"]).textMatches(texts["delete"]).findOne(running_config["find_delay_duration"]))) {
             log_util.info("控件点击删除功能成功");
             return clickConfirmDelete;
@@ -179,7 +179,7 @@
     /**
      * 点击确认删除
      */
-     function clickConfirmDelete() {
+    function clickConfirmDelete() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["confirm_delete"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("控件点击删除成功");
@@ -195,7 +195,7 @@
         }
         last_index--;
         count_wait_delete_friend--;
-        db_util.modifyTestedFriend({we_chat_id: last_we_chat_id, deleted: true});
+        db_util.modifyTestedFriend({ we_chat_id: last_we_chat_id, deleted: true });
         db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
         log_util.log("----------------------------------------");
         return clickFriend;
@@ -236,7 +236,7 @@
     /**
      * 返回好友列表
      */
-     function backToFriendList() {
+    function backToFriendList() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["back_to_friend_list"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("控件点击返回好友列表成功");
@@ -257,7 +257,7 @@
     /**
      * 滚动好友列表
      */
-     function scrollFriendList() {
+    function scrollFriendList() {
         while (true) {
             let friend_list_node = idMatches(ids["friend_list"]).findOne(running_config["find_delay_duration"]);
             // 策略1滚动联系人列表控件
@@ -300,7 +300,7 @@
      * 监听音量下键按下，停止脚本运行
      */
     function keyDownListenerByVolumeDown() {
-        threads.start(function() {
+        threads.start(function () {
             // 启用按键监听
             events.observeKey();
             events.setKeyInterceptionEnabled("volume_down", true);
@@ -315,7 +315,7 @@
      * 累计器监听器
      */
     function accumulatorListener() {
-        threads.start(function() {
+        threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
                 device.wakeUpIfNeeded();
@@ -380,7 +380,7 @@
         for (let nextFunction = clickContacts(); count_wait_delete_friend > 0 && run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
         }
-        
+
         if (count_wait_delete_friend == 0) {
             stopScript();
         }

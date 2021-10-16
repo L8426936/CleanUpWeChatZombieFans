@@ -10,8 +10,8 @@
     "debug": false,
     "auto_update": true,
     "clear_friend_current_page_work": false,
-    "find_delay_duration": 1000,
     "click_delay_duration": 500,
+    "find_delay_duration": 1000,
     "accumulator_delay_duration": 10000,
     "reboot_script": true
 }
