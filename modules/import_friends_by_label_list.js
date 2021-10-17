@@ -83,7 +83,7 @@
                 }
                 let label = label_nodes.get(last_index).text();
                 let count = count_nodes.get(last_index).text().match(/\d+/);
-                if (count && !labels_map[label]) {
+                if (count > 0 && !labels_map[label]) {
                     if (node_util.backtrackClickNode(label_nodes.get(last_index)) || node_util.backtrackClickNode(count_nodes.get(last_index))) {
                         labels_map[label] = true;
                         last_label = label;
