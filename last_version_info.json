@@ -1,5 +1,5 @@
 {
-  "version_code": 60,
-  "version_name": "4.0.1",
-  "update_content": "* 修复点击不到控件bug"
+  "version_code": 61,
+  "version_name": "4.0.2",
+  "update_content": "* 修复标签列表超过两页可能无法全部导入bug"
 }

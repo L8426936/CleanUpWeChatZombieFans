@@ -73,8 +73,11 @@
             let count_nodes = idMatches(ids["contacts_count_by_label"]).untilFind();
             if (label_nodes.size() == count_nodes.size() && label_nodes.size() && count_nodes.size()) {
                 if (last_index >= label_nodes.size()) {
+                    // 记录滚动前标签列表最后一个标签
+                    last_label = label_nodes.get(label_nodes.size() - 1).text();
                     return scrollLabelList;
                 }
+                // 标签列表滚动前后最后一个标签一致，标签列表已滚动到底部
                 if (last_label == label_nodes.get(label_nodes.size() - 1).text()) {
                     return stopScript;
                 }
