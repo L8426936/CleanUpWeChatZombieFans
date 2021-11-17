@@ -24,6 +24,7 @@
     let accumulator;
     let last_label;
     let last_index;
+    let last_friend_remark;
     let labels_map;
 
     /**
@@ -105,6 +106,7 @@
             }
         }
         last_index++;
+        last_friend_remark = undefined;
         return synchronizeFriends;
     }
 
@@ -113,6 +115,10 @@
      */
     function synchronizeFriends() {
         let friend_remark_nodes = idMatches(ids["friend_remark_by_label"]).untilFind();
+        // 好友列表滚动前后最后一个好友备注一致，好友列表已滚动到底部
+        if (last_friend_remark == friend_remark_nodes.get(friend_remark_nodes.size() - 1).text()) {
+            return backToLabelList;
+        }
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
             let label_friend = db_util.findLabelFriendByFriendRemark(friend_remark);
@@ -128,9 +134,8 @@
                 log_util.error("导入好友标签失败");
             }
         }
-        if (idMatches(ids["delete_label"]).textMatches(texts["delete_label"]).findOnce()) {
-            return backToLabelList;
-        }
+        // 记录滚动前好友列表最后一个好友备注
+        last_friend_remark = friend_remark_nodes.get(friend_remark_nodes.size() - 1).text();
         return scrollFriendList;
     }
 
@@ -161,9 +166,9 @@
     function scrollFriendList() {
         while (true) {
             let node = idMatches(ids["friend_list_by_label"]).findOne(running_config["find_delay_duration"]);
-            // 策略1滚动好友列表
+            // 控件滚动好友列表
             if (node) {
-                if (node.bounds().right - node.bounds().left > 0) {
+                if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
                         log_util.info("控件滚动好友列表成功");
                         sleep(running_config["click_delay_duration"]);
@@ -176,7 +181,7 @@
             } else {
                 log_util.warn("好友列表控件id可能不一致");
             }
-            // 策略2滚动好友列表
+            // 坐标滚动好友列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
                 log_util.info("坐标滚动好友列表成功");
@@ -193,9 +198,9 @@
     function scrollLabelList() {
         while (true) {
             let node = idMatches(ids["label_list"]).findOne(running_config["find_delay_duration"]);
-            // 策略1滚动标签列表
+            // 控件滚动标签列表
             if (node) {
-                if (node.bounds().right - node.bounds().left > 0) {
+                if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
                         log_util.info("控件滚动标签列表成功");
                         sleep(running_config["click_delay_duration"]);
@@ -208,7 +213,7 @@
             } else {
                 log_util.warn("标签列表控件id可能不一致");
             }
-            // 策略2滚动标签列表
+            // 坐标滚动标签列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
                 log_util.info("坐标滚动标签列表成功");
@@ -280,7 +285,7 @@
         ids = app_util.getWeChatIds();
         texts = JSON.parse(files.read("config/text_id/text.json"));
 
-        run = true, last_index = 0, labels_map = {};
+        run = true, last_index = 0, accumulator = 0, labels_map = {};
 
         keyDownListenerByVolumeDown();
         accumulatorListener();

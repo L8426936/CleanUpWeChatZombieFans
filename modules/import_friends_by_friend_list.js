@@ -63,9 +63,9 @@
     function scrollFriendList() {
         while (true) {
             let friend_list_node = idMatches(ids["friend_list"]).findOne(running_config["find_delay_duration"]);
-            // 策略1滚动联系人列表控件
+            // 控件滚动联系人列表
             if (friend_list_node) {
-                if (friend_list_node.bounds().right - friend_list_node.bounds().left > 0) {
+                if (friend_list_node.bounds().right > friend_list_node.bounds().left) {
                     if (node_util.scrollForward(friend_list_node)) {
                         log_util.info("控件滚动联系人列表成功");
                         sleep(running_config["click_delay_duration"]);
@@ -78,22 +78,13 @@
             } else {
                 log_util.warn("联系人列表控件id可能不一致");
             }
-            // 策略2滚动联系人列表控件
-            let friend_remark_nodes = idMatches(ids["friend_remark"]).untilFind();
-            let first_bounds = friend_remark_nodes.get(0).bounds();
-            let last_bounds = friend_remark_nodes.get(friend_remark_nodes.size() - 1).bounds();
-            if (swipe(last_bounds.centerX(), last_bounds.centerY(), first_bounds.centerX(), first_bounds.top, running_config["click_delay_duration"])) {
-                log_util.info("策略1坐标滚动联系人列表成功");
-                break;
-            }
-            log_util.warn("策略1坐标滚动联系人列表失败");
-            // 策略3滚动联系人列表控件
+            // 坐标滚动联系人列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("策略2坐标滚动联系人列表成功");
+                log_util.info("坐标滚动联系人列表成功");
                 break;
             }
-            log_util.warn("策略2坐标滚动联系人列表失败");
+            log_util.warn("坐标滚动联系人列表失败");
         }
         log_util.log("----------------------------------------");
         return synchronizeFriends;
@@ -158,7 +149,7 @@
         ids = app_util.getWeChatIds();
         texts = JSON.parse(files.read("config/text_id/text.json"));
 
-        run = true;
+        run = true, accumulator = 0;
 
         keyDownListenerByVolumeDown();
         accumulatorListener();

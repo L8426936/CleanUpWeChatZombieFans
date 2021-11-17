@@ -8,8 +8,8 @@
 
 
 ## 功能简介
-* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.11、8.0.14\~8.0.15版本
-* 适用Google Play Store版微信7.0.16\~7.0.17、7.0.21、8.0.2版本
+* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.10\~8.0.11、8.0.14\~8.0.16版本
+* 适用Google Play Store版微信7.0.16\~7.0.17、7.0.21、8.0.2、8.0.15版本
 * 仅支持简体中文(zh-CN)
 * 检测僵尸粉，支持黑、白名单模式
 * 删除好友
@@ -27,7 +27,7 @@
 2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)解压到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 * Github镜像地址：[Auto.js](https://hub.fastgit.org/SuperMonster002/Hello_Sockpuppet/raw/master/%5Bauto.js%5D%5B4.1.1_alpha2%5D%5Barm-v7%5D(b69a4e23).apk)&emsp;[CleanUpWeChatZombieFans](https://hub.fastgit.org/L8426936/CleanUpWeChatZombieFans/archive/master.zip)
-### 运行方式二（操作简单）
+### 运行方式二（操作简单，已知Android10闪退）
 * 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)，安装apk&emsp;[GitHub镜像地址](https://hub.fastgit.org/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)
 * 下载[最新发布版（Gitee）](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/releases)，安装apk
 

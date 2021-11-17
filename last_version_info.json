@@ -1,5 +1,5 @@
 {
-  "version_code": 62,
+  "version_code": 63,
   "version_name": "4.0.3",
-  "update_content": "* 修复点击好友数量为0的标签"
+  "update_content": "* 支持中国版微信8.0.16\n* 支持Google Play Store版微信8.0.15\n* 修复导入好友卡住脚本无法重启"
 }

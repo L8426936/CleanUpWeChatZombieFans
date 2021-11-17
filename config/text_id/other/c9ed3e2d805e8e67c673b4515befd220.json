@@ -5,7 +5,6 @@
     "label": "com\\.tencent\\.mm:id/cy8",
     "contacts_count_by_label": "com\\.tencent\\.mm:id/cy7",
     "friend_remark_by_label": "com\\.tencent\\.mm:id/f3v",
-    "delete_label": "android:id/title",
     "friend_list_by_label": "android:id/list",
     "back_to_label_list": "com\\.tencent\\.mm:id/dn",
     "label_list": "com\\.tencent\\.mm:id/cy_",

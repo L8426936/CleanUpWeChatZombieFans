@@ -265,24 +265,23 @@
                     if (!cancel) {
                         if (completed_all_file) {
                             for (let key in remote_files_md5) {
-                                if (completed_all_file && (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"])) {
-                                    completed_all_file = files.copy(".download_files/" + key, key);
+                                if ((!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) && !files.copy(".download_files/" + key, key)) {
+                                    completed_all_file = false;
+                                    break;
                                 }
                             }
-                            if (completed_all_file) {
-                                for (let key in local_files_md5) {
-                                    if (!remote_files_md5[key]) {
-                                        files.remove(key);
-                                    }
+                        }
+                        files.removeDir(".download_files");
+                        if (completed_all_file) {
+                            for (let key in local_files_md5) {
+                                if (!remote_files_md5[key]) {
+                                    files.remove(key);
                                 }
-                                dialog.dismiss();
-                                toast(language["update_success"]);
-                                engines.execScriptFile("main.js");
-                                engines.myEngine().forceStop();
-                            } else {
-                                dialog.dismiss();
-                                toast(language["update_fail"]);
                             }
+                            dialog.dismiss();
+                            toast(language["update_success"]);
+                            engines.execScriptFile("main.js");
+                            engines.myEngine().forceStop();
                         } else {
                             dialog.dismiss();
                             toast(language["update_fail"]);
