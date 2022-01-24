@@ -47,7 +47,7 @@
      * 导入好友备注
      */
     function synchronizeFriends() {
-        let friend_remark_nodes = idMatches(ids["friend_remark"]).untilFind();
+        let friend_remark_nodes = idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]));
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
             if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({ friend_remark: friend_remark, label: "", enabled: false }))) {

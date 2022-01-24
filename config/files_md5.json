@@ -4,7 +4,7 @@
         "size": 29955
     },
     "project.json": {
-        "md5": "aae4198f2a15fa62361a09ff15c5d156",
+        "md5": "e84ab90b7f117aa9ac918440f815e83b",
         "size": 387
     },
     "activity/friend_list.js": {
@@ -24,12 +24,12 @@
         "size": 6294
     },
     "config/config.json": {
-        "md5": "01d386dbea1a8187ed16ebe6a073a69f",
-        "size": 1682
+        "md5": "74bb1a3b54ace0e2facabf867f0e610f",
+        "size": 1753
     },
     "config/files_md5.json": {
-        "md5": "3466f398a9d33601f3c1389f152e7da6",
-        "size": 3615
+        "md5": "5e9c2d2e86385ec4d019ac0c560d6882",
+        "size": 3766
     },
     "config/running_config.json": {
         "md5": "19e74e47f395bd1f61cdd2a526f49d28",
@@ -75,25 +75,29 @@
         "md5": "5b84d0e6d965381faca22db07815cbe2",
         "size": 1634
     },
+    "config/text_id/other/9852d8aadd6f5846699f7c335e42032f.json": {
+        "md5": "9852d8aadd6f5846699f7c335e42032f",
+        "size": 1633
+    },
     "config/text_id/text.json": {
         "md5": "f022bf6b64718ec876b318697e953e58",
         "size": 700
     },
     "modules/delete_friends.js": {
-        "md5": "1dac62348be5a4069dbb764b0354ef3d",
-        "size": 14298
+        "md5": "02d6434626fe1cf5e628d5fe2f8d12c3",
+        "size": 14369
     },
     "modules/import_friends_by_friend_list.js": {
-        "md5": "4c9ab6cbe25b869ddaec36abd19449a7",
-        "size": 6084
+        "md5": "37e73b5bbb7e7a5d83591dd9b8c29bb7",
+        "size": 6118
     },
     "modules/import_friends_by_label_list.js": {
         "md5": "a7dbaa8fd672218e6b7863afccefa7b3",
         "size": 12313
     },
     "modules/test_friends.js": {
-        "md5": "7f576ed3d892ebc50f468b361110f94b",
-        "size": 25358
+        "md5": "48ba8b6147dd17b508de03f307210e55",
+        "size": 25429
     },
     "utils/app_util.js": {
         "md5": "6f774fbcd1f6c39c5b6ebe6ff4ed8ba0",

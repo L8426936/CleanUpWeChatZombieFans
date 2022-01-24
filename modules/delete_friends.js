@@ -61,7 +61,7 @@
      */
     function clickFriend() {
         while (true) {
-            let friend_remark_nodes = idMatches(ids["friend_remark"]).untilFind();
+            let friend_remark_nodes = idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]));
             if (last_index >= friend_remark_nodes.size()) {
                 return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
             }
@@ -75,7 +75,7 @@
                 }
                 log_util.warn("控件点击联系人失败");
                 sleep(running_config["click_delay_duration"]);
-                if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_remark"]).findOnce(last_index))) {
+                if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]))[last_index])) {
                     last_friend_remark = friend_remark;
                     log_util.info("坐标点击联系人成功");
                     break;
