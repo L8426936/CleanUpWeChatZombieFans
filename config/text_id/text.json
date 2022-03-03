@@ -12,6 +12,5 @@
     "transfer": "转账",
     "send_message": "发消息",
     "switch_to_voice_message": "切换到按住说话",
-    "label": "标签",
-    "delete_label": "删除标签"
+    "label": "标签"
 }

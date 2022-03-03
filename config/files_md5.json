@@ -1,11 +1,15 @@
 {
     "main.js": {
-        "md5": "3bf7ad5cffec07f09ae510feea86d9f6",
-        "size": 29955
+        "md5": "627eca2caa4de35e5feebe9ae46d48c6",
+        "size": 28738
     },
     "project.json": {
-        "md5": "e84ab90b7f117aa9ac918440f815e83b",
+        "md5": "f74d18e6e38cdf873f4f135596e31027",
         "size": 387
+    },
+    "activity/developer_qr_code.js": {
+        "md5": "baed01f12d0110f30fdd8312988e6a28",
+        "size": 2851
     },
     "activity/friend_list.js": {
         "md5": "5be846f10050711f23b0bf5b6e4e4686",
@@ -24,20 +28,20 @@
         "size": 6294
     },
     "config/config.json": {
-        "md5": "74bb1a3b54ace0e2facabf867f0e610f",
+        "md5": "6b7cd9f68d458e687e1e5f14c2461cca",
         "size": 1753
     },
     "config/files_md5.json": {
-        "md5": "5e9c2d2e86385ec4d019ac0c560d6882",
-        "size": 3766
+        "md5": "c62cb4f9c7ad97c2f0b4bee03711d540",
+        "size": 3888
     },
     "config/running_config.json": {
         "md5": "19e74e47f395bd1f61cdd2a526f49d28",
         "size": 511
     },
     "config/languages/zh-CN.json": {
-        "md5": "d94da12178e8d1a5c383d91788e42719",
-        "size": 5781
+        "md5": "29048672e96857c66b29b659264bcb9e",
+        "size": 5431
     },
     "config/text_id/google_play_store/7b03c7082cf95fe13edcbc02e4e7c930.json": {
         "md5": "7b03c7082cf95fe13edcbc02e4e7c930",
@@ -75,13 +79,13 @@
         "md5": "5b84d0e6d965381faca22db07815cbe2",
         "size": 1634
     },
-    "config/text_id/other/9852d8aadd6f5846699f7c335e42032f.json": {
-        "md5": "9852d8aadd6f5846699f7c335e42032f",
+    "config/text_id/other/803bf26d262c440f7c2358a0386e382e.json": {
+        "md5": "803bf26d262c440f7c2358a0386e382e",
         "size": 1633
     },
     "config/text_id/text.json": {
-        "md5": "f022bf6b64718ec876b318697e953e58",
-        "size": 700
+        "md5": "404c9d23296def16e15b2f60613d3a3e",
+        "size": 663
     },
     "modules/delete_friends.js": {
         "md5": "02d6434626fe1cf5e628d5fe2f8d12c3",

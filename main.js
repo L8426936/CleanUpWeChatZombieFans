@@ -301,43 +301,12 @@
         }).show();
     }
 
-    function developerQQ() {
-        let cancel = false;
-        let dialog = dialogs.build({
-            content: language["wait_get_developer_qq"],
-            positive: language["cancel"]
-        }).on("positive", () => {
-            cancel = true;
-        });
-        dialog.setCancelable(false);
-        dialog.show();
-        http.get(base_url + "developer_qq.txt", {}, (res, err) => {
-            if (!cancel) {
-                dialog.setActionButton("positive", language["confirm"]);
-                dialog.setCancelable(true);
-                if (err || res["statusCode"] != 200) {
-                    dialog.setContent(language["developer_qq_get_fail"]);
-                } else {
-                    let developer_qq = res.body.string();
-                    try {
-                        app.startActivity({
-                            action: "android.intent.action.VIEW",
-                            data: "mqqapi://card/show_pslcard?&uin=" + developer_qq
-                        });
-                        dialog.dismiss();
-                    } catch (e) {
-                        dialog.setContent(language["launch_qq_fail"].replace("%developer_qq", developer_qq));
-                    }
-                }
-            }
-        });
-    }
-
     // 创建选项菜单(右上角)
     ui.emitter.on("create_options_menu", menu => {
         menu.add(language["update"]);
         menu.add(language["instructions_for_use_title"]);
-        menu.add(language["feedback_suggestions"]);
+        menu.add(language["contact_the_developer"]);
+        menu.add(language["sponsor_the_developer"]);
         menu.add(language["setting"]);
     });
     // 监听选项菜单点击
@@ -349,17 +318,15 @@
             case language["instructions_for_use_title"]:
                 showInstructionsForUse();
                 break;
-            case language["feedback_suggestions"]:
-                dialogs.build({
-                    content: language["feedback_suggestions_alert_dialog_message"],
-                    positive: language["cancel"],
-                    negative: language["open_source_code_url"],
-                    neutral: language["add_developer_qq"]
-                }).on("negative", () => {
-                    app.openUrl("https://github.com/L8426936/CleanUpWeChatZombieFans");
-                }).on("neutral", () => {
-                    developerQQ();
-                }).show();
+            case language["contact_the_developer"]: case language["sponsor_the_developer"]:
+                let running_config = app_util.getRunningConfig();
+                if (item.getTitle() == language["contact_the_developer"]) {
+                    running_config["developer_qr_code_type"] = "contact";
+                } else {
+                    running_config["developer_qr_code_type"] = "sponsor";
+                }
+                files.write("config/running_config.json", JSON.stringify(running_config));
+                engines.execScriptFile("activity/developer_qr_code.js");
                 break;
             case language["setting"]:
                 engines.execScriptFile("activity/setting.js");
