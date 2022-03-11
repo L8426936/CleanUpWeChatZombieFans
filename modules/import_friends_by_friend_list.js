@@ -38,7 +38,7 @@
                 log_util.info("坐标点击通讯录成功");
                 break;
             }
-            log_util.warn("坐标点击通讯录失败");
+            log_util.error("坐标点击通讯录失败");
         }
         return synchronizeFriends;
     }
@@ -84,9 +84,9 @@
                 log_util.info("坐标滚动联系人列表成功");
                 break;
             }
-            log_util.warn("坐标滚动联系人列表失败");
+            log_util.error("坐标滚动联系人列表失败");
         }
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return synchronizeFriends;
     }
 
@@ -133,7 +133,8 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
-        toastLog(language["script_stopped"]);
+        toast(language["script_stopped"]);
+        log_util.info(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -155,7 +156,8 @@
         accumulatorListener();
         device.keepScreenDim();
 
-        toastLog(language["script_running"]);
+        toast(language["script_running"]);
+        log_util.info(language["script_running"]);
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];

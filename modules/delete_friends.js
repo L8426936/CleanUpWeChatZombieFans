@@ -51,7 +51,7 @@
                 log_util.info("坐标点击通讯录成功");
                 break;
             }
-            log_util.warn("坐标点击通讯录失败");
+            log_util.error("坐标点击通讯录失败");
         }
         return clickFriend;
     }
@@ -80,7 +80,7 @@
                     log_util.info("坐标点击联系人成功");
                     break;
                 }
-                log_util.warn("坐标点击联系人失败");
+                log_util.error("坐标点击联系人失败");
             } else {
                 last_index++;
             }
@@ -133,7 +133,7 @@
                 log_util.info("坐标滚动联系人详情页成功");
                 break;
             }
-            log_util.warn("坐标滚动联系人详情页失败");
+            log_util.error("坐标滚动联系人详情页失败");
         }
         return checkWeChatId;
     }
@@ -153,7 +153,7 @@
                 log_util.info("坐标点击更多功能成功");
                 break;
             }
-            log_util.warn("坐标点击更多功能失败");
+            log_util.error("坐标点击更多功能失败");
         }
         return clickDeleteFunction;
     }
@@ -172,7 +172,7 @@
             log_util.info("坐标点击删除功能成功");
             return clickConfirmDelete;
         }
-        log_util.warn("坐标点击删除功能失败");
+        log_util.error("坐标点击删除功能失败");
         return scrollMoreFunctionPage;
     }
 
@@ -191,13 +191,13 @@
                 log_util.info("坐标点击删除成功");
                 break;
             }
-            log_util.warn("坐标点击删除失败");
+            log_util.error("坐标点击删除失败");
         }
         last_index--;
         count_wait_delete_friend--;
         db_util.modifyTestedFriend({ we_chat_id: last_we_chat_id, deleted: true });
         db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickFriend;
     }
 
@@ -228,7 +228,7 @@
                 log_util.info("坐标滚动更多功能页面成功");
                 break;
             }
-            log_util.warn("坐标滚动更多功能页面失败");
+            log_util.error("坐标滚动更多功能页面失败");
         }
         return clickDeleteFunction;
     }
@@ -248,9 +248,9 @@
                 log_util.info("坐标点击返回好友列表成功");
                 break;
             }
-            log_util.warn("坐标点击返回好友列表失败");
+            log_util.error("坐标点击返回好友列表失败");
         }
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickFriend;
     }
 
@@ -281,7 +281,7 @@
                 log_util.info("坐标滚动联系人列表成功");
                 break;
             }
-            log_util.warn("坐标滚动联系人列表失败");
+            log_util.error("坐标滚动联系人列表失败");
         }
         last_index = 0;
         return clickFriend;
@@ -330,7 +330,8 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
-        toastLog(language["script_stopped"]);
+        toast(language["script_stopped"]);
+        log_util.info(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -352,7 +353,8 @@
         accumulatorListener();
         device.keepScreenDim();
 
-        toastLog(language["script_running"]);
+        toast(language["script_running"]);
+        log_util.info(language["script_running"]);
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];

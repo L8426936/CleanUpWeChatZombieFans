@@ -1,47 +1,52 @@
 module.exports = (() => {
+    Date.prototype.format = function() {
+        return (new Date(this.getTime() - this.getTimezoneOffset() * 60000)).toISOString().replace(/T|Z/g, ' ');    
+    }
+    files.ensureDir("logs/");
     let running_config = JSON.parse(files.read("config/running_config.json"));
+    let date = new Date();
 
-    function debug(level, message) {
-        if (running_config["debug"]) {
-            if (level == "log") {
+    function log(int_level, text_level, message) {
+        if (int_level >= running_config["log_level"]) {
+            files.append("logs/log.log", date.format() + "[" + text_level + "] - " + message + "\n");
+            if (console[text_level]) {
+                console[text_level](message);
+            } else {
                 console.log(message);
-            } else if (level == "verbose") {
-                console.verbose(message);
-            } else if (level == "info") {
-                console.info(message);
-            } else if (level == "warn") {
-                console.warn(message);
-            } else if (level == "error") {
-                console.error(message);
             }
         }
     }
 
-    function log(message) {
-        debug("log", message);
-    }
-
-    function verbose(message) {
-        debug("verbose", message);
-    }
-
-    function info(message) {
-        debug("info", message);
-    }
-
-    function warn(message) {
-        debug("warn", message);
+    function fatal(message) {
+        log(6, "fatal", message);
     }
 
     function error(message) {
-        debug("error", message);
+        log(5, "error", message);
+    }
+
+    function warn(message) {
+        log(4, "warn", message);
+    }
+
+    function info(message) {
+        log(3, "info", message);
+    }
+
+    function debug(message) {
+        log(2, "debug", message);
+    }
+
+    function trace(message) {
+        log(1, "trace", message);
     }
 
     return {
-        log: log,
-        verbose: verbose,
-        info: info,
+        fatal: fatal,
+        error: error,
         warn: warn,
-        error: error
+        info: info,
+        debug: debug,
+        trace: trace
     };
 })();

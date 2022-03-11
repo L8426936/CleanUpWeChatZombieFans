@@ -39,7 +39,7 @@
                 if (node_util.backtrackSimulationClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
                     log_util.info("坐标点击通讯录成功");
                 }
-                log_util.warn("坐标点击通讯录失败");
+                log_util.error("坐标点击通讯录失败");
             }
         }
         return clickLabels;
@@ -60,7 +60,7 @@
                 log_util.info("坐标点击通讯录标签成功");
                 break;
             }
-            log_util.warn("坐标点击通讯录标签失败");
+            log_util.error("坐标点击通讯录标签失败");
         }
         return idMatches(ids["label_list"]).findOne(running_config["find_delay_duration"]) ? clickLabel : stopScript;
     }
@@ -99,7 +99,7 @@
                         log_util.info("坐标点击标签成功");
                         break;
                     }
-                    log_util.warn("坐标点击标签失败");
+                    log_util.error("坐标点击标签失败");
                 } else {
                     last_index++;
                 }
@@ -154,9 +154,9 @@
                 log_util.info("坐标点击返回标签列表成功");
                 break;
             }
-            log_util.warn("坐标点击返回标签列表失败");
+            log_util.error("坐标点击返回标签列表失败");
         }
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickLabel;
     }
 
@@ -187,7 +187,7 @@
                 log_util.info("坐标滚动好友列表成功");
                 break;
             }
-            log_util.warn("坐标滚动好友列表失败");
+            log_util.error("坐标滚动好友列表失败");
         }
         return synchronizeFriends;
     }
@@ -219,10 +219,10 @@
                 log_util.info("坐标滚动标签列表成功");
                 break;
             }
-            log_util.warn("坐标滚动标签列表失败");
+            log_util.error("坐标滚动标签列表失败");
         }
         last_index = 0;
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickLabel;
     }
 
@@ -269,7 +269,8 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
-        toastLog(language["script_stopped"]);
+        toast(language["script_stopped"]);
+        log_util.info(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -291,7 +292,8 @@
         accumulatorListener();
         device.keepScreenDim();
 
-        toastLog(language["script_running"]);
+        toast(language["script_running"]);
+        log_util.info(language["script_running"]);
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];

@@ -50,7 +50,7 @@
                 log_util.info("坐标点击通讯录成功");
                 break;
             }
-            log_util.warn("坐标点击通讯录失败");
+            log_util.error("坐标点击通讯录失败");
         }
         return clickFriend;
     }
@@ -90,16 +90,16 @@
                         log_util.info("坐标点击联系人成功");
                         break;
                     }
-                    log_util.warn("坐标点击联系人失败");
+                    log_util.error("坐标点击联系人失败");
                 } else {
                     last_index++;
-                    log_util.verbose("忽略检测联系人");
-                    log_util.log("----------------------------------------");
+                    log_util.info("忽略检测联系人");
+                    log_util.info("----------------------------------------");
                 }
             } else {
                 last_index++;
-                log_util.verbose("联系人已检测");
-                log_util.log("----------------------------------------");
+                log_util.info("联系人已检测");
+                log_util.info("----------------------------------------");
             }
         }
         last_index++;
@@ -122,7 +122,7 @@
                 }
                 if (db_util.isTestedFriendForWeChatID(we_chat_id)) {
                     db_util.modifyTestedFriend({ we_chat_id: we_chat_id, friend_remark: last_friend_remark });
-                    log_util.verbose("联系人已检测");
+                    log_util.info("联系人已检测");
                     return backToFriendList;
                 }
                 last_we_chat_id = we_chat_id;
@@ -131,7 +131,7 @@
             log_util.warn("微信号控件id可能不一致");
             return scrollFriendDetailsPage;
         }
-        log_util.verbose("忽略检测联系人");
+        log_util.info("忽略检测联系人");
         db_util.addTestedFriend({ we_chat_id: last_friend_remark, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.IGNORED_FRIEND_TYPE });
         return backToFriendList;
     }
@@ -156,7 +156,7 @@
             log_util.info("坐标点击发消息成功");
             return switchToVoiceMessage;
         }
-        log_util.warn("坐标点击发消息失败");
+        log_util.error("坐标点击发消息失败");
         return scrollFriendDetailsPage;
     }
 
@@ -187,7 +187,7 @@
                 log_util.info("坐标滚动联系人详情页成功");
                 break;
             }
-            log_util.warn("坐标滚动联系人详情页失败");
+            log_util.error("坐标滚动联系人详情页失败");
         }
         return clickSendMessage;
     }
@@ -209,7 +209,7 @@
                 log_util.info("坐标点击切换消息类型成功");
                 break;
             }
-            log_util.warn("坐标点击切换消息类型失败");
+            log_util.error("坐标点击切换消息类型失败");
         }
         return clickMoreFunction;
     }
@@ -230,7 +230,7 @@
                 log_util.info("坐标点击更多功能成功");
                 break;
             }
-            log_util.warn("坐标点击更多功能失败");
+            log_util.error("坐标点击更多功能失败");
         }
         return clickTransferFunction;
     }
@@ -251,7 +251,7 @@
                 log_util.info("坐标点击转账功能成功");
                 break;
             }
-            log_util.warn("坐标点击转账功能失败");
+            log_util.error("坐标点击转账功能失败");
         }
         return setTransferAmount;
     }
@@ -265,7 +265,7 @@
             let payee = payee_node && payee_node.text();
             if (/.?\(.+\)/.test(payee) && payee != last_friend_remark) {
                 db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: '', selected: false, deleted: false, friend_type: db_util.NORMAL_FRIEND_TYPE });
-                log_util.verbose("正常联系人");
+                log_util.info("正常联系人");
                 return backToChatPage;
             }
             let transfer_amount_node = idMatches(ids["transfer_amount"]).findOnce();
@@ -295,7 +295,7 @@
                 log_util.info("坐标点击转账成功");
                 break;
             }
-            log_util.warn("坐标点击转账失败");
+            log_util.error("坐标点击转账失败");
         }
         return assertionFriend;
     }
@@ -353,7 +353,7 @@
                 log_util.info("坐标点击关闭转账密码弹窗成功");
                 break;
             }
-            log_util.warn("坐标点击关闭转账密码弹窗失败");
+            log_util.error("坐标点击关闭转账密码弹窗失败");
         }
         return backToChatPage;
     }
@@ -375,7 +375,7 @@
                 log_util.info("坐标点击取消支付成功");
                 break;
             }
-            log_util.warn("坐标点击取消支付失败");
+            log_util.error("坐标点击取消支付失败");
         }
         return backToChatPage;
     }
@@ -395,7 +395,7 @@
                 log_util.info("坐标点击关闭消息弹窗成功");
                 break;
             }
-            log_util.warn("坐标点击关闭消息弹窗失败");
+            log_util.error("坐标点击关闭消息弹窗失败");
         }
         return backToChatPage;
     }
@@ -415,7 +415,7 @@
                 log_util.info("坐标点击返回聊天页面成功");
                 break;
             }
-            log_util.warn("坐标点击返回聊天页面失败");
+            log_util.error("坐标点击返回聊天页面失败");
         }
         return backToChatList;
     }
@@ -434,9 +434,9 @@
                 log_util.info("坐标点击返回聊天列表成功");
                 break;
             }
-            log_util.warn("坐标点击返回聊天列表失败");
+            log_util.error("坐标点击返回聊天列表失败");
         }
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickContacts;
     }
 
@@ -467,7 +467,7 @@
                 log_util.info("坐标滚动联系人列表成功");
                 break;
             }
-            log_util.warn("坐标滚动联系人列表失败");
+            log_util.error("坐标滚动联系人列表失败");
         }
         last_index = 0;
         return clickFriend;
@@ -488,9 +488,9 @@
                 log_util.info("坐标点击返回联系人列表页面成功");
                 break;
             }
-            log_util.warn("坐标点击返回联系人列表页面失败");
+            log_util.error("坐标点击返回联系人列表页面失败");
         }
-        log_util.log("----------------------------------------");
+        log_util.info("----------------------------------------");
         return clickFriend;
     }
 
@@ -538,7 +538,8 @@
         run = false;
         db_util.deleteIgnoredTestFriend();
         device.cancelKeepingAwake();
-        toastLog(language["script_stopped"]);
+        toast(language["script_stopped"]);
+        log_util.info(language["script_stopped"]);
         engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
     }
@@ -560,7 +561,8 @@
         accumulatorListener();
         device.keepScreenDim();
 
-        toastLog(language["script_running"]);
+        toast(language["script_running"]);
+        log_util.info(language["script_running"]);
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
