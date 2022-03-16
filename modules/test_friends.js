@@ -60,7 +60,13 @@
      * 点击好友
      */
     function clickFriend() {
-        let friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
+        let friend_remark_nodes;
+        let friend_list_node = idMatches(ids["friend_list"]).visibleToUser(true).findOne(running_config["find_delay_duration"]);
+        if (friend_list_node) {
+            friend_remark_nodes = friend_list_node.find(idMatches(ids["friend_remark"]));
+        } else {
+            friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
+        }
         while (last_index < friend_remark_nodes.size()) {
             last_friend_remark = friend_remark_nodes.get(last_index).text();
             let repeat_friend_remark = (last_index > 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark) || (last_index < friend_remark_nodes.size() - 1 && friend_remark_nodes.get(last_index + 1).text() == last_friend_remark);
@@ -93,7 +99,7 @@
                 }
             }
             last_index++;
-            log_util.info("忽略检测联系人");
+            log_util.trace("忽略检测联系人");
         }
         log_util.info("----------------------------------------");
         return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
@@ -356,14 +362,14 @@
     function cancelTransfer() {
         while (true) {
             let node = descMatches(texts["cancel_transfer"]).findOne(running_config["find_delay_duration"]);
-            if (node && !node.id() && node_util.backtrackClickNode(node)) {
+            if (node && node_util.backtrackClickNode(node)) {
                 log_util.info("控件点击取消支付成功");
                 break;
             }
             log_util.warn("控件点击取消支付失败");
             sleep(running_config["click_delay_duration"]);
             node = descMatches(texts["cancel_transfer"]).findOne(running_config["find_delay_duration"]);
-            if (node && !node.id() && node_util.backtrackSimulationClickNode(node)) {
+            if (node && node_util.backtrackSimulationClickNode(node)) {
                 log_util.info("坐标点击取消支付成功");
                 break;
             }
@@ -573,8 +579,7 @@
         for (let nextFunction = clickContacts(); run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
             if (operate_pause
-                && (nextFunction == clickFriend
-                    || nextFunction == clickTransferFunction
+                && (nextFunction == clickTransferFunction
                     || nextFunction == backToChatList)) {
                 sleep(running_config["click_delay_duration"]);
             }

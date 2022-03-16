@@ -1,10 +1,10 @@
 {
     "main.js": {
-        "md5": "627eca2caa4de35e5feebe9ae46d48c6",
-        "size": 28738
+        "md5": "564199fdd6b04b819047cfa7ae104ff7",
+        "size": 28944
     },
     "project.json": {
-        "md5": "f74d18e6e38cdf873f4f135596e31027",
+        "md5": "8156aa68182f6c0d703ef07ab4da707d",
         "size": 387
     },
     "activity/developer_qr_code.js": {
@@ -20,67 +20,71 @@
         "size": 4172
     },
     "activity/label_list.js": {
-        "md5": "8f033a1e3b0049434cb6fd83ce970f46",
-        "size": 4308
+        "md5": "83ac933a1750a1d2d402996097f14db2",
+        "size": 4302
     },
     "activity/setting.js": {
-        "md5": "2ccdab67753eebc6837e794b6f42a9bd",
-        "size": 6294
+        "md5": "e437eaca22a6bdf8671b2b674c9ce828",
+        "size": 7161
     },
     "config/config.json": {
-        "md5": "6b7cd9f68d458e687e1e5f14c2461cca",
-        "size": 1753
+        "md5": "41d3640c41876dede00bd8424d64ff42",
+        "size": 1482
     },
     "config/files_md5.json": {
-        "md5": "c62cb4f9c7ad97c2f0b4bee03711d540",
-        "size": 3888
+        "md5": "2f76eb9975a1647f052477eb61702253",
+        "size": 3763
     },
     "config/running_config.json": {
-        "md5": "19e74e47f395bd1f61cdd2a526f49d28",
-        "size": 511
+        "md5": "670a7d8e2c73d60f37ac2f26de9b36db",
+        "size": 553
     },
     "config/languages/zh-CN.json": {
-        "md5": "29048672e96857c66b29b659264bcb9e",
-        "size": 5431
+        "md5": "68119ade97e948159bce3618b049cfb8",
+        "size": 5260
     },
-    "config/text_id/google_play_store/7b03c7082cf95fe13edcbc02e4e7c930.json": {
+    "config/text_id/google_play_store/7.0.16.json": {
         "md5": "7b03c7082cf95fe13edcbc02e4e7c930",
         "size": 1601
     },
-    "config/text_id/google_play_store/1f671612bfad71c4eb32b0913161014b.json": {
+    "config/text_id/google_play_store/7.0.17.json": {
         "md5": "1f671612bfad71c4eb32b0913161014b",
         "size": 1601
     },
-    "config/text_id/google_play_store/b4d28e6166f31ad45acbe18177e37841.json": {
+    "config/text_id/google_play_store/7.0.21.json": {
         "md5": "b4d28e6166f31ad45acbe18177e37841",
         "size": 1601
     },
-    "config/text_id/google_play_store/06a3c2f981a3e4caadc3f87f8f905136.json": {
+    "config/text_id/google_play_store/8.0.2.json": {
         "md5": "06a3c2f981a3e4caadc3f87f8f905136",
         "size": 1599
     },
-    "config/text_id/google_play_store/b4c77a560b71ef6076ab1e09a9e18049.json": {
-        "md5": "b4c77a560b71ef6076ab1e09a9e18049",
-        "size": 1611
+    "config/text_id/google_play_store/8.0.15.json": {
+        "md5": "83fdea2ca97f1dd8df4e27adeae2f17b",
+        "size": 1601
     },
-    "config/text_id/other/c9ed3e2d805e8e67c673b4515befd220.json": {
+    "config/text_id/google_play_store/8.0.18.json": {
+        "md5": "9022743dfef01e842565a7bb01f330c6",
+        "size": 1633
+    },
+    "config/text_id/other/7.0.15.json": {
         "md5": "c9ed3e2d805e8e67c673b4515befd220",
         "size": 1601
     },
-    "config/text_id/other/7ac23c46848768342c80eb492f8e9bdd.json": {
+    "config/text_id/other/8.0.0.json": {
         "md5": "7ac23c46848768342c80eb492f8e9bdd",
         "size": 1617
     },
-    "config/text_id/other/bf7ce1d0518cc85f40a4b31a41ff6e24.json": {
+    "config/text_id/other/8.0.10.json": {
         "md5": "bf7ce1d0518cc85f40a4b31a41ff6e24",
         "size": 1602
     },
-    "config/text_id/other/5b84d0e6d965381faca22db07815cbe2.json": {
+    "config/text_id/other/8.0.14.json": {
         "md5": "5b84d0e6d965381faca22db07815cbe2",
         "size": 1634
     },
-    "config/text_id/other/803bf26d262c440f7c2358a0386e382e.json": {
-        "md5": "803bf26d262c440f7c2358a0386e382e",
+    "config/text_id/other/8.0.18.json": {
+        "md5": "3796b73ffbd942177485c1547d4db2ab",
         "size": 1633
     },
     "config/text_id/text.json": {
@@ -88,32 +92,32 @@
         "size": 663
     },
     "modules/delete_friends.js": {
-        "md5": "02d6434626fe1cf5e628d5fe2f8d12c3",
-        "size": 14369
+        "md5": "d2fb786e92b65b18fede595e98692dab",
+        "size": 14134
     },
     "modules/import_friends_by_friend_list.js": {
-        "md5": "37e73b5bbb7e7a5d83591dd9b8c29bb7",
-        "size": 6118
+        "md5": "a57bc4b63beb3401805de9782d0c440c",
+        "size": 6160
     },
     "modules/import_friends_by_label_list.js": {
-        "md5": "a7dbaa8fd672218e6b7863afccefa7b3",
-        "size": 12313
+        "md5": "e838bb95f105817b44482acf3ccc6300",
+        "size": 11884
     },
     "modules/test_friends.js": {
-        "md5": "48ba8b6147dd17b508de03f307210e55",
-        "size": 25429
+        "md5": "1bea58f92715daf76b09e5cb3e64a93f",
+        "size": 25471
     },
     "utils/app_util.js": {
-        "md5": "6f774fbcd1f6c39c5b6ebe6ff4ed8ba0",
-        "size": 14444
+        "md5": "5ffe6e408e5cc056808ef86a6b10eca5",
+        "size": 14600
     },
     "utils/db_util.js": {
         "md5": "a1260001278591c1a10b2b185048b691",
         "size": 18303
     },
     "utils/log_util.js": {
-        "md5": "ea1452ed9c5928bbce1ed9e95e17b754",
-        "size": 1139
+        "md5": "515d4b7a7521ae139f2a9a32fc1699b2",
+        "size": 1336
     },
     "utils/node_util.js": {
         "md5": "28ebc0eb003bbc4cfd6081f42893e1b2",

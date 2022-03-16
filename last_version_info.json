@@ -1,5 +1,5 @@
 {
-  "version_code": 65,
+  "version_code": 66,
   "version_name": "4.0.3",
-  "update_content": "* 支持中国版微信8.0.19\n* 修改反馈建议为联系作者\n* 新增赞助作者功能"
+  "update_content": "* 支持中国版微信8.0.20\n* 支持GooglePlayStore版微信8.0.18\n* 增强模块功能\n* 增强日志功能"
 }
