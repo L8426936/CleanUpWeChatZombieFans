@@ -34,6 +34,7 @@
      * 运行状态
      */
     let run;
+    let stuck;
     let accumulator;
 
     /**
@@ -53,6 +54,7 @@
             }
             log_util.error("坐标点击通讯录失败");
         }
+        sleep(running_config["click_delay_duration"]);
         return clickFriend;
     }
 
@@ -60,33 +62,28 @@
      * 点击好友
      */
     function clickFriend() {
-        while (true) {
-            let friend_remark_nodes = idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]));
-            if (last_index >= friend_remark_nodes.size()) {
-                return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
-            }
-            let friend_remark_node = friend_remark_nodes.get(last_index);
-            let friend_remark = friend_remark_node.text();
-            if (db_util.isSelectedFriendForDeleteByFriendRemark(friend_remark)) {
-                if (node_util.backtrackClickNode(friend_remark_node)) {
-                    last_friend_remark = friend_remark;
+        let friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
+        while (last_index < friend_remark_nodes.size()) {
+            last_friend_remark = friend_remark_nodes.get(last_index).text();
+            if (db_util.isSelectedFriendForDeleteByFriendRemark(last_friend_remark)) {
+                if (node_util.backtrackClickNode(friend_remark_nodes.get(last_index))) {
+                    last_index++;
                     log_util.info("控件点击联系人成功");
-                    break;
+                    return checkWeChatId;
                 }
                 log_util.warn("控件点击联系人失败");
                 sleep(running_config["click_delay_duration"]);
-                if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]))[last_index])) {
-                    last_friend_remark = friend_remark;
+                if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_remark"]).visibleToUser(true).findOnce(last_index))) {
+                    last_index++;
                     log_util.info("坐标点击联系人成功");
-                    break;
+                    return checkWeChatId;
                 }
                 log_util.error("坐标点击联系人失败");
-            } else {
-                last_index++;
             }
+            last_index++;
         }
-        last_index++;
-        return checkWeChatId;
+        log_util.info("----------------------------------------");
+        return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
     }
 
     /**
@@ -95,9 +92,8 @@
     function checkWeChatId() {
         let we_chat_id_node = idMatches(ids["we_chat_id"]).findOne(running_config["find_delay_duration"]);
         if (we_chat_id_node) {
-            let we_chat_id = we_chat_id_node.text();
-            if (db_util.isSelectedFriendForDeleteByWeChatID(we_chat_id)) {
-                last_we_chat_id = we_chat_id;
+            last_we_chat_id = we_chat_id_node.text();
+            if (db_util.isSelectedFriendForDeleteByWeChatID(last_we_chat_id)) {
                 return clickMoreFunction;
             }
             return backToFriendList;
@@ -194,11 +190,10 @@
             log_util.error("坐标点击删除失败");
         }
         last_index--;
-        count_wait_delete_friend--;
         db_util.modifyTestedFriend({ we_chat_id: last_we_chat_id, deleted: true });
         db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
         log_util.info("----------------------------------------");
-        return clickFriend;
+        return --count_wait_delete_friend ? clickFriend : stopScript;
     }
 
     /**
@@ -309,15 +304,9 @@
         threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
-                device.wakeUpIfNeeded();
                 if (localAccumulator == accumulator) {
-                    if (running_config["reboot_script"]) {
-                        device.cancelKeepingAwake();
-                        engines.execScriptFile(engines.myEngine().getSource().toString());
-                        engines.myEngine().forceStop();
-                    } else {
-                        stopScript();
-                    }
+                    stuck = true;
+                    stopScript();
                 }
                 localAccumulator = accumulator;
             }, running_config["accumulator_delay_duration"]);
@@ -330,10 +319,16 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
+        events.removeAllListeners();
+        threads.shutDownAll();
         toast(language["script_stopped"]);
         log_util.info(language["script_stopped"]);
-        engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
+        if (stuck && running_config["reboot_script"]) {
+            engines.execScriptFile(engines.myEngine().getSource().toString());
+        } else {
+            engines.execScriptFile("main.js");
+        }
     }
 
     function main() {
@@ -345,7 +340,7 @@
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
-        texts = JSON.parse(files.read("config/text_id/text.json"));
+        texts = app_util.getWeChatTexts();
 
         last_index = 0, run = true, accumulator = 0;
 
@@ -370,12 +365,8 @@
          * 此方式流程控制较为灵活
          */
         count_wait_delete_friend = db_util.countWaitDeleteFriend();
-        for (let nextFunction = clickContacts(); count_wait_delete_friend > 0 && run && nextFunction; nextFunction = nextFunction()) {
+        for (let nextFunction = clickContacts(); run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
-        }
-
-        if (count_wait_delete_friend == 0) {
-            stopScript();
         }
     }
 

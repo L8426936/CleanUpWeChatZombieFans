@@ -136,6 +136,15 @@
     }
     initUI();
 
+    ui.emitter.on("back_pressed", e => {
+        if (ui.drawer.isDrawerOpen(android.view.Gravity.LEFT)) {
+            ui.drawer.closeDrawers();
+            e.consumed = true;
+        } else {
+            e.consumed = false;
+        }
+    });
+
     /**
      * 更新
      * @param {boolean} show_update_dialog
@@ -163,7 +172,7 @@
                 } else {
                     let local_config = JSON.parse(files.read("project.json"));
                     let last_version_info = res.body.json();
-                    dialog.setContent(language["versions_info"].replace("%current_versions_name", local_config["versionName"]).replace("%current_versions_code", local_config["versionCode"]).replace("%last_versions_name", last_version_info["version_name"]).replace("%last_versions_code", last_version_info["version_code"]).replace("%update_content", last_version_info["update_content"]));
+                    dialog.setContent(language["versions_info"].replace("%current_versions_name%", local_config["versionName"]).replace("%current_versions_code%", local_config["versionCode"]).replace("%last_versions_name%", last_version_info["version_name"]).replace("%last_versions_code%", last_version_info["version_code"]).replace("%update_content%", last_version_info["update_content"]));
                     dialog.setActionButton("neutral", language["show_history_update_info"]);
                     dialog.on("neutral", () => {
                         showHistoryUpdateInfo(last_version_info["version_code"] > local_config["versionCode"]);
@@ -235,44 +244,43 @@
             cancel = true;
         }).show();
         http.get(base_url + "config/files_md5.json", {}, (res, err) => {
-            if (!cancel) {
-                if (err || res["statusCode"] != 200) {
-                    dialog.dismiss();
-                    toast(language["update_fail"]);
-                } else {
-                    let remote_files_md5 = res.body.json();
-                    let local_files_md5 = files.exists("config/files_md5.json") ? JSON.parse(files.read("config/files_md5.json")) : {};
-                    let completed_all_file = true, max_progress = 0, current_progress = 0;
-                    for (let key in remote_files_md5) {
-                        if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
-                            max_progress += remote_files_md5[key]["size"];
-                        }
-                    }
-                    for (let key in remote_files_md5) {
-                        if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
-                            let response = http.get(base_url + key);
-                            if (!cancel && response["statusCode"] == 200) {
-                                current_progress += remote_files_md5[key]["size"];
-                                dialog.progress = current_progress * 100 / max_progress;
-                                files.ensureDir(".download_files/" + key);
-                                files.write(".download_files/" + key, response.body.string());
-                            } else {
-                                completed_all_file = false;
-                                break;
+            try {
+                if (!cancel) {
+                    if (err || res["statusCode"] != 200) {
+                        dialog.dismiss();
+                        toast(language["update_fail"]);
+                    } else {
+                        let remote_files_md5 = res.body.json();
+                        let local_files_md5 = files.exists("config/files_md5.json") ? JSON.parse(files.read("config/files_md5.json")) : {};
+                        let max_progress = 0, current_progress = 0;
+                        for (let key in remote_files_md5) {
+                            if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
+                                max_progress += remote_files_md5[key]["size"];
                             }
                         }
-                    }
-                    if (!cancel) {
-                        if (completed_all_file) {
-                            for (let key in remote_files_md5) {
-                                if ((!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) && !files.copy(".download_files/" + key, key)) {
-                                    completed_all_file = false;
+                        for (let key in remote_files_md5) {
+                            if (!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) {
+                                let response = http.get(base_url + key);
+                                if (!cancel) {
+                                    if (response["statusCode"] == 200) {
+                                        current_progress += remote_files_md5[key]["size"];
+                                        dialog.progress = current_progress * 100 / max_progress;
+                                        files.ensureDir(".cache/" + key);
+                                        files.write(".cache/" + key, response.body.string());
+                                    } else {
+                                        throw new Error("download fail");
+                                    }
+                                } else {
                                     break;
                                 }
                             }
                         }
-                        files.removeDir(".download_files");
-                        if (completed_all_file) {
+                        if (!cancel) {
+                            for (let key in remote_files_md5) {
+                                if ((!local_files_md5[key] || local_files_md5[key]["md5"] != remote_files_md5[key]["md5"]) && !files.copy(".cache/" + key, key)) {
+                                    throw new Error("copy fail");
+                                }
+                            }
                             for (let key in local_files_md5) {
                                 if (!remote_files_md5[key]) {
                                     files.remove(key);
@@ -282,14 +290,14 @@
                             toast(language["update_success"]);
                             engines.execScriptFile("main.js");
                             engines.myEngine().forceStop();
-                        } else {
-                            dialog.dismiss();
-                            toast(language["update_fail"]);
                         }
                     }
-                    files.removeDir(".download_files");
                 }
+            } catch (e) {
+                dialog.dismiss();
+                toast(language["update_fail"]);
             }
+            files.removeDir(".cache");
         });
     }
 

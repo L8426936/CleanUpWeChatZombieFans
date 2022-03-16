@@ -21,6 +21,7 @@
      * 运行状态
      */
     let run;
+    let stuck;
     let accumulator;
 
     /**
@@ -40,6 +41,7 @@
             }
             log_util.error("坐标点击通讯录失败");
         }
+        sleep(running_config["click_delay_duration"]);
         return synchronizeFriends;
     }
 
@@ -47,7 +49,7 @@
      * 导入好友备注
      */
     function synchronizeFriends() {
-        let friend_remark_nodes = idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]));
+        let friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
             let friend_remark = friend_remark_nodes.get(i).text();
             if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({ friend_remark: friend_remark, label: "", enabled: false }))) {
@@ -112,15 +114,9 @@
         threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
-                device.wakeUpIfNeeded();
                 if (localAccumulator == accumulator) {
-                    if (running_config["reboot_script"]) {
-                        device.cancelKeepingAwake();
-                        engines.execScriptFile(engines.myEngine().getSource().toString());
-                        engines.myEngine().forceStop();
-                    } else {
-                        stopScript();
-                    }
+                    stuck = true;
+                    stopScript();
                 }
                 localAccumulator = accumulator;
             }, running_config["accumulator_delay_duration"]);
@@ -133,10 +129,16 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
+        events.removeAllListeners();
+        threads.shutDownAll();
         toast(language["script_stopped"]);
         log_util.info(language["script_stopped"]);
-        engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
+        if (stuck && running_config["reboot_script"]) {
+            engines.execScriptFile(engines.myEngine().getSource().toString());
+        } else {
+            engines.execScriptFile("main.js");
+        }
     }
 
     function main() {
@@ -148,7 +150,7 @@
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
-        texts = JSON.parse(files.read("config/text_id/text.json"));
+        texts = app_util.getWeChatTexts();
 
         run = true, accumulator = 0;
 

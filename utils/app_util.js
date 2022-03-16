@@ -113,6 +113,10 @@ module.exports = (() => {
         return JSON.parse(files.read(getWeChatIdFilePath()));
     }
 
+    function getWeChatTexts() {
+        return JSON.parse(files.read("config/text_id/text.json"));
+    }
+
     /**
      * 不小于8.0.11中国版微信某些操作需要暂停
      */
@@ -168,7 +172,7 @@ module.exports = (() => {
         let supported = supportedApplicationVersions(we_chat_versions, min_supported_versions, max_supported_versions);
         if (!supported) {
             dialogs.build({
-                content: default_language["unsupported_we_chat_versions_alert_dialog_message"].replace("%min_supported_versions", min_supported_versions).replace("%max_supported_versions", max_supported_versions).replace("%we_chat_versions", we_chat_versions),
+                content: default_language["unsupported_we_chat_versions_alert_dialog_message"].replace("%min_supported_versions%", min_supported_versions).replace("%max_supported_versions%", max_supported_versions).replace("%we_chat_versions%", we_chat_versions),
                 positive: default_language["confirm"]
             }).show();
         }
@@ -183,7 +187,7 @@ module.exports = (() => {
         let file_path = getWeChatIdFilePath();
         if (!files.exists(file_path)) {
             dialogs.build({
-                content: default_language["file_lost_alert_dialog_message"].replace("%file_path", file_path),
+                content: default_language["file_lost_alert_dialog_message"].replace("%file_path%", file_path),
                 positive: default_language["confirm"]
             }).show();
             return false;
@@ -204,7 +208,7 @@ module.exports = (() => {
         }
         if (!enabled) {
             dialogs.build({
-                content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name", getAppName(context.getPackageName())),
+                content: default_language["jump_to_settings_alert_dialog_message"].replace("%app_name%", getAppName(context.getPackageName())),
                 positive: default_language["confirm"],
                 negative: default_language["cancel"],
                 cancelable: false
@@ -332,6 +336,7 @@ module.exports = (() => {
         getConfig: getConfig,
         getRunningConfig: getRunningConfig,
         getWeChatIds: getWeChatIds,
+        getWeChatTexts: getWeChatTexts,
         operatePause: operatePause,
         checkSupportedLanguage: checkSupportedLanguage,
         checkInstalledWeChat: checkInstalledWeChat,

@@ -21,9 +21,9 @@
      * 运行状态
      */
     let run;
+    let stuck;
     let accumulator;
     let last_label;
-    let last_index;
     let last_friend_remark;
     let labels_map;
 
@@ -73,41 +73,33 @@
             let label_nodes = idMatches(ids["label"]).untilFind();
             let count_nodes = idMatches(ids["contacts_count_by_label"]).untilFind();
             if (label_nodes.size() == count_nodes.size() && label_nodes.size() && count_nodes.size()) {
-                if (last_index >= label_nodes.size()) {
-                    // 记录滚动前标签列表最后一个标签
-                    last_label = label_nodes.get(label_nodes.size() - 1).text();
-                    return scrollLabelList;
-                }
                 // 标签列表滚动前后最后一个标签一致，标签列表已滚动到底部
                 if (last_label == label_nodes.get(label_nodes.size() - 1).text()) {
                     return stopScript;
                 }
-                let label = label_nodes.get(last_index).text();
-                let count = count_nodes.get(last_index).text().match(/\d+/);
-                if (count > 0 && !labels_map[label]) {
-                    if (node_util.backtrackClickNode(label_nodes.get(last_index)) || node_util.backtrackClickNode(count_nodes.get(last_index))) {
-                        labels_map[label] = true;
-                        last_label = label;
-                        log_util.info("控件点击标签成功");
-                        break;
+                for (let i = 0; i < label_nodes.size(); i++) {
+                    last_label = label_nodes.get(i).text();
+                    if (count_nodes.get(i).text().match(/\d+/) > 0 && !labels_map[last_label]) {
+                        if (node_util.backtrackClickNode(label_nodes.get(i)) || node_util.backtrackClickNode(count_nodes.get(i))) {
+                            labels_map[last_label] = true;
+                            last_friend_remark = null;
+                            log_util.info("控件点击标签成功");
+                            return synchronizeFriends;
+                        }
+                        log_util.warn("控件点击标签失败");
+                        sleep(running_config["click_delay_duration"]);
+                        if (node_util.backtrackSimulationClickNode(idMatches(ids["label"]).findOnce(i)) || node_util.backtrackSimulationClickNode(idMatches(ids["contacts_count_by_label"]).findOnce(i))) {
+                            labels_map[last_label] = true;
+                            last_friend_remark = null;
+                            log_util.info("坐标点击标签成功");
+                            return synchronizeFriends;
+                        }
+                        log_util.error("坐标点击标签失败");
                     }
-                    log_util.warn("控件点击标签失败");
-                    sleep(running_config["click_delay_duration"]);
-                    if (node_util.backtrackSimulationClickNode(idMatches(ids["label"]).findOnce(last_index)) || node_util.backtrackSimulationClickNode(idMatches(ids["contacts_count_by_label"]).findOnce(last_index))) {
-                        labels_map[label] = true;
-                        last_label = label;
-                        log_util.info("坐标点击标签成功");
-                        break;
-                    }
-                    log_util.error("坐标点击标签失败");
-                } else {
-                    last_index++;
                 }
+                return scrollLabelList;
             }
         }
-        last_index++;
-        last_friend_remark = undefined;
-        return synchronizeFriends;
     }
 
     /**
@@ -120,22 +112,20 @@
             return backToLabelList;
         }
         for (let i = 0; i < friend_remark_nodes.size(); i++) {
-            let friend_remark = friend_remark_nodes.get(i).text();
-            let label_friend = db_util.findLabelFriendByFriendRemark(friend_remark);
+            last_friend_remark = friend_remark_nodes.get(i).text();
+            let label_friend = db_util.findLabelFriendByFriendRemark(last_friend_remark);
             let result = true;
             if (label_friend) {
                 label_friend["label"] = last_label;
                 result = db_util.modifyLabelFriend(label_friend);
             } else {
-                label_friend = { label: last_label, friend_remark: friend_remark, enabled: false };
+                label_friend = { label: last_label, friend_remark: last_friend_remark, enabled: false };
                 result = db_util.addLabelFriend(label_friend);
             }
             if (!result) {
                 log_util.error("导入好友标签失败");
             }
         }
-        // 记录滚动前好友列表最后一个好友备注
-        last_friend_remark = friend_remark_nodes.get(friend_remark_nodes.size() - 1).text();
         return scrollFriendList;
     }
 
@@ -156,6 +146,7 @@
             }
             log_util.error("坐标点击返回标签列表失败");
         }
+        last_label = null;
         log_util.info("----------------------------------------");
         return clickLabel;
     }
@@ -221,7 +212,6 @@
             }
             log_util.error("坐标滚动标签列表失败");
         }
-        last_index = 0;
         log_util.info("----------------------------------------");
         return clickLabel;
     }
@@ -248,15 +238,9 @@
         threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
-                device.wakeUpIfNeeded();
                 if (localAccumulator == accumulator) {
-                    if (running_config["reboot_script"]) {
-                        device.cancelKeepingAwake();
-                        engines.execScriptFile(engines.myEngine().getSource().toString());
-                        engines.myEngine().forceStop();
-                    } else {
-                        stopScript();
-                    }
+                    stuck = true;
+                    stopScript();
                 }
                 localAccumulator = accumulator;
             }, running_config["accumulator_delay_duration"]);
@@ -269,10 +253,16 @@
     function stopScript() {
         run = false;
         device.cancelKeepingAwake();
+        events.removeAllListeners();
+        threads.shutDownAll();
         toast(language["script_stopped"]);
         log_util.info(language["script_stopped"]);
-        engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
+        if (stuck && running_config["reboot_script"]) {
+            engines.execScriptFile(engines.myEngine().getSource().toString());
+        } else {
+            engines.execScriptFile("main.js");
+        }
     }
 
     function main() {
@@ -284,9 +274,9 @@
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
-        texts = JSON.parse(files.read("config/text_id/text.json"));
+        texts = app_util.getWeChatTexts();
 
-        run = true, last_index = 0, accumulator = 0, labels_map = {};
+        run = true, accumulator = 0, labels_map = {};
 
         keyDownListenerByVolumeDown();
         accumulatorListener();

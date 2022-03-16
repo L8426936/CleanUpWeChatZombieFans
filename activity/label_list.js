@@ -52,7 +52,7 @@
     initUI();
 
     // 当用户回到本界面时，resume事件会被触发
-    ui.emitter.on("resume", function () {
+    ui.emitter.on("resume", () => {
         initUI();
     });
 

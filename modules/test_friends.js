@@ -33,13 +33,14 @@
      * 运行状态
      */
     let run;
+    let stuck;
     let accumulator;
 
     /**
      * 点击通讯录
      */
     function clickContacts() {
-        while (true) {
+        while (!idMatches(ids["friend_list"]).visibleToUser(true).findOnce()) {
             if (node_util.backtrackClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
                 log_util.info("控件点击通讯录成功");
                 break;
@@ -59,13 +60,9 @@
      * 点击好友
      */
     function clickFriend() {
-        while (true) {
-            let friend_remark_nodes = idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]));
-            if (last_index >= friend_remark_nodes.size()) {
-                return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
-            }
-            let friend_remark_node = friend_remark_nodes.get(last_index);
-            last_friend_remark = friend_remark_node.text();
+        let friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
+        while (last_index < friend_remark_nodes.size()) {
+            last_friend_remark = friend_remark_nodes.get(last_index).text();
             let repeat_friend_remark = (last_index > 0 && friend_remark_nodes.get(last_index - 1).text() == last_friend_remark) || (last_index < friend_remark_nodes.size() - 1 && friend_remark_nodes.get(last_index + 1).text() == last_friend_remark);
             if (repeat_friend_remark || !db_util.isTestedFriendForFriendRemark(last_friend_remark)) {
                 let enabled = true;
@@ -80,30 +77,26 @@
                         break;
                 }
                 if (enabled) {
-                    if (node_util.backtrackClickNode(friend_remark_node)) {
+                    if (node_util.backtrackClickNode(friend_remark_nodes.get(last_index))) {
+                        last_index++;
                         log_util.info("控件点击联系人成功");
-                        break;
+                        return checkContinueTest;
                     }
                     log_util.warn("控件点击联系人失败");
                     sleep(running_config["click_delay_duration"]);
-                    if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_list"]).findOne().find(idMatches(ids["friend_remark"]))[last_index])) {
+                    if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_remark"]).visibleToUser(true).findOnce(i))) {
+                        last_index++;
                         log_util.info("坐标点击联系人成功");
-                        break;
+                        return checkContinueTest;
                     }
                     log_util.error("坐标点击联系人失败");
-                } else {
-                    last_index++;
-                    log_util.info("忽略检测联系人");
-                    log_util.info("----------------------------------------");
                 }
-            } else {
-                last_index++;
-                log_util.info("联系人已检测");
-                log_util.info("----------------------------------------");
             }
+            last_index++;
+            log_util.info("忽略检测联系人");
         }
-        last_index++;
-        return checkContinueTest;
+        log_util.info("----------------------------------------");
+        return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
     }
 
     /**
@@ -113,19 +106,18 @@
         if (idMatches(ids["more_function_by_delete"]).findOne(running_config["find_delay_duration"])) {
             let we_chat_id_node = idMatches(ids["we_chat_id"]).findOne(running_config["find_delay_duration"]);
             if (we_chat_id_node) {
-                let we_chat_id = we_chat_id_node.text();
+                last_we_chat_id = we_chat_id_node.text();
                 let account_deleted_node = idMatches(ids["account_deleted"]).findOnce();
                 if (account_deleted_node) {
-                    db_util.addTestedFriend({ we_chat_id: we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE });
+                    db_util.addTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark, abnormal_message: account_deleted_node.text(), selected: true, deleted: false, friend_type: db_util.ABNORMAL_FRIEND_TYPE });
                     log_util.info("微信号已注销");
                     return backToFriendList;
                 }
-                if (db_util.isTestedFriendForWeChatID(we_chat_id)) {
-                    db_util.modifyTestedFriend({ we_chat_id: we_chat_id, friend_remark: last_friend_remark });
+                if (db_util.isTestedFriendForWeChatID(last_we_chat_id)) {
+                    db_util.modifyTestedFriend({ we_chat_id: last_we_chat_id, friend_remark: last_friend_remark });
                     log_util.info("联系人已检测");
                     return backToFriendList;
                 }
-                last_we_chat_id = we_chat_id;
                 return clickSendMessage;
             }
             log_util.warn("微信号控件id可能不一致");
@@ -516,15 +508,9 @@
         threads.start(function () {
             let localAccumulator = 0;
             setInterval(() => {
-                device.wakeUpIfNeeded();
                 if (localAccumulator == accumulator) {
-                    if (running_config["reboot_script"]) {
-                        device.cancelKeepingAwake();
-                        engines.execScriptFile(engines.myEngine().getSource().toString());
-                        engines.myEngine().forceStop();
-                    } else {
-                        stopScript();
-                    }
+                    stuck = true;
+                    stopScript();
                 }
                 localAccumulator = accumulator;
             }, running_config["accumulator_delay_duration"]);
@@ -538,10 +524,16 @@
         run = false;
         db_util.deleteIgnoredTestFriend();
         device.cancelKeepingAwake();
+        events.removeAllListeners();
+        threads.shutDownAll();
         toast(language["script_stopped"]);
         log_util.info(language["script_stopped"]);
-        engines.execScriptFile("main.js");
         engines.myEngine().forceStop();
+        if (stuck && running_config["reboot_script"]) {
+            engines.execScriptFile(engines.myEngine().getSource().toString());
+        } else {
+            engines.execScriptFile("main.js");
+        }
     }
 
     function main() {
@@ -553,7 +545,7 @@
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
         ids = app_util.getWeChatIds();
-        texts = JSON.parse(files.read("config/text_id/text.json"));
+        texts = app_util.getWeChatTexts();
 
         last_index = 0, run = true, accumulator = 0;
 
@@ -580,7 +572,10 @@
         let operate_pause = app_util.operatePause();
         for (let nextFunction = clickContacts(); run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
-            if (operate_pause && (nextFunction == clickTransferFunction || nextFunction == backToChatList)) {
+            if (operate_pause
+                && (nextFunction == clickFriend
+                    || nextFunction == clickTransferFunction
+                    || nextFunction == backToChatList)) {
                 sleep(running_config["click_delay_duration"]);
             }
         }
