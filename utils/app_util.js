@@ -227,8 +227,11 @@ module.exports = (() => {
     function stopModulesScript() {
         let scripts = engines.all();
         for (let i = 0; i < scripts.length; i++) {
-            if (/.+modules.+/.test(scripts[i].getSource().toString())) {
+            const script = scripts[i].getSource();
+            if(script) { //可能为null，toString报错
+              if (/.+modules.+/.test(script.toString())) {
                 scripts[i].forceStop();
+              }    
             }
         }
     }
@@ -236,8 +239,11 @@ module.exports = (() => {
     function stopUIScript() {
         let scripts = engines.all();
         for (let i = 0; i < scripts.length; i++) {
-            if (/.+(main|activity).+/.test(scripts[i].getSource().toString())) {
+            const script = scripts[i].getSource();
+            if(script) { //可能为null，toString报错
+              if (/.+(main|activity).+/.test(script.toString())) {
                 scripts[i].forceStop();
+              }
             }
         }
     }
