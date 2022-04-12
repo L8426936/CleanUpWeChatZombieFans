@@ -1,3 +1,8 @@
+2022-04-12 v4.0.3_c67
+* 在此感谢shen-lan（https://github.com/shen-lan）贡献的代码
+* 修复redmi K40 bug
+* 支持中国版微信8.0.21
+
 2022-03-16 v4.0.3_c66
 * 支持中国版微信8.0.20
 * 支持GooglePlayStore版微信8.0.18

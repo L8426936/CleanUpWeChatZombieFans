@@ -4,7 +4,7 @@
         "size": 28944
     },
     "project.json": {
-        "md5": "8156aa68182f6c0d703ef07ab4da707d",
+        "md5": "50afbaf259a44937a249e3937b0a60b5",
         "size": 387
     },
     "activity/developer_qr_code.js": {
@@ -28,11 +28,11 @@
         "size": 7161
     },
     "config/config.json": {
-        "md5": "41d3640c41876dede00bd8424d64ff42",
+        "md5": "39180e21ab2101235e33c0015fa135f0",
         "size": 1482
     },
     "config/files_md5.json": {
-        "md5": "2f76eb9975a1647f052477eb61702253",
+        "md5": "e0abc64af59370a3aecf135cd189c0b0",
         "size": 3763
     },
     "config/running_config.json": {
@@ -84,7 +84,7 @@
         "size": 1634
     },
     "config/text_id/other/8.0.18.json": {
-        "md5": "3796b73ffbd942177485c1547d4db2ab",
+        "md5": "64225a82f4bfed2429302511c393bc65",
         "size": 1633
     },
     "config/text_id/text.json": {
@@ -108,8 +108,8 @@
         "size": 25471
     },
     "utils/app_util.js": {
-        "md5": "5ffe6e408e5cc056808ef86a6b10eca5",
-        "size": 14600
+        "md5": "f6478c9a930379ac13714295b6c36e55",
+        "size": 14844
     },
     "utils/db_util.js": {
         "md5": "a1260001278591c1a10b2b185048b691",
