@@ -304,7 +304,7 @@
     function showInstructionsForUse() {
         dialogs.build({
             title: language["instructions_for_use_title"],
-            content: language["instructions_for_use_content"],
+            content: android.text.Html.fromHtml(language["instructions_for_use_content"], android.text.Html.FROM_HTML_MODE_COMPACT),
             positive: language["confirm"]
         }).show();
     }
