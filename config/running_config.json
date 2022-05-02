@@ -7,7 +7,7 @@
     "manual_control_we_chat_release_source": false,
     "we_chat_last_update_time": null,
     "no_more_warning": false,
-    "log_level": 4,
+    "log_level": 3,
     "auto_update": true,
     "clear_friend_current_page_work": false,
     "click_delay_duration": 500,

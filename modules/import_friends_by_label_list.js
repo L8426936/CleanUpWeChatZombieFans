@@ -33,11 +33,11 @@
     function clickContacts() {
         while (!idMatches(ids["labels"]).textMatches(texts["label"]).findOnce()) {
             if (node_util.backtrackClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击通讯录成功");
+                log_util.debug("控件点击通讯录成功");
             } else {
                 log_util.warn("控件点击通讯录失败");
                 if (node_util.backtrackSimulationClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                    log_util.info("坐标点击通讯录成功");
+                    log_util.debug("坐标点击通讯录成功");
                 }
                 log_util.error("坐标点击通讯录失败");
             }
@@ -51,13 +51,13 @@
     function clickLabels() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["labels"]).textMatches(texts["label"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击通讯录标签成功");
+                log_util.debug("控件点击通讯录标签成功");
                 break;
             }
             log_util.warn("控件点击通讯录标签失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["labels"]).textMatches(texts["label"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击通讯录标签成功");
+                log_util.debug("坐标点击通讯录标签成功");
                 break;
             }
             log_util.error("坐标点击通讯录标签失败");
@@ -83,7 +83,7 @@
                         if (node_util.backtrackClickNode(label_nodes.get(i)) || node_util.backtrackClickNode(count_nodes.get(i))) {
                             labels_map[last_label] = true;
                             last_friend_remark = null;
-                            log_util.info("控件点击标签成功");
+                            log_util.debug("控件点击标签成功");
                             return synchronizeFriends;
                         }
                         log_util.warn("控件点击标签失败");
@@ -91,7 +91,7 @@
                         if (node_util.backtrackSimulationClickNode(idMatches(ids["label"]).findOnce(i)) || node_util.backtrackSimulationClickNode(idMatches(ids["contacts_count_by_label"]).findOnce(i))) {
                             labels_map[last_label] = true;
                             last_friend_remark = null;
-                            log_util.info("坐标点击标签成功");
+                            log_util.debug("坐标点击标签成功");
                             return synchronizeFriends;
                         }
                         log_util.error("坐标点击标签失败");
@@ -135,19 +135,19 @@
     function backToLabelList() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["back_to_label_list"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击返回标签列表成功");
+                log_util.debug("控件点击返回标签列表成功");
                 break;
             }
             log_util.warn("控件点击返回标签列表失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["back_to_label_list"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击返回标签列表成功");
+                log_util.debug("坐标点击返回标签列表成功");
                 break;
             }
             log_util.error("坐标点击返回标签列表失败");
         }
         last_label = null;
-        log_util.info("----------------------------------------");
+        log_util.info("---------------好友列表页面---------------");
         return clickLabel;
     }
 
@@ -161,7 +161,7 @@
             if (node) {
                 if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
-                        log_util.info("控件滚动好友列表成功");
+                        log_util.debug("控件滚动好友列表成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -175,7 +175,7 @@
             // 坐标滚动好友列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动好友列表成功");
+                log_util.debug("坐标滚动好友列表成功");
                 break;
             }
             log_util.error("坐标滚动好友列表失败");
@@ -193,7 +193,7 @@
             if (node) {
                 if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
-                        log_util.info("控件滚动标签列表成功");
+                        log_util.debug("控件滚动标签列表成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -207,12 +207,12 @@
             // 坐标滚动标签列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动标签列表成功");
+                log_util.debug("坐标滚动标签列表成功");
                 break;
             }
             log_util.error("坐标滚动标签列表失败");
         }
-        log_util.info("----------------------------------------");
+        log_util.info("---------------标签列表页面---------------");
         return clickLabel;
     }
 
@@ -256,7 +256,7 @@
         events.removeAllListeners();
         threads.shutDownAll();
         toast(language["script_stopped"]);
-        log_util.info(language["script_stopped"]);
+        log_util.info("---------------结束导入标签列表---------------");
         engines.myEngine().forceStop();
         if (stuck && running_config["reboot_script"]) {
             engines.execScriptFile(engines.myEngine().getSource().toString());
@@ -283,11 +283,12 @@
         device.keepScreenDim();
 
         toast(language["script_running"]);
-        log_util.info(language["script_running"]);
+        log_util.info("---------------开始导入标签列表---------------");
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
         launch(we_chat_package_name);
+        waitForPackage(we_chat_package_name);
         while (!idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"])) {
             back();
             if (currentPackage() == we_chat_package_name) {

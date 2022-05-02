@@ -30,13 +30,13 @@
     function clickContacts() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击通讯录成功");
+                log_util.debug("控件点击通讯录成功");
                 break;
             }
             log_util.warn("控件点击通讯录失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击通讯录成功");
+                log_util.debug("坐标点击通讯录成功");
                 break;
             }
             log_util.error("坐标点击通讯录失败");
@@ -69,7 +69,7 @@
             if (friend_list_node) {
                 if (friend_list_node.bounds().right > friend_list_node.bounds().left) {
                     if (node_util.scrollForward(friend_list_node)) {
-                        log_util.info("控件滚动联系人列表成功");
+                        log_util.debug("控件滚动联系人列表成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -83,12 +83,12 @@
             // 坐标滚动联系人列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动联系人列表成功");
+                log_util.debug("坐标滚动联系人列表成功");
                 break;
             }
             log_util.error("坐标滚动联系人列表失败");
         }
-        log_util.info("----------------------------------------");
+        log_util.info("---------------好友列表页面---------------");
         return synchronizeFriends;
     }
 
@@ -132,7 +132,7 @@
         events.removeAllListeners();
         threads.shutDownAll();
         toast(language["script_stopped"]);
-        log_util.info(language["script_stopped"]);
+        log_util.info("---------------结束导入好友列表---------------");
         engines.myEngine().forceStop();
         if (stuck && running_config["reboot_script"]) {
             engines.execScriptFile(engines.myEngine().getSource().toString());
@@ -159,11 +159,12 @@
         device.keepScreenDim();
 
         toast(language["script_running"]);
-        log_util.info(language["script_running"]);
+        log_util.info("---------------开始导入好友列表---------------");
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
         launch(we_chat_package_name);
+        waitForPackage(we_chat_package_name);
         while (!idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"])) {
             back();
             if (currentPackage() == we_chat_package_name) {

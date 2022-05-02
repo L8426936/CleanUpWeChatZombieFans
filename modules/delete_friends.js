@@ -43,13 +43,13 @@
     function clickContacts() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击通讯录成功");
+                log_util.debug("控件点击通讯录成功");
                 break;
             }
             log_util.warn("控件点击通讯录失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击通讯录成功");
+                log_util.debug("坐标点击通讯录成功");
                 break;
             }
             log_util.error("坐标点击通讯录失败");
@@ -68,21 +68,21 @@
             if (db_util.isSelectedFriendForDeleteByFriendRemark(last_friend_remark)) {
                 if (node_util.backtrackClickNode(friend_remark_nodes.get(last_index))) {
                     last_index++;
-                    log_util.info("控件点击联系人成功");
+                    log_util.debug("控件点击联系人成功");
                     return checkWeChatId;
                 }
                 log_util.warn("控件点击联系人失败");
                 sleep(running_config["click_delay_duration"]);
                 if (node_util.backtrackSimulationClickNode(idMatches(ids["friend_remark"]).visibleToUser(true).findOnce(last_index))) {
                     last_index++;
-                    log_util.info("坐标点击联系人成功");
+                    log_util.debug("坐标点击联系人成功");
                     return checkWeChatId;
                 }
                 log_util.error("坐标点击联系人失败");
             }
             last_index++;
         }
-        log_util.info("----------------------------------------");
+        log_util.info("---------------好友列表页面---------------");
         return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
     }
 
@@ -112,7 +112,7 @@
             if (node) {
                 if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
-                        log_util.info("控件滚动联系人详情页成功");
+                        log_util.debug("控件滚动联系人详情页成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -126,7 +126,7 @@
             // 坐标滚动联系人详情页
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动联系人详情页成功");
+                log_util.debug("坐标滚动联系人详情页成功");
                 break;
             }
             log_util.error("坐标滚动联系人详情页失败");
@@ -140,13 +140,13 @@
     function clickMoreFunction() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["more_function_by_delete"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击更多功能成功");
+                log_util.debug("控件点击更多功能成功");
                 break;
             }
             log_util.warn("控件点击更多功能失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["more_function_by_delete"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击更多功能成功");
+                log_util.debug("坐标点击更多功能成功");
                 break;
             }
             log_util.error("坐标点击更多功能失败");
@@ -159,13 +159,13 @@
      */
     function clickDeleteFunction() {
         if (node_util.backtrackClickNode(idMatches(ids["delete"]).textMatches(texts["delete"]).findOne(running_config["find_delay_duration"]))) {
-            log_util.info("控件点击删除功能成功");
+            log_util.debug("控件点击删除功能成功");
             return clickConfirmDelete;
         }
         log_util.warn("控件点击删除功能失败");
         sleep(running_config["click_delay_duration"]);
         if (node_util.backtrackSimulationClickNode(idMatches(ids["delete"]).textMatches(texts["delete"]).findOne(running_config["find_delay_duration"]))) {
-            log_util.info("坐标点击删除功能成功");
+            log_util.debug("坐标点击删除功能成功");
             return clickConfirmDelete;
         }
         log_util.error("坐标点击删除功能失败");
@@ -178,13 +178,13 @@
     function clickConfirmDelete() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["confirm_delete"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击删除成功");
+                log_util.debug("控件点击删除成功");
                 break;
             }
             log_util.warn("控件点击删除失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["confirm_delete"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击删除成功");
+                log_util.debug("坐标点击删除成功");
                 break;
             }
             log_util.error("坐标点击删除失败");
@@ -192,7 +192,7 @@
         last_index--;
         db_util.modifyTestedFriend({ we_chat_id: last_we_chat_id, deleted: true });
         db_util.deleteLabelFriendByFriendRemark(last_friend_remark);
-        log_util.info("----------------------------------------");
+        log_util.info("---------------更多功能页面---------------");
         return --count_wait_delete_friend ? clickFriend : stopScript;
     }
 
@@ -206,7 +206,7 @@
             if (node) {
                 if (node.bounds().right > node.bounds().left) {
                     if (node_util.scrollForward(node)) {
-                        log_util.info("控件滚动更多功能页面成功");
+                        log_util.debug("控件滚动更多功能页面成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -220,7 +220,7 @@
             // 坐标滚动更多功能页面
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动更多功能页面成功");
+                log_util.debug("坐标滚动更多功能页面成功");
                 break;
             }
             log_util.error("坐标滚动更多功能页面失败");
@@ -234,18 +234,18 @@
     function backToFriendList() {
         while (true) {
             if (node_util.backtrackClickNode(idMatches(ids["back_to_friend_list"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("控件点击返回好友列表成功");
+                log_util.debug("控件点击返回好友列表成功");
                 break;
             }
             log_util.warn("控件点击返回好友列表失败");
             sleep(running_config["click_delay_duration"]);
             if (node_util.backtrackSimulationClickNode(idMatches(ids["back_to_friend_list"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.info("坐标点击返回好友列表成功");
+                log_util.debug("坐标点击返回好友列表成功");
                 break;
             }
             log_util.error("坐标点击返回好友列表失败");
         }
-        log_util.info("----------------------------------------");
+        log_util.info("---------------好友详情页面---------------");
         return clickFriend;
     }
 
@@ -259,7 +259,7 @@
             if (friend_list_node) {
                 if (friend_list_node.bounds().right > friend_list_node.bounds().left) {
                     if (node_util.scrollForward(friend_list_node)) {
-                        log_util.info("控件滚动联系人列表成功");
+                        log_util.debug("控件滚动联系人列表成功");
                         sleep(running_config["click_delay_duration"]);
                         break;
                     }
@@ -273,7 +273,7 @@
             // 坐标滚动联系人列表
             setScreenMetrics(1080, 1920);
             if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.info("坐标滚动联系人列表成功");
+                log_util.debug("坐标滚动联系人列表成功");
                 break;
             }
             log_util.error("坐标滚动联系人列表失败");
@@ -322,7 +322,7 @@
         events.removeAllListeners();
         threads.shutDownAll();
         toast(language["script_stopped"]);
-        log_util.info(language["script_stopped"]);
+        log_util.info("---------------结束删除好友---------------");
         engines.myEngine().forceStop();
         if (stuck && running_config["reboot_script"]) {
             engines.execScriptFile(engines.myEngine().getSource().toString());
@@ -349,11 +349,12 @@
         device.keepScreenDim();
 
         toast(language["script_running"]);
-        log_util.info(language["script_running"]);
+        log_util.info("---------------开始删除好友---------------");
 
         // 确保在微信首页
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
         launch(we_chat_package_name);
+        waitForPackage(we_chat_package_name);
         while (!idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"])) {
             back();
             if (currentPackage() == we_chat_package_name) {
