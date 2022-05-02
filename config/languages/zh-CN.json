@@ -4,7 +4,7 @@
     "account_deleted": "对方已经删除帐号",
     "app_name": "清理微信僵尸粉",
     "instructions_for_use_title": "使用说明",
-    "instructions_for_use_content": "<strong>请自行斟酌后使用，一切后果，自行承担，与本人无关。</strong><br/><strong>本软件无任何广告、引流等行为，仅在以下链接发布</strong><br/>脚本不再同步跟进微信版本，同步微信版本教程请移步以下链接<br/><a href='https://github.com/L8426936/CleanUpWeChatZombieFans'>https://github.com/L8426936/CleanUpWeChatZombieFans</a><br/><a href='https://gitee.com/L8426936/CleanUpWeChatZombieFans'>https://gitee.com/L8426936/CleanUpWeChatZombieFans</a><br/>1. 黑白名单可在左侧边栏列表配置<br/>2. 黑名单模式：只测试选中的好友<br/>3. 白名单模式：不测试选中的好友<br/>4. 标签列表页面，点击标签，可进行更详细的设置<br/>5. 来源<a href='https://baike.baidu.com/item/Google%20Play'>Google Play Store</a>的微信需要勾选[Google Play Store]，没有选择框则程序已自动判断，设置页面可以开启手动判断用于校正自动判断",
+    "instructions_for_use_content": "<strong>请自行斟酌后使用，一切后果，自行承担，与本人无关。</strong><br/><strong>本软件无任何广告、引流等行为，访问以下链接下载正版软件及解决不支持的微信版本问题</strong><br/><a href='https://github.com/L8426936/CleanUpWeChatZombieFans'>https://github.com/L8426936/CleanUpWeChatZombieFans</a><br/><a href='https://gitee.com/L8426936/CleanUpWeChatZombieFans'>https://gitee.com/L8426936/CleanUpWeChatZombieFans</a><br/>1. 黑白名单可在左侧边栏列表配置<br/>2. 黑名单模式：只测试选中的好友<br/>3. 白名单模式：不测试选中的好友<br/>4. 标签列表页面，点击标签，可进行更详细的设置<br/>5. 来源<a href='https://baike.baidu.com/item/Google%20Play'>Google Play Store</a>的微信需要勾选[Google Play Store]；通过应用商店安装的微信，程序基本能自动判断",
     "abnormal_friend": "异常好友",
     "normal_friend": "正常好友",
     "ignored_friend": "忽略测试的好友",
