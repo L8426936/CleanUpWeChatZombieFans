@@ -32,9 +32,9 @@
 2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)解压到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 
-### 运行方式二（操作简单）
-* 下载[最新发布版（GitHub）](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)，安装apk即可
-* 下载[最新发布版（Gitee）](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/releases)，安装apk即可
+### 运行方式二（操作简单，下载安装apk即可）
+* [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)
+* [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/releases)
 
 
 ## 界面截图（versionCode: 29, versionName: 3.5.0）
