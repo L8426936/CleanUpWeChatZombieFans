@@ -12,7 +12,7 @@
         },
         "other": {
             "min_supported_versions": "7.0.15",
-            "max_supported_versions": "8.0.21"
+            "max_supported_versions": "8.0.22"
         }
     },
     "ids_versions": {
@@ -31,7 +31,7 @@
             "8.0.9-8.0.9": "8.0.0.json",
             "8.0.10-8.0.11": "8.0.10.json",
             "8.0.14-8.0.16": "8.0.14.json",
-            "8.0.18-8.0.21": "8.0.18.json"
+            "8.0.18-8.0.22": "8.0.18.json"
         }
     }
 }
