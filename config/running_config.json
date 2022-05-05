@@ -5,14 +5,228 @@
     "include_friend": false,
     "import_friend_mode": 0,
     "manual_control_we_chat_release_source": false,
-    "we_chat_last_update_time": null,
+    "we_chat_last_update_time": 0,
     "no_more_warning": false,
-    "log_level": 3,
+    "log_level": 4,
     "auto_update": true,
     "clear_friend_current_page_work": false,
-    "click_delay_duration": 500,
+    "click_delay_duration": 350,
     "find_delay_duration": 1000,
     "accumulator_delay_duration": 10000,
     "reboot_script": true,
-    "developer_qr_code_type": "contact"
+    "developer_qr_code_type": null,
+    "label": null,
+    "module": null,
+    "test_friends": [
+        {
+            "function_name": "clickContacts",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickFriend",
+            "widget": true,
+            "coordinate": false,
+            "delay": true
+        },
+        {
+            "function_name": "scrollFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickSendMessage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "backToFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "scrollFriendDetailsPage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickSwitchToVoiceMessage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickMoreFunction",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickTransferFunction",
+            "widget": true,
+            "coordinate": true,
+            "delay": true
+        },
+        {
+            "function_name": "clickConfirmTransfer",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "closePayPassword",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "confirmTransAbnormalMessage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "cancelPay",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "backToChatPage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "backToChatList",
+            "widget": true,
+            "coordinate": false,
+            "delay": true
+        }
+    ],
+    "delete_friends": [
+        {
+            "function_name": "clickContacts",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickFriend",
+            "widget": true,
+            "coordinate": false,
+            "delay": true
+        },
+        {
+            "function_name": "scrollFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "backToFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "scrollFriendDetailsPage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickMoreFunction",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickDeleteFunction",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "scrollMoreFunctionPage",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickConfirmDelete",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        }
+    ],
+    "import_friend_list": [
+        {
+            "function_name": "clickContacts",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "synchronizeFriends",
+            "widget": false,
+            "coordinate": false,
+            "delay": true
+        },
+        {
+            "function_name": "scrollFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        }
+    ],
+    "import_label_list": [
+        {
+            "function_name": "clickContacts",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickLabels",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "clickLabel",
+            "widget": true,
+            "coordinate": false,
+            "delay": true
+        },
+        {
+            "function_name": "scrollLabelList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "synchronizeFriends",
+            "widget": false,
+            "coordinate": false,
+            "delay": true
+        },
+        {
+            "function_name": "scrollFriendList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        },
+        {
+            "function_name": "backToLabelList",
+            "widget": true,
+            "coordinate": false,
+            "delay": false
+        }
+    ]
 }

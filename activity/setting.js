@@ -13,22 +13,30 @@
             <text id="find_delay_duration_text" gravity="center" />
             <seekbar id="find_delay_duration_seekbar" max="250" />
             <text id="log_level_text" gravity="center" />
-            <seekbar id="log_level_seekbar" max="7" />
+            <seekbar id="log_level_seekbar" max="6" />
             <horizontal>
                 <button id="delete_log" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
                 <button id="share_log" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
             </horizontal>
+            <horizontal>
+                <button id="test_friends_setting" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
+                <button id="delete_friends_setting" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
+            </horizontal>
+            <horizontal>
+                <button id="import_friend_list_setting" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
+                <button id="import_label_list_setting" layout_weight="1" style="Widget.AppCompat.Button.Colored" />
+            </horizontal>
         </vertical>
     );
 
-    let language, running_config;
-    let log_level = ["ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"];
+    let app_util, language, running_config;
+    let log_level = ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"];
 
     /**
      * 初始化配置
      */
     function init() {
-        let app_util = require("utils/app_util.js");
+        app_util = require("utils/app_util.js");
         language = app_util.getLanguage();
         running_config = app_util.getRunningConfig();
 
@@ -62,8 +70,18 @@
 
         ui.share_log.setText(language["share_log"]);
         ui.share_log.setEnabled(files.exists("logs/log.log"));
+        
+        ui.test_friends_setting.setText(language["test_friends_setting"]);
+        ui.delete_friends_setting.setText(language["delete_friends_setting"]);
+        ui.import_friend_list_setting.setText(language["import_friend_list_setting"]);
+        ui.import_label_list_setting.setText(language["import_label_list_setting"]);
     }
     init();
+
+    // 当用户回到本界面时，resume事件会被触发
+    ui.emitter.on("resume", () => {
+        running_config = app_util.getRunningConfig();
+    });
 
     ui.manual_control_we_chat_release_source.on("check", checked => {
         running_config["manual_control_we_chat_release_source"] = checked;
@@ -144,4 +162,30 @@
         });
     });
 
+    ui.test_friends_setting.on("click", () => {
+        running_config["module"] = "test_friends";
+        files.write("config/running_config.json", JSON.stringify(running_config));
+        engines.execScriptFile("activity/module_setting.js");
+    });
+
+    
+    ui.delete_friends_setting.on("click", () => {
+        running_config["module"] = "delete_friends";
+        files.write("config/running_config.json", JSON.stringify(running_config));
+        engines.execScriptFile("activity/module_setting.js");
+    });
+
+    
+    ui.import_friend_list_setting.on("click", () => {
+        running_config["module"] = "import_friend_list";
+        files.write("config/running_config.json", JSON.stringify(running_config));
+        engines.execScriptFile("activity/module_setting.js");
+    });
+
+    
+    ui.import_label_list_setting.on("click", () => {
+        running_config["module"] = "import_label_list";
+        files.write("config/running_config.json", JSON.stringify(running_config));
+        engines.execScriptFile("activity/module_setting.js");
+    });
 })();

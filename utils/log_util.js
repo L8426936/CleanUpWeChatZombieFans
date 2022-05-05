@@ -18,27 +18,27 @@ module.exports = (() => {
     }
 
     function fatal(message) {
-        log(6, "fatal", message);
+        log(5, "fatal", message);
     }
 
     function error(message) {
-        log(5, "error", message);
+        log(4, "error", message);
     }
 
     function warn(message) {
-        log(4, "warn", message);
+        log(3, "warn", message);
     }
 
     function info(message) {
-        log(3, "info", message);
+        log(2, "info", message);
     }
 
     function debug(message) {
-        log(2, "debug", message);
+        log(1, "debug", message);
     }
 
     function trace(message) {
-        log(1, "trace", message);
+        log(0, "trace", message);
     }
 
     return {

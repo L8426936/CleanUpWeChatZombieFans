@@ -11,6 +11,6 @@
     "return": "返回",
     "transfer": "转账",
     "send_message": "发消息",
-    "switch_to_voice_message": "切换到按住说话",
+    "switch_to_text_message": "切换到键盘",
     "label": "标签"
 }

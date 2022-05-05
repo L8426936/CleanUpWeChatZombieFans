@@ -12,7 +12,7 @@
 
 
 ## 功能简介
-* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.10\~8.0.11、8.0.14\~8.0.16、8.0.18\~8.0.21版本
+* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.10\~8.0.11、8.0.14\~8.0.16、8.0.18\~8.0.22版本
 * 适用Google Play Store版微信7.0.16\~7.0.17、7.0.21、8.0.2、8.0.15、8.0.18版本
 * 仅支持简体中文(zh-CN)
 * 测试好友，支持黑、白名单模式
@@ -32,7 +32,7 @@
 2. 下载[CleanUpWeChatZombieFans](https://github.com/L8426936/CleanUpWeChatZombieFans/archive/master.zip)解压到Auto.js的“脚本”文件夹（需要在内存卡根目录手动新建“脚本”文件夹）
 3. 运行[main.js](./main.js)
 
-### 运行方式二（操作简单，下载安装apk即可）
+### 运行方式二（操作简单，下载apk安装即可）
 * [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/releases/latest)
 * [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/releases)
 
@@ -58,4 +58,11 @@
 --------------------------------------
 
 
-## [同步微信版本教程](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/Make.md)
+## 同步微信版本教程
+* [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/Make.md)
+* [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/Make.md)
+
+
+## 模块配置教程
+* [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/ModuleSetting.md)
+* [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/ModuleSetting.md)

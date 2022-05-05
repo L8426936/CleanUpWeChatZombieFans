@@ -24,24 +24,34 @@
     let stuck;
     let accumulator;
 
+    function findContactsNode() {
+        let node = idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]);
+        if (!node) {
+            log_util.warn("通讯录控件id可能不一致");
+        }
+        return node;
+    }
+
     /**
      * 点击通讯录
      */
     function clickContacts() {
         while (true) {
-            if (node_util.backtrackClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.debug("控件点击通讯录成功");
-                break;
+            if (running_config["import_friend_list"]["clickContacts"]["widget"]) {
+                if (node_util.backtrackClickNode(findContactsNode())) {
+                    log_util.debug("控件点击通讯录成功");
+                    break;
+                }
+                log_util.error("控件点击通讯录失败");
             }
-            log_util.warn("控件点击通讯录失败");
-            sleep(running_config["click_delay_duration"]);
-            if (node_util.backtrackSimulationClickNode(idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"]))) {
-                log_util.debug("坐标点击通讯录成功");
-                break;
+            if (running_config["import_friend_list"]["clickContacts"]["coordinate"]) {
+                if (node_util.backtrackSimulationClickNode(findContactsNode())) {
+                    log_util.debug("坐标点击通讯录成功");
+                    break;
+                }
+                log_util.error("坐标点击通讯录失败");
             }
-            log_util.error("坐标点击通讯录失败");
         }
-        sleep(running_config["click_delay_duration"]);
         return synchronizeFriends;
     }
 
@@ -49,14 +59,24 @@
      * 导入好友备注
      */
     function synchronizeFriends() {
-        let friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
-        for (let i = 0; i < friend_remark_nodes.size(); i++) {
-            let friend_remark = friend_remark_nodes.get(i).text();
+        let friend_remark_nodes, friend_list_node = idMatches(ids["friend_list"]).visibleToUser(true).findOne(running_config["find_delay_duration"]);
+        if (friend_list_node) {
+            friend_remark_nodes = friend_list_node.find(idMatches(ids["friend_remark"]));
+        } else {
+            friend_remark_nodes = idMatches(ids["friend_remark"]).visibleToUser(true).find();
+            log_util.warn("联系人列表控件id可能不一致");
+        }
+        for (let friend_remark_node of friend_remark_nodes) {
+            let friend_remark = friend_remark_node.text();
             if (!(db_util.isExistFriendRemark(friend_remark) || db_util.addLabelFriend({ friend_remark: friend_remark, label: "", enabled: false }))) {
                 log_util.error("导入好友失败");
             }
         }
-        return idMatches(ids["contacts_count"]).findOnce() ? stopScript : scrollFriendList;
+        let node = idMatches(ids["contacts_count"]).findOnce();
+        if (!node) {
+            log_util.warn("好友数量控件id可能不一致");
+        }
+        return node ? stopScript : scrollFriendList;
     }
 
     /**
@@ -64,29 +84,31 @@
      */
     function scrollFriendList() {
         while (true) {
-            let friend_list_node = idMatches(ids["friend_list"]).findOne(running_config["find_delay_duration"]);
-            // 控件滚动联系人列表
-            if (friend_list_node) {
-                if (friend_list_node.bounds().right > friend_list_node.bounds().left) {
-                    if (node_util.scrollForward(friend_list_node)) {
+            if (running_config["import_friend_list"]["scrollFriendList"]["widget"]) {
+                // 控件滚动联系人列表
+                let node = idMatches(ids["friend_list"]).findOne(running_config["find_delay_duration"]);
+                if (node) {
+                    if (node.bounds().left == node.bounds().right) {
+                        log_util.warn("联系人列表控件宽度为0");
+                    }
+                    if (node_util.scrollForward(node)) {
                         log_util.debug("控件滚动联系人列表成功");
-                        sleep(running_config["click_delay_duration"]);
                         break;
                     }
-                    log_util.warn("控件滚动联系人列表失败");
+                    log_util.error("控件滚动联系人列表失败");
                 } else {
-                    log_util.warn("联系人列表控件宽度为0");
+                    log_util.warn("联系人列表控件id可能不一致");
                 }
-            } else {
-                log_util.warn("联系人列表控件id可能不一致");
             }
-            // 坐标滚动联系人列表
-            setScreenMetrics(1080, 1920);
-            if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
-                log_util.debug("坐标滚动联系人列表成功");
-                break;
+            if (running_config["import_friend_list"]["scrollFriendList"]["coordinate"]) {
+                // 坐标滚动联系人列表
+                setScreenMetrics(1080, 1920);
+                if (swipe(540, 1658, 540, 428, running_config["click_delay_duration"])) {
+                    log_util.debug("坐标滚动联系人列表成功");
+                    break;
+                }
+                log_util.error("坐标滚动联系人列表失败");
             }
-            log_util.error("坐标滚动联系人列表失败");
         }
         log_util.info("---------------好友列表页面---------------");
         return synchronizeFriends;
@@ -133,12 +155,12 @@
         threads.shutDownAll();
         toast(language["script_stopped"]);
         log_util.info("---------------结束导入好友列表---------------");
-        engines.myEngine().forceStop();
         if (stuck && running_config["reboot_script"]) {
             engines.execScriptFile(engines.myEngine().getSource().toString());
         } else {
             engines.execScriptFile("main.js");
         }
+        engines.myEngine().forceStop();
     }
 
     function main() {
@@ -154,6 +176,12 @@
 
         run = true, accumulator = 0;
 
+        let import_friend_list = {};
+        for (let method of running_config["import_friend_list"]) {
+            import_friend_list[method["function_name"]] = method;
+        }
+        running_config["import_friend_list"] = import_friend_list;
+
         keyDownListenerByVolumeDown();
         accumulatorListener();
         device.keepScreenDim();
@@ -165,7 +193,7 @@
         let we_chat_package_name = app_util.getConfig()["we_chat_package_name"];
         launch(we_chat_package_name);
         waitForPackage(we_chat_package_name);
-        while (!idMatches(ids["contacts"]).textMatches(texts["contacts"]).findOne(running_config["find_delay_duration"])) {
+        while (!findContactsNode()) {
             back();
             if (currentPackage() == we_chat_package_name) {
                 accumulator++;
@@ -175,8 +203,12 @@
         /**
          * 此方式流程控制较为灵活
          */
-        for (let nextFunction = clickContacts(); run && nextFunction; nextFunction = nextFunction()) {
+        for (let nextFunction = clickContacts; run && nextFunction; nextFunction = nextFunction()) {
             accumulator++;
+            let method = running_config["import_friend_list"][nextFunction.name];
+            if (method && method["delay"]) {
+                sleep(running_config["click_delay_duration"])
+            }
         }
     }
 

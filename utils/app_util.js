@@ -118,24 +118,6 @@ module.exports = (() => {
     }
 
     /**
-     * 不小于8.0.11中国版微信某些操作需要暂停
-     */
-    function operatePause() {
-        let min_supported_versions_arr = "8.0.11".match(/\d+/g);
-        let current_versions_arr = getWeChatVersionsName().match(/\d+/g);
-        for (let i = 0; i < min_supported_versions_arr.length || i < current_versions_arr.length; i++) {
-            let min = i < min_supported_versions_arr.length ? parseInt(min_supported_versions_arr[i]) : 0;
-            let middle = i < current_versions_arr.length ? parseInt(current_versions_arr[i]) : 0;
-            if (min < middle) {
-                break;
-            } else if (min > middle) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * 检验语言
      * @returns {boolean}
      */
@@ -343,7 +325,6 @@ module.exports = (() => {
         getRunningConfig: getRunningConfig,
         getWeChatIds: getWeChatIds,
         getWeChatTexts: getWeChatTexts,
-        operatePause: operatePause,
         checkSupportedLanguage: checkSupportedLanguage,
         checkInstalledWeChat: checkInstalledWeChat,
         checkSupportedWeChatVersions: checkSupportedWeChatVersions,
