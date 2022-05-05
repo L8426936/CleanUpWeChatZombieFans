@@ -4,7 +4,7 @@
         "size": 29014
     },
     "project.json": {
-        "md5": "654eb71959b21fe4429d2f72c9af347c",
+        "md5": "02097f71b0e01201b804cd507488dad0",
         "size": 387
     },
     "activity/developer_qr_code.js": {
@@ -36,12 +36,12 @@
         "size": 1482
     },
     "config/files_md5.json": {
-        "md5": "0a23caedf849ab6cf997b2951cb8cb0b",
+        "md5": "92bfe778a06bc81b6aafbf11c8e36af6",
         "size": 3883
     },
     "config/running_config.json": {
-        "md5": "2b177b2909735f2c5d0a9bc269611acd",
-        "size": 6303
+        "md5": "34fd279d536bc3fad0e5770c9453f869",
+        "size": 6302
     },
     "config/languages/zh-CN.json": {
         "md5": "79cf39ed44f805b34833f24111d238a7",
@@ -96,8 +96,8 @@
         "size": 656
     },
     "modules/delete_friends.js": {
-        "md5": "a850f389e1c2d73ef1976963dbfc1846",
-        "size": 17205
+        "md5": "ca196a78015d06163e2f9628ea61b356",
+        "size": 17148
     },
     "modules/import_friends_by_friend_list.js": {
         "md5": "ce793d8d42fe677d07f757c1c12e2d92",

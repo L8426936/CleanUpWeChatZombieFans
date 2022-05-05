@@ -200,28 +200,25 @@
      * 点击删除功能
      */
     function clickDeleteFunction() {
-        while (true) {
-            let node = idMatches(ids["delete"]).textMatches(texts["delete"]).findOne(running_config["find_delay_duration"]);
-            if (!node) {
-                log_util.warn("删除功能控件id可能不一致");
-                return scrollMoreFunctionPage;
-            }
+        let node = idMatches(ids["delete"]).textMatches(texts["delete"]).findOne(running_config["find_delay_duration"]);
+        while (node) {
             if (running_config["delete_friends"]["clickDeleteFunction"]["widget"]) {
                 if (node_util.backtrackClickNode(node)) {
                     log_util.debug("控件点击删除功能成功");
-                    break;
+                    return clickConfirmDelete;
                 }
                 log_util.error("控件点击删除功能失败");
             }
             if (running_config["delete_friends"]["clickDeleteFunction"]["coordinate"]) {
                 if (node_util.backtrackSimulationClickNode(node)) {
                     log_util.debug("坐标点击删除功能成功");
-                    break;
+                    return clickConfirmDelete;
                 }
                 log_util.error("坐标点击删除功能失败");
             }
         }
-        return clickConfirmDelete;
+        log_util.warn("删除功能控件id可能不一致");
+        return scrollMoreFunctionPage;
     }
 
     /**

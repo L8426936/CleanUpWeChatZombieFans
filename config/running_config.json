@@ -149,7 +149,7 @@
         {
             "function_name": "clickDeleteFunction",
             "widget": true,
-            "coordinate": false,
+            "coordinate": true,
             "delay": false
         },
         {
