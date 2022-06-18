@@ -4,7 +4,7 @@
         "size": 29014
     },
     "project.json": {
-        "md5": "02097f71b0e01201b804cd507488dad0",
+        "md5": "0f47075b07e58b2841b7bc2933355a2b",
         "size": 387
     },
     "activity/developer_qr_code.js": {
@@ -28,7 +28,7 @@
         "size": 3171
     },
     "activity/setting.js": {
-        "md5": "79cf9051bd4f14e8d926f3df07a3f27b",
+        "md5": "f3a3372630ec3fab8895f4b34cf6cec0",
         "size": 9311
     },
     "config/config.json": {
@@ -36,7 +36,7 @@
         "size": 1482
     },
     "config/files_md5.json": {
-        "md5": "92bfe778a06bc81b6aafbf11c8e36af6",
+        "md5": "005f2c65091fcf301e3fb5663af7de13",
         "size": 3883
     },
     "config/running_config.json": {
@@ -44,8 +44,8 @@
         "size": 6302
     },
     "config/languages/zh-CN.json": {
-        "md5": "79cf39ed44f805b34833f24111d238a7",
-        "size": 6700
+        "md5": "5597c1470b11b1ec0a0904d3319eda57",
+        "size": 6709
     },
     "config/text_id/google_play_store/7.0.16.json": {
         "md5": "ab3657654f0487f7b0a16611f7b6eecb",

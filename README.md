@@ -12,7 +12,7 @@
 
 
 ## 功能简介
-* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.10\~8.0.11、8.0.14\~8.0.16、8.0.18\~8.0.22版本
+* 适用中国版微信7.0.15\~7.0.22、8.0.0\~8.0.3、8.0.6\~8.0.7、8.0.9、8.0.10\~8.0.11、8.0.14\~8.0.16、8.0.18\~8.0.23版本
 * 适用Google Play Store版微信7.0.16\~7.0.17、7.0.21、8.0.2、8.0.15、8.0.18版本
 * 仅支持简体中文(zh-CN)
 * 测试好友，支持黑、白名单模式
@@ -40,7 +40,7 @@
 ## 界面截图（versionCode: 29, versionName: 3.5.0）
 | 使用说明 | 主界面 | 侧边菜单 | 标签列表 | 好友列表 | 右上角菜单 |
 |:----:|:----:|:----:|:----:|:----:|:----:|
-| ![使用说明](res/Screenshots/Screenshot_20200728-154752.jpg) | ![主界面](res/Screenshots/Screenshot_20200720-133124.jpg) | ![侧边菜单](res/Screenshots/Screenshot_20200728-154800.jpg) | ![标签列表](res/Screenshots/Screenshot_20200728-155110.jpg) | ![好友列表](res/Screenshots/Screenshot_20200728-155116.jpg) | ![右上角菜单](res/Screenshots/Screenshot_20200728-154756.jpg) |
+| ![使用说明](res/Screenshot_20200728-154752.jpg) | ![主界面](res/Screenshot_20200720-133124.jpg) | ![侧边菜单](res/Screenshot_20200728-154800.jpg) | ![标签列表](res/Screenshot_20200728-155110.jpg) | ![好友列表](res/Screenshot_20200728-155116.jpg) | ![右上角菜单](res/Screenshot_20200728-154756.jpg) |
 --------------------------------------
 
 
@@ -58,11 +58,7 @@
 --------------------------------------
 
 
-## 同步微信版本教程
-* [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/Make.md)
-* [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/Make.md)
+## [同步微信版本教程](Make.md)
 
 
-## 模块配置教程
-* [GitHub](https://github.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/ModuleSetting.md)
-* [Gitee](https://gitee.com/L8426936/CleanUpWeChatZombieFansLauncher/blob/main/ModuleSetting.md)
+## [模块配置教程](ModuleSetting.md)
