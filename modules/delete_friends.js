@@ -205,19 +205,40 @@
             if (running_config["delete_friends"]["clickDeleteFunction"]["widget"]) {
                 if (node_util.backtrackClickNode(node)) {
                     log_util.debug("控件点击删除功能成功");
-                    return clickConfirmDelete;
+                    return clickDeleteButReserveHistoryFunction;
                 }
                 log_util.error("控件点击删除功能失败");
             }
             if (running_config["delete_friends"]["clickDeleteFunction"]["coordinate"]) {
                 if (node_util.backtrackSimulationClickNode(node)) {
                     log_util.debug("坐标点击删除功能成功");
-                    return clickConfirmDelete;
+                    return clickDeleteButReserveHistoryFunction;
                 }
                 log_util.error("坐标点击删除功能失败");
             }
         }
         log_util.warn("删除功能控件id可能不一致");
+        return scrollMoreFunctionPage;
+    }
+
+    /**
+     * 点击取消删除同时清空聊天记录功能
+     */
+    function clickDeleteButReserveHistoryFunction() {
+        while (true) {
+            let node = idMatches(ids["delete_but_reserve_history"]).findOne(running_config["find_delay_duration"]);
+            if (node_util.backtrackClickNode(node)) {
+                log_util.debug("控件点击取消删除同时清空聊天记录功能成功");
+                return clickConfirmDelete;
+            }
+            log_util.error("控件点击取消删除同时清空聊天记录功能失败");
+            if (node_util.backtrackSimulationClickNode(node)) {
+                log_util.debug("坐标点击取消删除同时清空聊天记录功能成功");
+                return clickConfirmDelete;
+            }
+            log_util.error("坐标点击取消删除同时清空聊天记录功能失败");
+        }
+        log_util.warn("取消删除同时清空聊天记录功能控件id可能不一致");
         return scrollMoreFunctionPage;
     }
 

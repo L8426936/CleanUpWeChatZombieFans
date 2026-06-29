@@ -537,7 +537,7 @@
             log_util.warn("返回聊天列表控件id可能不一致");
         }
         log_util.info("---------------聊天页面---------------");
-        return clickContacts;
+        return backToFriendList;
     }
 
     /**
